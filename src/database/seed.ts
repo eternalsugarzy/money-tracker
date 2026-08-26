@@ -44,4 +44,20 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
       [acc.id, acc.name, acc.type, acc.initial_balance, acc.current_balance, acc.icon, acc.icon_family, acc.color, now, now]
     );
   }
+
+  // Default Shortcuts
+  const defaultShortcuts = [
+    { id: 'sc_def_kopi', title: 'Kopi / Cafe', emoji: '☕', amount: 25000, category_id: 'cat_cemilan', type: 'expense' },
+    { id: 'sc_def_makan', title: 'Makan Siang', emoji: '🍽️', amount: 35000, category_id: 'cat_makan', type: 'expense' },
+    { id: 'sc_def_bensin', title: 'Bensin BBM', emoji: '⛽', amount: 50000, category_id: 'cat_transport', type: 'expense' },
+    { id: 'sc_def_supermarket', title: 'Supermarket', emoji: '🛒', amount: 100000, category_id: 'cat_belanja', type: 'expense' },
+  ];
+
+  for (const sc of defaultShortcuts) {
+    await db.runAsync(
+      `INSERT OR IGNORE INTO shortcuts (id, title, emoji, amount, category_id, account_id, type, created_at)
+       VALUES (?, ?, ?, ?, ?, NULL, ?, ?)`,
+      [sc.id, sc.title, sc.emoji, sc.amount, sc.category_id, sc.type, now]
+    );
+  }
 }

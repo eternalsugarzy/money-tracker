@@ -78,18 +78,19 @@ export const HomeScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       loadHomeData();
-    }, [loadHomeData, transactions])
+    }, [loadHomeData])
   );
 
-  useEffect(() => {
-    loadHomeData();
-  }, [loadHomeData, transactions, period, chartPeriod, chartType]);
-
   const onRefresh = async () => {
-    setRefreshing(true);
-    await refreshData();
-    await loadHomeData();
-    setRefreshing(false);
+    try {
+      setRefreshing(true);
+      await refreshData();
+      await loadHomeData();
+    } catch (e) {
+      // safe fallback
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   // Financial Health Score Calculation

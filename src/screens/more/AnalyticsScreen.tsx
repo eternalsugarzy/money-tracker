@@ -60,18 +60,19 @@ export const AnalyticsScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       loadAnalytics();
-    }, [loadAnalytics, transactions])
+    }, [loadAnalytics])
   );
 
-  useEffect(() => {
-    loadAnalytics();
-  }, [loadAnalytics, transactions, period, chartType]);
-
   const onRefresh = async () => {
-    setRefreshing(true);
-    await refreshData();
-    await loadAnalytics();
-    setRefreshing(false);
+    try {
+      setRefreshing(true);
+      await refreshData();
+      await loadAnalytics();
+    } catch (e) {
+      // safe
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const PERIODS: { key: TimePeriodFilter; label: string }[] = [

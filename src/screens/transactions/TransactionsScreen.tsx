@@ -66,18 +66,19 @@ export const TransactionsScreen: React.FC = () => {
   useFocusEffect(
     useCallback(() => {
       fetchTransactions();
-    }, [fetchTransactions, globalTx])
+    }, [fetchTransactions])
   );
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions, globalTx]);
-
   const onRefresh = async () => {
-    setRefreshing(true);
-    await refreshData();
-    await fetchTransactions();
-    setRefreshing(false);
+    try {
+      setRefreshing(true);
+      await refreshData();
+      await fetchTransactions();
+    } catch (e) {
+      // safe
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleToggleCategory = (catId: string) => {

@@ -138,14 +138,6 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
     // Ignore if table was just created
   }
 
-  // Seed default categories and default accounts if empty
+  // Seed default categories, accounts, and shortcuts if empty
   await seedInitialData(db);
-
-  // Seed default shortcuts if empty
-  try {
-    const { seedDefaultShortcutsIfEmpty } = await import('./shortcutRepo');
-    await seedDefaultShortcutsIfEmpty();
-  } catch (e) {
-    // Ignore
-  }
 }

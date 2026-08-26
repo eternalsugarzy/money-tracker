@@ -49,10 +49,15 @@ export const BudgetScreen: React.FC = () => {
   }, []);
 
   const onRefresh = async () => {
-    setRefreshing(true);
-    await refreshData();
-    await fetchBudgets();
-    setRefreshing(false);
+    try {
+      setRefreshing(true);
+      await refreshData();
+      await fetchBudgets();
+    } catch (e) {
+      // safe
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleDeleteBudget = (budget: Budget) => {
