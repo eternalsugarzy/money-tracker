@@ -10,12 +10,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { formatCurrency } from '../../utils/formatters';
 
 export const MoreScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const { accounts, categories, recurring, debts, totalNetWorth } = useAppData();
 
@@ -27,56 +29,56 @@ export const MoreScreen: React.FC = () => {
   const MENU_ITEMS = [
     {
       id: 'analytics',
-      title: 'Statistik & Trend Keuangan',
-      subtitle: 'Analisis visual pemasukan, pengeluaran, perbandingan & tren saldo',
+      title: t.analyticsMenu,
+      subtitle: t.analyticsSub,
       icon: 'bar-chart',
       iconColor: theme.colors.primary,
       screen: 'Analytics',
     },
     {
       id: 'savings',
-      title: 'Celengan & Target Impian',
-      subtitle: 'Simpan dan pantau progress tabungan tujuanmu',
+      title: t.savingsMenu,
+      subtitle: t.savingsSub,
       icon: 'trophy',
       iconColor: theme.colors.warning,
       screen: 'SavingsGoals',
     },
     {
       id: 'accounts',
-      title: 'Akun & Dompet',
-      subtitle: `${activeAccountsCount} akun aktif • Total ${formatCurrency(totalNetWorth)}`,
+      title: t.accountsMenu,
+      subtitle: `${activeAccountsCount} ${language === 'id' ? 'akun aktif' : 'active accounts'} • Total ${formatCurrency(totalNetWorth)}`,
       icon: 'wallet',
       iconColor: theme.colors.income,
       screen: 'Accounts',
     },
     {
       id: 'categories',
-      title: 'Kategori Keuangan',
-      subtitle: `${activeCategoriesCount} kategori aktif (Universal)`,
+      title: t.categoriesMenu,
+      subtitle: `${activeCategoriesCount} ${language === 'id' ? 'kategori aktif' : 'active categories'}`,
       icon: 'grid',
       iconColor: theme.colors.transfer,
       screen: 'Categories',
     },
     {
       id: 'debts',
-      title: 'Hutang - Piutang',
-      subtitle: `${unpaidDebtsCount} catatan belum lunas`,
+      title: t.debtsMenu,
+      subtitle: `${unpaidDebtsCount} ${language === 'id' ? 'catatan belum lunas' : 'unsettled records'}`,
       icon: 'people',
       iconColor: theme.colors.debt,
       screen: 'Debts',
     },
     {
       id: 'recurring',
-      title: 'Transaksi Berulang (Recurring)',
-      subtitle: `${activeRecurringCount} template aktif`,
+      title: t.recurringMenu,
+      subtitle: `${activeRecurringCount} ${language === 'id' ? 'template aktif' : 'active templates'}`,
       icon: 'repeat',
       iconColor: theme.colors.accent,
       screen: 'Recurring',
     },
     {
       id: 'export',
-      title: 'Laporan & Ekspor Data',
-      subtitle: 'Ekspor riwayat ke CSV, JSON, & Backup Data',
+      title: t.exportMenu,
+      subtitle: language === 'id' ? 'Ekspor riwayat ke CSV, JSON, & Impor Data Money+' : 'Export history to CSV, JSON, & Import Money+',
       icon: 'download',
       iconColor: theme.colors.expense,
       screen: 'ExportReport',
@@ -87,7 +89,7 @@ export const MoreScreen: React.FC = () => {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>MENU UTAMA</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t.mainMenu}</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -142,7 +144,7 @@ export const MoreScreen: React.FC = () => {
             <Ionicons name="wallet" size={26} color="#121212" />
           </View>
           <Text style={[styles.aboutTitle, { color: theme.colors.text }]}>
-            Sugarzy Finance Tracker (SuFiKer+)
+            SUGARZY FINANCE TRACKER (SUFIKER+)
           </Text>
           <View
             style={[
@@ -154,11 +156,11 @@ export const MoreScreen: React.FC = () => {
             ]}
           >
             <Text style={styles.creatorChipText}>
-              Dibuat oleh Irwan Firmanto (@eternalsugarzy)
+              {t.createdBy} Irwan Firmanto (@eternalsugarzy)
             </Text>
           </View>
           <Text style={[styles.aboutDesc, { color: theme.colors.textMuted }]}>
-            Aplikasi Pencatatan Keuangan iOS dengan Desain Neo-Brutalism, Built-in Calculator, Multi-Account & Offline SQLite.
+            {t.aboutDesc}
           </Text>
           <Text style={[styles.versionText, { color: theme.colors.textMuted }]}>
             Versi 1.4.0 (iOS Edition) • © 2026 Irwan Firmanto (@eternalsugarzy)
@@ -198,9 +200,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 8,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
@@ -210,8 +212,9 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   menuTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '900',
+    letterSpacing: 0.2,
   },
   menuSubtitle: {
     fontSize: 11,
@@ -219,45 +222,46 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   arrowBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
+    width: 28,
+    height: 28,
+    borderRadius: 6,
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
   },
   aboutCard: {
-    marginTop: 20,
-    padding: 18,
+    marginTop: 16,
     alignItems: 'center',
+    padding: 18,
   },
   brandIconBadge: {
-    width: 54,
-    height: 54,
-    borderRadius: 14,
+    width: 48,
+    height: 48,
+    borderRadius: 12,
     backgroundColor: '#FFE600',
-    borderWidth: 2.5,
+    borderWidth: 2,
     borderColor: '#121212',
-    alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    alignItems: 'center',
+    marginBottom: 8,
   },
   aboutTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '900',
+    letterSpacing: 0.5,
     textAlign: 'center',
   },
   creatorChip: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 6,
     borderWidth: 1.5,
     marginVertical: 8,
   },
   creatorChipText: {
     fontSize: 11,
-    fontWeight: '900',
+    fontWeight: '800',
     color: '#121212',
   },
   aboutDesc: {
@@ -265,12 +269,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     lineHeight: 16,
-    marginTop: 4,
+    marginHorizontal: 10,
   },
   versionText: {
     fontSize: 10,
-    fontWeight: '800',
-    textAlign: 'center',
+    fontWeight: '700',
     marginTop: 10,
+    textAlign: 'center',
   },
 });

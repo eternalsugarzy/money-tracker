@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
@@ -19,6 +20,7 @@ import { scheduleDailyExpenseReminder, cancelDailyExpenseReminder } from '../../
 
 export const SettingsScreen: React.FC = () => {
   const { theme, isDark, toggleTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
   const navigation = useNavigation<any>();
   const { generateSampleData } = useAppData();
 
@@ -31,26 +33,39 @@ export const SettingsScreen: React.FC = () => {
     setReminderEnabled(enabled);
     if (enabled) {
       await scheduleDailyExpenseReminder(reminderHour, reminderMinute, true);
-      Alert.alert('Pengingat Aktif', `Notifikasi harian dijadwalkan setiap pukul ${String(reminderHour).padStart(2, '0')}:${String(reminderMinute).padStart(2, '0')}.`);
+      Alert.alert(
+        language === 'id' ? 'Pengingat Aktif' : 'Reminder Enabled',
+        language === 'id'
+          ? `Notifikasi harian dijadwalkan setiap pukul ${String(reminderHour).padStart(2, '0')}:${String(reminderMinute).padStart(2, '0')}.`
+          : `Daily notification scheduled at ${String(reminderHour).padStart(2, '0')}:${String(reminderMinute).padStart(2, '0')}.`
+      );
     } else {
       await cancelDailyExpenseReminder();
-      Alert.alert('Pengingat Dimatikan', 'Notifikasi pengingat harian telah dinonaktifkan.');
+      Alert.alert(
+        language === 'id' ? 'Pengingat Dimatikan' : 'Reminder Disabled',
+        language === 'id' ? 'Notifikasi pengingat harian telah dinonaktifkan.' : 'Daily reminder notification has been turned off.'
+      );
     }
   };
 
   const handleGenerateSample = async () => {
     Alert.alert(
-      'Generate Data Sampel',
-      'Tambahkan data simulasi transaksi, budget, akun, dan hutang-piutang untuk mencoba seluruh fitur?',
+      language === 'id' ? 'Generate Data Sampel' : 'Generate Sample Data',
+      language === 'id'
+        ? 'Tambahkan data simulasi transaksi, budget, akun, dan hutang-piutang untuk mencoba seluruh fitur?'
+        : 'Add simulated transactions, budgets, accounts, and debts to test all features?',
       [
-        { text: 'Batal', style: 'cancel' },
+        { text: language === 'id' ? 'Batal' : 'Cancel', style: 'cancel' },
         {
-          text: 'Generate Sekarang',
+          text: language === 'id' ? 'Generate Sekarang' : 'Generate Now',
           onPress: async () => {
             setGenerating(true);
             await generateSampleData();
             setGenerating(false);
-            Alert.alert('Selesai', 'Data sampel realistis berhasil dibuat!');
+            Alert.alert(
+              language === 'id' ? 'Selesai' : 'Success',
+              language === 'id' ? 'Data sampel realistis berhasil dibuat!' : 'Realistic sample data generated successfully!'
+            );
           },
         },
       ]
@@ -73,13 +88,81 @@ export const SettingsScreen: React.FC = () => {
         >
           <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>PENGATURAN</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t.settings}</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Appearance Settings */}
-        <Text style={[styles.sectionHeading, { color: theme.colors.text }]}>TAMPILAN</Text>
+        {/* 1. Language Settings */}
+        <Text style={[styles.sectionHeading, { color: theme.colors.text }]}>
+          {t.languageSection}
+        </Text>
+        <NeoCard style={styles.settingCard}>
+          <View style={styles.languageOptionsRow}>
+            {/* Indonesian Option */}
+            <TouchableOpacity
+              onPress={() => setLanguage('id')}
+              style={[
+                styles.langOptionBtn,
+                {
+                  backgroundColor: language === 'id' ? theme.colors.primary : theme.colors.surface,
+                  borderColor: theme.colors.border,
+                  borderWidth: language === 'id' ? 2.5 : 1.5,
+                },
+              ]}
+            >
+              <Text style={styles.flagEmoji}>🇮🇩</Text>
+              <Text
+                style={[
+                  styles.langOptionText,
+                  {
+                    color: language === 'id' ? '#121212' : theme.colors.text,
+                    fontWeight: language === 'id' ? '900' : '700',
+                  },
+                ]}
+              >
+                Bahasa Indonesia
+              </Text>
+              {language === 'id' && (
+                <Ionicons name="checkmark-circle" size={18} color="#121212" style={{ marginLeft: 6 }} />
+              )}
+            </TouchableOpacity>
+
+            {/* English Option */}
+            <TouchableOpacity
+              onPress={() => setLanguage('en')}
+              style={[
+                styles.langOptionBtn,
+                {
+                  backgroundColor: language === 'en' ? theme.colors.primary : theme.colors.surface,
+                  borderColor: theme.colors.border,
+                  borderWidth: language === 'en' ? 2.5 : 1.5,
+                },
+              ]}
+            >
+              <Text style={styles.flagEmoji}>🇬🇧</Text>
+              <Text
+                style={[
+                  styles.langOptionText,
+                  {
+                    color: language === 'en' ? '#121212' : theme.colors.text,
+                    fontWeight: language === 'en' ? '900' : '700',
+                  },
+                ]}
+              >
+                English (US)
+              </Text>
+              {language === 'en' && (
+                <Ionicons name="checkmark-circle" size={18} color="#121212" style={{ marginLeft: 6 }} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </NeoCard>
+
+        {/* 2. Appearance Settings */}
+        <Text style={[styles.sectionHeading, { color: theme.colors.text, marginTop: 14 }]}>
+          {t.appearance}
+        </Text>
         <NeoCard style={styles.settingCard}>
           <View style={styles.settingRow}>
             <View style={styles.settingLeftGroup}>
@@ -92,9 +175,9 @@ export const SettingsScreen: React.FC = () => {
                 <Ionicons name={isDark ? 'moon' : 'sunny'} size={20} color="#121212" />
               </View>
               <View style={styles.settingTextCol}>
-                <Text style={[styles.settingTitle, { color: theme.colors.text }]}>Mode Gelap (Dark Mode)</Text>
+                <Text style={[styles.settingTitle, { color: theme.colors.text }]}>{t.darkMode}</Text>
                 <Text style={[styles.settingDesc, { color: theme.colors.textMuted }]}>
-                  {isDark ? 'Tema Neo-Brutalism Gelap aktif' : 'Tema Neo-Brutalism Terang aktif'}
+                  {t.darkModeSub}
                 </Text>
               </View>
             </View>
@@ -111,9 +194,9 @@ export const SettingsScreen: React.FC = () => {
           </View>
         </NeoCard>
 
-        {/* Notification Settings */}
+        {/* 3. Notification Settings */}
         <Text style={[styles.sectionHeading, { color: theme.colors.text, marginTop: 14 }]}>
-          NOTIFIKASI PENGINGAT
+          {t.notifications}
         </Text>
         <NeoCard style={styles.settingCard}>
           <View style={styles.settingRow}>
@@ -128,10 +211,10 @@ export const SettingsScreen: React.FC = () => {
               </View>
               <View style={styles.settingTextCol}>
                 <Text style={[styles.settingTitle, { color: theme.colors.text }]}>
-                  Pengingat Catat Harian
+                  {t.dailyReminder}
                 </Text>
                 <Text style={[styles.settingDesc, { color: theme.colors.textMuted }]}>
-                  Pukul {String(reminderHour).padStart(2, '0')}:{String(reminderMinute).padStart(2, '0')} setiap malam
+                  {t.dailyReminderSub}
                 </Text>
               </View>
             </View>
@@ -148,9 +231,9 @@ export const SettingsScreen: React.FC = () => {
           </View>
         </NeoCard>
 
-        {/* Demo & Testing Data */}
+        {/* 4. Demo & Testing Data */}
         <Text style={[styles.sectionHeading, { color: theme.colors.text, marginTop: 14 }]}>
-          DATA & DEMO
+          {t.dataManagement}
         </Text>
         <NeoCard style={styles.settingCard}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
@@ -164,25 +247,25 @@ export const SettingsScreen: React.FC = () => {
             </View>
             <View style={{ marginLeft: 12, flex: 1 }}>
               <Text style={[styles.settingTitle, { color: theme.colors.text }]}>
-                Isi Data Simulasi Cepat
+                {t.generateSample}
               </Text>
               <Text style={[styles.settingDesc, { color: theme.colors.textMuted }]}>
-                Tambahkan contoh transaksi, budget makan, dan hutang-piutang untuk melihat grafik secara langsung.
+                {t.generateSampleSub}
               </Text>
             </View>
           </View>
 
           <NeoButton
-            title="GENERATE SAMPLE DATA"
+            title={language === 'id' ? 'GENERATE SAMPLE DATA' : 'GENERATE SAMPLE DATA'}
             variant="transfer"
             loading={generating}
             onPress={handleGenerateSample}
           />
         </NeoCard>
 
-        {/* App Info & Copyright */}
+        {/* 5. App Info & Copyright */}
         <Text style={[styles.sectionHeading, { color: theme.colors.text, marginTop: 14 }]}>
-          TENTANG APLIKASI
+          {t.aboutApp}
         </Text>
         <NeoCard style={styles.settingCard}>
           <View style={{ alignItems: 'center', paddingVertical: 8 }}>
@@ -201,7 +284,7 @@ export const SettingsScreen: React.FC = () => {
               <Ionicons name="wallet" size={28} color="#121212" />
             </View>
             <Text style={[styles.appName, { color: theme.colors.text }]}>
-              Sugarzy Finance Tracker (SuFiKer+)
+              SUGARZY FINANCE TRACKER (SUFIKER+)
             </Text>
             <Text style={[styles.appVersion, { color: theme.colors.textMuted }]}>
               Versi 1.4.0 (Build 2026.08)
@@ -217,12 +300,12 @@ export const SettingsScreen: React.FC = () => {
               ]}
             >
               <Text style={[styles.creatorText, { color: theme.colors.text }]}>
-                Dibuat dengan ❤️ oleh <Text style={{ fontWeight: '900' }}>Irwan Firmanto</Text> (@eternalsugarzy)
+                {t.createdBy} <Text style={{ fontWeight: '900' }}>Irwan Firmanto</Text> (@eternalsugarzy)
               </Text>
             </View>
 
             <Text style={[styles.copyrightText, { color: theme.colors.textMuted }]}>
-              © 2026 Irwan Firmanto (@eternalsugarzy). All rights reserved.
+              © 2026 Irwan Firmanto (@eternalsugarzy). {t.rightsReserved}
             </Text>
           </View>
         </NeoCard>
@@ -262,7 +345,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   sectionHeading: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 0.5,
     marginBottom: 6,
@@ -270,74 +353,89 @@ const styles = StyleSheet.create({
   },
   settingCard: {
     padding: 14,
-    marginVertical: 4,
+    marginBottom: 6,
+  },
+  languageOptionsRow: {
+    flexDirection: 'column',
+    gap: 8,
+  },
+  langOptionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  flagEmoji: {
+    fontSize: 20,
+    marginRight: 10,
+  },
+  langOptionText: {
+    fontSize: 13,
+    flex: 1,
   },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 48,
   },
   settingLeftGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    marginRight: 10,
+    paddingRight: 12,
+  },
+  iconBadge: {
+    width: 42,
+    height: 42,
+    borderRadius: 10,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   settingTextCol: {
     marginLeft: 12,
     flex: 1,
   },
-  switchWrapper: {
-    flexShrink: 0,
-    marginLeft: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   settingTitle: {
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: 14,
+    fontWeight: '900',
   },
   settingDesc: {
     fontSize: 11,
     fontWeight: '600',
     marginTop: 2,
+    lineHeight: 15,
+  },
+  switchWrapper: {
+    paddingLeft: 4,
   },
   appName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '900',
-    marginTop: 10,
+    marginTop: 8,
     letterSpacing: 0.5,
     textAlign: 'center',
   },
   appVersion: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     marginTop: 2,
   },
   creatorBadge: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1.5,
-    marginTop: 12,
-    alignItems: 'center',
+    marginVertical: 8,
   },
   creatorText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
   },
   copyrightText: {
     fontSize: 10,
-    fontWeight: '700',
-    marginTop: 8,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

@@ -9,11 +9,13 @@ import { TransactionsScreen } from '../screens/transactions/TransactionsScreen';
 import { BudgetScreen } from '../screens/budget/BudgetScreen';
 import { MoreScreen } from '../screens/more/MoreScreen';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const insets = useSafeAreaInsets();
 
   // iPhone 16 bottom safe area is 34pt
@@ -60,7 +62,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
               >
                 <Ionicons name="add" size={34} color="#121212" />
               </TouchableOpacity>
-              <Text style={[styles.fabLabel, { color: theme.colors.text }]}>Tambah</Text>
+              <Text style={[styles.fabLabel, { color: theme.colors.text }]}>{t.add}</Text>
             </View>
           );
         }
@@ -82,14 +84,14 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
         const getTabLabel = (routeName: string) => {
           switch (routeName) {
             case 'HomeTab':
-              return 'Home';
+              return t.home;
             case 'TransactionsTab':
-              return 'Transaksi';
+              return t.transactions;
             case 'BudgetTab':
-              return 'Budget';
+              return t.budget;
             case 'MoreTab':
             default:
-              return 'Lainnya';
+              return t.more;
           }
         };
 

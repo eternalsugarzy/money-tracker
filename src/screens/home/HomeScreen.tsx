@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoBadge } from '../../components/common/NeoBadge';
@@ -30,6 +31,7 @@ import { getAllShortcuts } from '../../database/shortcutRepo';
 
 export const HomeScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const navigation = useNavigation<any>();
   const {
     totalNetWorth,
@@ -104,8 +106,8 @@ export const HomeScreen: React.FC = () => {
   const getHealthStatus = () => {
     if (savingsRate >= 30) {
       return {
-        label: 'SEHAT FINANSIAL',
-        desc: `Keren! Kamu menabung ${savingsRate}% dari pemasukanmu.`,
+        label: t.healthyStatus,
+        desc: t.healthyDesc,
         color: theme.colors.income,
         textColor: '#0A3B0A',
         icon: 'checkmark-circle',
@@ -113,16 +115,16 @@ export const HomeScreen: React.FC = () => {
     }
     if (savingsRate >= 10) {
       return {
-        label: 'CUKUP STABIL',
-        desc: `Rasio tabungan ${savingsRate}%. Pertahankan pengeluaran agar tabungan bertambah.`,
+        label: t.stableStatus,
+        desc: t.stableDesc,
         color: theme.colors.warning,
         textColor: '#3B2900',
         icon: 'alert-circle',
       };
     }
     return {
-      label: 'WASPADA (DEFISIT)',
-      desc: 'Pengeluaran mendekati atau melebihi pemasukan. Cek budgetmu.',
+      label: t.warningStatus,
+      desc: t.warningDesc,
       color: theme.colors.expense,
       textColor: '#3B0A18',
       icon: 'warning',
