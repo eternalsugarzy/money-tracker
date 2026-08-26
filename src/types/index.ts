@@ -159,3 +159,15 @@ export interface QuickShortcut {
   category_name?: string;
   account_name?: string;
 }
+
+export interface SavingsGoal {
+  id: string;
+  title: string;
+  target_amount: number;
+  current_amount: number;
+  emoji: string;
+  target_date?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+

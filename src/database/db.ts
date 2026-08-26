@@ -119,6 +119,17 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
       type TEXT NOT NULL DEFAULT 'expense',
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS savings_goals (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      target_amount REAL NOT NULL,
+      current_amount REAL NOT NULL DEFAULT 0,
+      emoji TEXT NOT NULL DEFAULT '🎯',
+      target_date TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `);
 
   // Clean up unused legacy categories, shortcuts, and accounts from previous builds

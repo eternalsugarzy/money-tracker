@@ -242,13 +242,12 @@ export const AddTransactionModal: React.FC = () => {
                 {
                   backgroundColor: activeTab === 'expense' ? theme.colors.expense : theme.colors.surface,
                   borderColor: theme.colors.border,
-                  borderWidth: activeTab === 'expense' ? 2.5 : 1.5,
                 },
               ]}
             >
               <Ionicons
                 name="arrow-up-circle"
-                size={20}
+                size={18}
                 color={activeTab === 'expense' ? '#FFFFFF' : theme.colors.text}
               />
               <Text
@@ -256,6 +255,7 @@ export const AddTransactionModal: React.FC = () => {
                   styles.typeBtnText,
                   { color: activeTab === 'expense' ? '#FFFFFF' : theme.colors.text },
                 ]}
+                numberOfLines={1}
               >
                 {t.expense}
               </Text>
@@ -269,13 +269,12 @@ export const AddTransactionModal: React.FC = () => {
                 {
                   backgroundColor: activeTab === 'income' ? theme.colors.income : theme.colors.surface,
                   borderColor: theme.colors.border,
-                  borderWidth: activeTab === 'income' ? 2.5 : 1.5,
                 },
               ]}
             >
               <Ionicons
                 name="arrow-down-circle"
-                size={20}
+                size={18}
                 color={activeTab === 'income' ? '#0A3B0A' : theme.colors.text}
               />
               <Text
@@ -283,6 +282,7 @@ export const AddTransactionModal: React.FC = () => {
                   styles.typeBtnText,
                   { color: activeTab === 'income' ? '#0A3B0A' : theme.colors.text },
                 ]}
+                numberOfLines={1}
               >
                 {t.income}
               </Text>
@@ -296,13 +296,12 @@ export const AddTransactionModal: React.FC = () => {
                 {
                   backgroundColor: activeTab === 'transfer' ? theme.colors.transfer : theme.colors.surface,
                   borderColor: theme.colors.border,
-                  borderWidth: activeTab === 'transfer' ? 2.5 : 1.5,
                 },
               ]}
             >
               <Ionicons
                 name="swap-horizontal"
-                size={20}
+                size={18}
                 color={activeTab === 'transfer' ? '#00363B' : theme.colors.text}
               />
               <Text
@@ -310,6 +309,7 @@ export const AddTransactionModal: React.FC = () => {
                   styles.typeBtnText,
                   { color: activeTab === 'transfer' ? '#00363B' : theme.colors.text },
                 ]}
+                numberOfLines={1}
               >
                 {t.transfer}
               </Text>
@@ -323,13 +323,12 @@ export const AddTransactionModal: React.FC = () => {
                 {
                   backgroundColor: activeTab === 'debt' ? theme.colors.debt : theme.colors.surface,
                   borderColor: theme.colors.border,
-                  borderWidth: activeTab === 'debt' ? 2.5 : 1.5,
                 },
               ]}
             >
               <Ionicons
                 name="people"
-                size={20}
+                size={18}
                 color={activeTab === 'debt' ? '#FFFFFF' : theme.colors.text}
               />
               <Text
@@ -337,8 +336,9 @@ export const AddTransactionModal: React.FC = () => {
                   styles.typeBtnText,
                   { color: activeTab === 'debt' ? '#FFFFFF' : theme.colors.text },
                 ]}
+                numberOfLines={1}
               >
-                {language === 'id' ? 'Hutang' : 'Debt'}
+                {t.debtTab}
               </Text>
             </TouchableOpacity>
           </View>
@@ -794,14 +794,17 @@ const styles = StyleSheet.create({
   typeBtn: {
     flex: 1,
     paddingVertical: 8,
-    borderRadius: 10,
+    paddingHorizontal: 2,
+    borderRadius: 8,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   typeBtnText: {
-    fontSize: 11,
+    fontSize: 9.5,
     fontWeight: '900',
     marginTop: 2,
+    textAlign: 'center',
   },
   nominalCard: {
     padding: 14,

@@ -110,4 +110,23 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
       [sc.id, sc.title, sc.emoji, sc.amount, sc.category_id, sc.type, now]
     );
   }
+
+  // 7. Default Savings Goals
+  const countGoals = await db.getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) as count FROM savings_goals`
+  );
+  if (countGoals && countGoals.count === 0) {
+    const defaults = [
+      { id: 'goal_def_1', title: 'Dana Darurat (6 Bulan)', target_amount: 15000000, current_amount: 8500000, emoji: '🛡️' },
+      { id: 'goal_def_2', title: 'Beli iPhone 16 Pro', target_amount: 22000000, current_amount: 14000000, emoji: '📱' },
+      { id: 'goal_def_3', title: 'Liburan Akhir Tahun', target_amount: 8000000, current_amount: 5000000, emoji: '✈️' },
+    ];
+    for (const d of defaults) {
+      await db.runAsync(
+        `INSERT INTO savings_goals (id, title, target_amount, current_amount, emoji, target_date, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, NULL, ?, ?)`,
+        [d.id, d.title, d.target_amount, d.current_amount, d.emoji, now, now]
+      );
+    }
+  }
 }
