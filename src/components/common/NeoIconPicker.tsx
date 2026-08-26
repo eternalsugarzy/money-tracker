@@ -30,9 +30,14 @@ export const NeoIconPicker: React.FC<NeoIconPickerProps> = ({
   onSelect,
 }) => {
   const { theme } = useTheme();
-  const [selectedThemeId, setSelectedThemeId] = useState<string>(
-    ICON_GALLERY_THEMES[0].themeId
-  );
+  const [selectedThemeId, setSelectedThemeId] = useState<string>(() => {
+    for (const th of ICON_GALLERY_THEMES) {
+      if (th.icons.some(ic => ic.name === selectedIcon && ic.family === selectedIconFamily)) {
+        return th.themeId;
+      }
+    }
+    return ICON_GALLERY_THEMES[0].themeId;
+  });
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeColor, setActiveColor] = useState<string>(selectedColor || POP_COLOR_PALETTE[0]);
 
@@ -63,6 +68,33 @@ export const NeoIconPicker: React.FC<NeoIconPickerProps> = ({
 
   return (
     <View style={styles.container}>
+      {/* Current Icon Preview */}
+      <View style={styles.currentIconRow}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 0, marginRight: 12 }]}>
+          PREVIEW ICON:
+        </Text>
+        <View
+          style={[
+            styles.iconBox,
+            {
+              backgroundColor: activeColor,
+              borderColor: theme.colors.border,
+              borderWidth: 2,
+              width: 48,
+              height: 48,
+              marginBottom: 0,
+              shadowColor: theme.neo.shadowSm.shadowColor,
+              shadowOffset: { width: 2, height: 2 },
+              shadowOpacity: 1,
+              shadowRadius: 0,
+              elevation: 2,
+            },
+          ]}
+        >
+          {renderIconGlyph(selectedIcon, selectedIconFamily, 26, '#121212')}
+        </View>
+      </View>
+
       {/* Color Palette Selector */}
       <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
         PILIH WARNA KATEGORI
@@ -217,6 +249,11 @@ export const NeoIconPicker: React.FC<NeoIconPickerProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 4,
+  },
+  currentIconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 12,
