@@ -145,13 +145,16 @@ export const NeoIconPicker: React.FC<NeoIconPickerProps> = ({
                 <Ionicons
                   name={th.themeIcon as any}
                   size={14}
-                  color={theme.colors.text}
+                  color={isTabActive ? '#121212' : theme.colors.text}
                   style={{ marginRight: 4 }}
                 />
                 <Text
                   style={[
                     styles.themeTabText,
-                    { color: theme.colors.text, fontWeight: isTabActive ? '900' : '700' },
+                    {
+                      color: isTabActive ? '#121212' : theme.colors.text,
+                      fontWeight: isTabActive ? '900' : '700',
+                    },
                   ]}
                 >
                   {th.themeName}

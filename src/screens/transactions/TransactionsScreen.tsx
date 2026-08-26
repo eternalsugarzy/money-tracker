@@ -244,7 +244,14 @@ export const TransactionsScreen: React.FC = () => {
                 style={[
                   styles.dayNetPill,
                   {
-                    backgroundColor: day.netDiff >= 0 ? '#E8F5E9' : '#FFEBEE',
+                    backgroundColor:
+                      day.netDiff >= 0
+                        ? theme.isDark
+                          ? '#1C3822'
+                          : '#E8F5E9'
+                        : theme.isDark
+                        ? '#3D1C22'
+                        : '#FFEBEE',
                     borderColor: day.netDiff >= 0 ? theme.colors.income : theme.colors.expense,
                   },
                 ]}
@@ -252,7 +259,16 @@ export const TransactionsScreen: React.FC = () => {
                 <Text
                   style={[
                     styles.dayNetPillText,
-                    { color: day.netDiff >= 0 ? '#1B5E20' : '#B71C1C' },
+                    {
+                      color:
+                        day.netDiff >= 0
+                          ? theme.isDark
+                            ? '#54E346'
+                            : '#1B5E20'
+                          : theme.isDark
+                          ? '#FF5D8F'
+                          : '#B71C1C',
+                    },
                   ]}
                 >
                   {formatCurrency(day.netDiff, { showSign: true })}

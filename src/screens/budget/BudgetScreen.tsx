@@ -158,7 +158,10 @@ export const BudgetScreen: React.FC = () => {
             <Text
               style={[
                 styles.tabSwitchText,
-                { color: '#121212', fontWeight: activeTab === 'active' ? '900' : '700' },
+                {
+                  color: activeTab === 'active' ? '#121212' : theme.colors.text,
+                  fontWeight: activeTab === 'active' ? '900' : '700',
+                },
               ]}
             >
               Budget Aktif ({budgets.length})
@@ -179,7 +182,10 @@ export const BudgetScreen: React.FC = () => {
             <Text
               style={[
                 styles.tabSwitchText,
-                { color: '#121212', fontWeight: activeTab === 'history' ? '900' : '700' },
+                {
+                  color: activeTab === 'history' ? '#121212' : theme.colors.text,
+                  fontWeight: activeTab === 'history' ? '900' : '700',
+                },
               ]}
             >
               Riwayat Bulan Lalu

@@ -224,7 +224,7 @@ export const HomeScreen: React.FC = () => {
                       style={[
                         styles.periodTabLabel,
                         {
-                          color: '#121212',
+                          color: isSelected ? '#121212' : theme.colors.text,
                           fontWeight: isSelected ? '900' : '600',
                         },
                       ]}
