@@ -213,6 +213,11 @@ export const SavingsGoalsScreen: React.FC = () => {
   const totalSaved = goals.reduce((sum, g) => sum + g.current_amount, 0);
   const overallPct = totalTarget > 0 ? (totalSaved / totalTarget) * 100 : 0;
 
+  const getComputedDisplayAmount = (expr: string) => {
+    const res = evaluateMathExpression(expr);
+    return res.isValid ? formatCurrency(res.value) : 'Rp 0';
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       {/* Header */}
@@ -419,6 +424,16 @@ export const SavingsGoalsScreen: React.FC = () => {
             <Text style={[styles.modalLabel, { color: theme.colors.text }]}>
               {language === 'id' ? 'TARGET NOMINAL' : 'TARGET AMOUNT'}
             </Text>
+            <View style={[styles.displayBox, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+              <Text style={[styles.displayAmount, { color: theme.colors.text }]}>
+                {newTargetExpr ? getComputedDisplayAmount(newTargetExpr) : 'Rp 0'}
+              </Text>
+              {newTargetExpr.length > 0 && (
+                <Text style={[styles.displayExpression, { color: theme.colors.textMuted }]}>
+                  = {newTargetExpr}
+                </Text>
+              )}
+            </View>
             <NeoCalculator value={newTargetExpr} onChange={setNewTargetExpr} />
           </View>
           <NeoButton
@@ -470,6 +485,16 @@ export const SavingsGoalsScreen: React.FC = () => {
             <Text style={[styles.modalLabel, { color: theme.colors.text }]}>
               {language === 'id' ? 'TARGET NOMINAL' : 'TARGET AMOUNT'}
             </Text>
+            <View style={[styles.displayBox, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+              <Text style={[styles.displayAmount, { color: theme.colors.text }]}>
+                {editTargetExpr ? getComputedDisplayAmount(editTargetExpr) : 'Rp 0'}
+              </Text>
+              {editTargetExpr.length > 0 && (
+                <Text style={[styles.displayExpression, { color: theme.colors.textMuted }]}>
+                  = {editTargetExpr}
+                </Text>
+              )}
+            </View>
             <NeoCalculator value={editTargetExpr} onChange={setEditTargetExpr} />
           </View>
           <NeoButton
@@ -491,6 +516,16 @@ export const SavingsGoalsScreen: React.FC = () => {
           <Text style={[styles.modalLabel, { color: theme.colors.text }]}>
             {language === 'id' ? 'NOMINAL YANG DITABUNG' : 'DEPOSIT AMOUNT'}
           </Text>
+          <View style={[styles.displayBox, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}>
+            <Text style={[styles.displayAmount, { color: theme.colors.text }]}>
+              {addMoneyExpr ? getComputedDisplayAmount(addMoneyExpr) : 'Rp 0'}
+            </Text>
+            {addMoneyExpr.length > 0 && (
+              <Text style={[styles.displayExpression, { color: theme.colors.textMuted }]}>
+                = {addMoneyExpr}
+              </Text>
+            )}
+          </View>
           <NeoCalculator value={addMoneyExpr} onChange={setAddMoneyExpr} />
           <NeoButton
             title={language === 'id' ? 'SIMPAN TABUNGAN' : 'SAVE DEPOSIT'}
@@ -686,5 +721,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 6,
     lineHeight: 18,
+  },
+  displayBox: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  displayAmount: {
+    fontSize: 24,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  displayExpression: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 2,
   },
 });
