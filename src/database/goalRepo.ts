@@ -1,4 +1,5 @@
 import { getDatabase } from './db';
+import { type SQLiteDatabase } from 'expo-sqlite';
 import { SavingsGoal } from '../types';
 
 export async function getAllGoals(): Promise<SavingsGoal[]> {
@@ -92,14 +93,8 @@ export async function deleteGoal(id: string): Promise<void> {
   await db.runAsync(`DELETE FROM savings_goals WHERE id = ?`, [id]);
 }
 
-export async function seedDefaultGoalsIfEmpty(): Promise<void> {
-  const db = await getDatabase();
-  await db.execAsync(`
-    CREATE TABLE IF NOT EXISTS app_settings (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
-    );
-  `);
+export async function seedDefaultGoalsIfEmpty(dbDirect?: SQLiteDatabase): Promise<void> {
+  const db = dbDirect || (await getDatabase());
 
   const alreadySeeded = await db.getFirstAsync<{ value: string }>(
     `SELECT value FROM app_settings WHERE key = 'seeded_goals_v1'`

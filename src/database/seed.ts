@@ -75,6 +75,6 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
     }
   }
 
-  // 5. Default Savings Goals
-  await seedDefaultGoalsIfEmpty();
+  // 5. Default Savings Goals (pass db directly to avoid circular getDatabase() deadlock)
+  await seedDefaultGoalsIfEmpty(db);
 }
