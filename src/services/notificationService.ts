@@ -2,39 +2,48 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 // Configure notification behavior
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+try {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+} catch (e) {
+  // Graceful fallback
+}
 
 export async function requestNotificationPermissions(): Promise<boolean> {
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
+  try {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
 
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
 
-  if (finalStatus !== 'granted') {
+    if (finalStatus !== 'granted') {
+      return false;
+    }
+
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'Default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FFE600',
+      });
+    }
+
+    return true;
+  } catch (err) {
+    // In Expo Go or restricted dev environment, return false quietly
     return false;
   }
-
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'Default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FFE600',
-    });
-  }
-
-  return true;
 }
 
 export async function scheduleDailyExpenseReminder(
@@ -43,7 +52,7 @@ export async function scheduleDailyExpenseReminder(
   enabled: boolean = true
 ): Promise<void> {
   try {
-    // Cancel existing daily reminders
+    // Cancel existing daily reminders first
     await cancelDailyExpenseReminder();
 
     if (!enabled) return;
@@ -55,18 +64,19 @@ export async function scheduleDailyExpenseReminder(
       identifier: 'daily_expense_reminder',
       content: {
         title: '💰 Jangan lupa catat keuanganmu!',
-        body: 'Sudah ada pengeluaran atau pemasukan hari ini? Yuk luangkan 1 menit untuk mencatat di Money+.',
+        body: 'Sudah ada pengeluaran atau pemasukan hari ini? Yuk luangkan 1 menit untuk mencatat di SuFiKer+.',
         sound: true,
-        data: { screen: 'Add' },
+        data: { screen: 'AddModal' },
       },
       trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.DAILY,
+        type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
         hour,
         minute,
-      },
+        repeats: true,
+      } as any,
     });
   } catch (err) {
-    console.warn('Failed to schedule daily reminder:', err);
+    // Non-blocking silent fallback for notification scheduling
   }
 }
 
@@ -92,12 +102,12 @@ export async function sendRecurringDueNotification(
     await Notifications.scheduleNotificationAsync({
       content: {
         title: `⏰ Pengingat Transaksi Berulang`,
-        body: `Waktunya mencatat ${type === 'income' ? 'pemasukan' : 'pengeluaran'} "${itemName}" sebesar ${formattedAmount}. Buka aplikasi untuk konfirmasi.`,
+        body: `Waktunya mencatat ${type === 'income' ? 'pemasukan' : 'pengeluaran'} "${itemName}" sebesar ${formattedAmount}. Buka SuFiKer+ untuk konfirmasi.`,
         sound: true,
       },
       trigger: null, // send immediately
     });
   } catch (err) {
-    console.warn('Failed to send recurring notification:', err);
+    // Non-blocking silent fallback
   }
 }

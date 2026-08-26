@@ -400,7 +400,7 @@ export const HomeScreen: React.FC = () => {
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             TRANSAKSI TERBARU
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Transactions')}>
+          <TouchableOpacity onPress={() => navigation.navigate('TransactionsTab')}>
             <Text style={[styles.viewAllText, { color: theme.colors.primaryText }]}>
               Lihat Semua &gt;
             </Text>
