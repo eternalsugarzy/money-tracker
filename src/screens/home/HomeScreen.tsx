@@ -31,7 +31,7 @@ import { getAllShortcuts } from '../../database/shortcutRepo';
 
 export const HomeScreen: React.FC = () => {
   const { theme } = useTheme();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const {
     totalNetWorth,
@@ -221,7 +221,7 @@ export const HomeScreen: React.FC = () => {
         >
           <View style={styles.cardHeaderRow}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={styles.cardSuperLabel}>TOTAL SALDO BERSIH (NET WORTH)</Text>
+              <Text style={styles.cardSuperLabel}>{t.totalNetWorth}</Text>
               <TouchableOpacity
                 onPress={() => setShowBalance(!showBalance)}
                 style={styles.eyeBtn}
@@ -239,7 +239,7 @@ export const HomeScreen: React.FC = () => {
               onPress={() => navigation.navigate('Accounts')}
               style={styles.manageAccBtn}
             >
-              <Text style={styles.manageAccText}>Kelola Akun &gt;</Text>
+              <Text style={styles.manageAccText}>{t.manageAccounts}</Text>
             </TouchableOpacity>
           </View>
 
@@ -285,7 +285,7 @@ export const HomeScreen: React.FC = () => {
             <View style={styles.healthTitleRow}>
               <Ionicons name={healthStatus.icon as any} size={18} color={healthStatus.color} />
               <Text style={[styles.healthTitle, { color: theme.colors.text }]}>
-                SKOR KESEHATAN KEUANGAN
+                {t.financialHealth}
               </Text>
             </View>
             <View
@@ -313,9 +313,9 @@ export const HomeScreen: React.FC = () => {
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <Ionicons name="warning" size={20} color="#FFFFFF" />
               <View style={{ flex: 1 }}>
-                <Text style={styles.budgetWarningTitle}>PERINGATAN BUDGET BULANAN</Text>
+                <Text style={styles.budgetWarningTitle}>{t.budgetWarning}</Text>
                 <Text style={styles.budgetWarningSub}>
-                  {overBudgets[0]?.name} telah terpakai {formatPercentage(overBudgets[0]?.percentage || 0)} ({formatCurrency(overBudgets[0]?.spent_amount || 0)} dari {formatCurrency(overBudgets[0]?.limit_amount || 0)}).
+                  {overBudgets[0]?.name} {language === 'id' ? 'telah terpakai' : 'has spent'} {formatPercentage(overBudgets[0]?.percentage || 0)} ({formatCurrency(overBudgets[0]?.spent_amount || 0)} / {formatCurrency(overBudgets[0]?.limit_amount || 0)}).
                 </Text>
               </View>
             </View>
@@ -326,7 +326,7 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.quickAddSection}>
           <View style={styles.quickAddHeaderRow}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              ⚡ CATAT CEPAT (1-TAP INSTAN)
+              {t.quickAdd}
             </Text>
             <TouchableOpacity
               onPress={() => setShowShortcutsModal(true)}
@@ -337,7 +337,7 @@ export const HomeScreen: React.FC = () => {
             >
               <Ionicons name="options-outline" size={13} color={theme.colors.text} />
               <Text style={[styles.manageShortcutsText, { color: theme.colors.text }]}>
-                Kelola ({shortcuts.length})
+                {t.manage} ({shortcuts.length})
               </Text>
             </TouchableOpacity>
           </View>
@@ -381,7 +381,7 @@ export const HomeScreen: React.FC = () => {
               ]}
             >
               <Ionicons name="add" size={20} color={theme.colors.text} />
-              <Text style={[styles.quickAddAddText, { color: theme.colors.text }]}>Tambah</Text>
+              <Text style={[styles.quickAddAddText, { color: theme.colors.text }]}>{t.addNew}</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -389,7 +389,7 @@ export const HomeScreen: React.FC = () => {
         {/* 5. Periodic Income & Expense Summary Card */}
         <NeoCard style={styles.summaryCard}>
           <View style={styles.summaryTopRow}>
-            <Text style={[styles.summaryTitle, { color: theme.colors.text }]}>RINGKASAN</Text>
+            <Text style={[styles.summaryTitle, { color: theme.colors.text }]}>{t.summary}</Text>
             {/* Period Switcher Tabs */}
             <View
               style={[
@@ -399,7 +399,7 @@ export const HomeScreen: React.FC = () => {
             >
               {(['day', 'week', 'month'] as const).map((pKey) => {
                 const isSelected = period === pKey;
-                const pLabel = pKey === 'day' ? 'Hari ini' : pKey === 'week' ? 'Minggu ini' : 'Bulan ini';
+                const pLabel = pKey === 'day' ? t.day : pKey === 'week' ? t.week : t.month;
                 return (
                   <TouchableOpacity
                     key={pKey}
@@ -446,7 +446,7 @@ export const HomeScreen: React.FC = () => {
             >
               <View style={styles.boxHeader}>
                 <Ionicons name="arrow-down-circle" size={16} color={theme.colors.income} />
-                <Text style={[styles.boxLabel, { color: theme.colors.textMuted }]}>PEMASUKAN</Text>
+                <Text style={[styles.boxLabel, { color: theme.colors.textMuted }]}>{t.income}</Text>
               </View>
               <Text style={[styles.boxAmount, { color: theme.colors.income }]}>
                 +{formatCurrency(periodSummary.totalIncome)}
@@ -467,7 +467,7 @@ export const HomeScreen: React.FC = () => {
             >
               <View style={styles.boxHeader}>
                 <Ionicons name="arrow-up-circle" size={16} color={theme.colors.expense} />
-                <Text style={[styles.boxLabel, { color: theme.colors.textMuted }]}>PENGELUARAN</Text>
+                <Text style={[styles.boxLabel, { color: theme.colors.textMuted }]}>{t.expense}</Text>
               </View>
               <Text style={[styles.boxAmount, { color: theme.colors.expense }]}>
                 -{formatCurrency(periodSummary.totalExpense)}
@@ -478,7 +478,7 @@ export const HomeScreen: React.FC = () => {
           {/* Net Flow Footer */}
           <View style={[styles.netFlowFooter, { borderColor: theme.colors.border }]}>
             <Text style={[styles.netFlowLabel, { color: theme.colors.textMuted }]}>
-              SELISIH BERSIH ({period === 'day' ? 'HARI INI' : period === 'week' ? 'MINGGU INI' : 'BULAN INI'}):
+              {t.netSavings} ({period === 'day' ? t.day.toUpperCase() : period === 'week' ? t.week.toUpperCase() : t.month.toUpperCase()}):
             </Text>
             <Text
               style={[
@@ -497,7 +497,7 @@ export const HomeScreen: React.FC = () => {
         <NeoCard style={styles.chartCard}>
           <View style={styles.chartHeaderRow}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              GRAFIK KATEGORI
+              {t.categoryCharts}
             </Text>
 
             {/* Expense / Income Type Toggle */}
@@ -518,7 +518,7 @@ export const HomeScreen: React.FC = () => {
                     { color: chartType === 'expense' ? '#FFFFFF' : theme.colors.text },
                   ]}
                 >
-                  Pengeluaran
+                  {t.expense}
                 </Text>
               </TouchableOpacity>
 
@@ -538,7 +538,7 @@ export const HomeScreen: React.FC = () => {
                     { color: chartType === 'income' ? '#0A3B0A' : theme.colors.text },
                   ]}
                 >
-                  Pemasukan
+                  {t.income}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -552,7 +552,7 @@ export const HomeScreen: React.FC = () => {
           >
             {(['day', 'week', 'month', 'year'] as const).map((cp) => {
               const isActive = chartPeriod === cp;
-              const lbl = cp === 'day' ? 'Hari ini' : cp === 'week' ? 'Minggu ini' : cp === 'month' ? 'Bulan ini' : 'Tahun ini';
+              const lbl = cp === 'day' ? t.day : cp === 'week' ? t.week : cp === 'month' ? t.month : t.year;
               return (
                 <TouchableOpacity
                   key={cp}
@@ -585,11 +585,11 @@ export const HomeScreen: React.FC = () => {
         {/* 7. Recent Transactions List */}
         <View style={styles.recentSectionHeader}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            TRANSAKSI TERBARU
+            {t.recentTransactions}
           </Text>
           <TouchableOpacity onPress={() => navigation.navigate('TransactionsTab')}>
             <Text style={[styles.viewAllText, { color: theme.colors.primaryText }]}>
-              Lihat Semua &gt;
+              {t.viewAll}
             </Text>
           </TouchableOpacity>
         </View>
@@ -598,7 +598,7 @@ export const HomeScreen: React.FC = () => {
           <NeoCard style={{ alignItems: 'center', padding: 24, marginHorizontal: 16 }}>
             <Ionicons name="receipt-outline" size={40} color={theme.colors.textMuted} />
             <Text style={[styles.noTxText, { color: theme.colors.textMuted }]}>
-              Belum ada transaksi. Tekan tombol ➕ di bawah untuk mencatat!
+              {t.noTransactions}
             </Text>
           </NeoCard>
         ) : (

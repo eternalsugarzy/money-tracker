@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoButton } from '../../components/common/NeoButton';
 import { NeoInput } from '../../components/common/NeoInput';
@@ -27,6 +28,7 @@ import { createDebt } from '../../database/debtRepo';
 
 export const AddTransactionModal: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
   const { accounts, categories, transactions, refreshData } = useAppData();
@@ -219,7 +221,7 @@ export const AddTransactionModal: React.FC = () => {
           <Ionicons name="close" size={22} color={theme.colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          {isEditing ? 'EDIT TRANSAKSI' : 'CATAT TRANSAKSI'}
+          {isEditing ? t.editTxTitle : t.addTxTitle}
         </Text>
         <View style={{ width: 40 }} />
       </View>
@@ -255,7 +257,7 @@ export const AddTransactionModal: React.FC = () => {
                   { color: activeTab === 'expense' ? '#FFFFFF' : theme.colors.text },
                 ]}
               >
-                Pengeluaran
+                {t.expense}
               </Text>
             </TouchableOpacity>
 
@@ -282,7 +284,7 @@ export const AddTransactionModal: React.FC = () => {
                   { color: activeTab === 'income' ? '#0A3B0A' : theme.colors.text },
                 ]}
               >
-                Pemasukan
+                {t.income}
               </Text>
             </TouchableOpacity>
 
@@ -309,7 +311,7 @@ export const AddTransactionModal: React.FC = () => {
                   { color: activeTab === 'transfer' ? '#00363B' : theme.colors.text },
                 ]}
               >
-                Transfer
+                {t.transfer}
               </Text>
             </TouchableOpacity>
 
@@ -336,7 +338,7 @@ export const AddTransactionModal: React.FC = () => {
                   { color: activeTab === 'debt' ? '#FFFFFF' : theme.colors.text },
                 ]}
               >
-                Hutang
+                {language === 'id' ? 'Hutang' : 'Debt'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -346,7 +348,7 @@ export const AddTransactionModal: React.FC = () => {
         <NeoCard style={styles.nominalCard}>
           <View style={styles.nominalHeaderRow}>
             <Text style={[styles.nominalLabel, { color: theme.colors.textMuted }]}>
-              NOMINAL TRANSAKSI
+              {language === 'id' ? 'NOMINAL TRANSAKSI' : 'TRANSACTION AMOUNT'}
             </Text>
             <TouchableOpacity
               onPress={() => setShowCalculator(!showCalculator)}
@@ -360,7 +362,7 @@ export const AddTransactionModal: React.FC = () => {
             >
               <Ionicons name="calculator" size={16} color={theme.colors.text} />
               <Text style={[styles.calcToggleText, { color: theme.colors.text }]}>
-                {showCalculator ? 'Sembunyikan Keypad' : 'Tampilkan Keypad'}
+                {showCalculator ? (language === 'id' ? 'Sembunyikan Keypad' : 'Hide Keypad') : (language === 'id' ? 'Tampilkan Keypad' : 'Show Keypad')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -405,7 +407,7 @@ export const AddTransactionModal: React.FC = () => {
             <View style={styles.sectionHeaderRow}>
               <View style={styles.headerLeftGroup}>
                 <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                  DOMPET / AKUN
+                  {t.account.toUpperCase()}
                 </Text>
                 <View
                   style={[
@@ -417,7 +419,7 @@ export const AddTransactionModal: React.FC = () => {
                   ]}
                 >
                   <Text style={[styles.lastUsedBadgeText, { color: theme.colors.text }]}>
-                    Auto-Pilih
+                    {language === 'id' ? 'Auto-Pilih' : 'Auto-Selected'}
                   </Text>
                 </View>
               </View>
@@ -426,7 +428,7 @@ export const AddTransactionModal: React.FC = () => {
                 onPress={() => navigation.navigate('AccountFormModal')}
                 style={styles.addAccountBtn}
               >
-                <Text style={[styles.addNewText, { color: theme.colors.text }]}>+ Akun Baru</Text>
+                <Text style={[styles.addNewText, { color: theme.colors.text }]}>{t.addAccount}</Text>
               </TouchableOpacity>
             </View>
 
@@ -481,7 +483,7 @@ export const AddTransactionModal: React.FC = () => {
         {activeTab === 'transfer' && (
           <NeoCard style={styles.card}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              DARI AKUN (ASAL)
+              {t.fromAccount.toUpperCase()}
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
               {activeAccounts.map((acc) => {
@@ -519,7 +521,7 @@ export const AddTransactionModal: React.FC = () => {
             </ScrollView>
 
             <Text style={[styles.sectionTitle, { color: theme.colors.text, marginTop: 14 }]}>
-              KE AKUN (TUJUAN)
+              {t.toAccount.toUpperCase()}
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
               {activeAccounts.map((acc) => {
@@ -563,10 +565,10 @@ export const AddTransactionModal: React.FC = () => {
           <NeoCard style={styles.card}>
             <View style={styles.sectionHeaderRow}>
               <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                PILIH KATEGORI
+                {t.selectCatPrompt}
               </Text>
               <TouchableOpacity onPress={() => navigation.navigate('CategoryFormModal')}>
-                <Text style={[styles.addNewText, { color: theme.colors.primary }]}>+ Kategori Baru</Text>
+                <Text style={[styles.addNewText, { color: theme.colors.primary }]}>{t.addCategory}</Text>
               </TouchableOpacity>
             </View>
 
@@ -612,7 +614,7 @@ export const AddTransactionModal: React.FC = () => {
         {activeTab === 'debt' && (
           <NeoCard style={styles.card}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              TIPE HUTANG - PIUTANG
+              {language === 'id' ? 'TIPE HUTANG - PIUTANG' : 'DEBT / LOAN TYPE'}
             </Text>
             <View style={styles.debtTypeRow}>
               <TouchableOpacity
@@ -632,7 +634,7 @@ export const AddTransactionModal: React.FC = () => {
                     { color: debtType === 'receivable' ? '#0A3B0A' : theme.colors.text },
                   ]}
                 >
-                  Piutang (Orang Pinjam ke Saya)
+                  {t.receivableTab}
                 </Text>
               </TouchableOpacity>
 
@@ -653,14 +655,14 @@ export const AddTransactionModal: React.FC = () => {
                     { color: debtType === 'debt' ? '#FFFFFF' : theme.colors.text },
                   ]}
                 >
-                  Utang (Saya Meminjam)
+                  {t.payableTab}
                 </Text>
               </TouchableOpacity>
             </View>
 
             <NeoInput
-              label="NAMA ORANG / PIHAK TERKAIT"
-              placeholder="Misal: Budi, Ani, Bank..."
+              label={language === 'id' ? 'NAMA ORANG / PIHAK TERKAIT' : 'PERSON / ENTITY NAME'}
+              placeholder={language === 'id' ? 'Misal: Budi, Ani, Bank...' : 'e.g. John, Alice, Bank...'}
               value={debtPersonName}
               onChangeText={setDebtPersonName}
               containerStyle={{ marginTop: 12 }}
@@ -668,7 +670,7 @@ export const AddTransactionModal: React.FC = () => {
 
             <View style={{ marginTop: 12 }}>
               <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                TENGGAT JATUH TEMPO (OPSIONAL)
+                {language === 'id' ? 'TENGGAT JATUH TEMPO (OPSIONAL)' : 'DUE DATE (OPTIONAL)'}
               </Text>
               <TouchableOpacity
                 onPress={() => setShowDueDatePicker(true)}
@@ -682,7 +684,7 @@ export const AddTransactionModal: React.FC = () => {
               >
                 <Ionicons name="calendar-outline" size={18} color={theme.colors.text} />
                 <Text style={[styles.dateBtnText, { color: theme.colors.text }]}>
-                  {debtDueDate ? formatDateLabel(debtDueDate) : 'Tanpa Batas Waktu'}
+                  {debtDueDate ? formatDateLabel(debtDueDate, language) : (language === 'id' ? 'Tanpa Batas Waktu' : 'No Deadline')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -692,7 +694,7 @@ export const AddTransactionModal: React.FC = () => {
         {/* Section: Tanggal Transaksi */}
         <NeoCard style={styles.card}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            TANGGAL TRANSAKSI
+            {language === 'id' ? 'TANGGAL TRANSAKSI' : 'TRANSACTION DATE'}
           </Text>
           <TouchableOpacity
             onPress={() => setShowDatePicker(true)}
@@ -706,7 +708,7 @@ export const AddTransactionModal: React.FC = () => {
           >
             <Ionicons name="calendar-outline" size={18} color={theme.colors.text} />
             <Text style={[styles.dateBtnText, { color: theme.colors.text }]}>
-              {formatDateLabel(selectedDate)} ({selectedDate})
+              {formatDateLabel(selectedDate, language)} ({selectedDate})
             </Text>
           </TouchableOpacity>
         </NeoCard>
@@ -714,8 +716,8 @@ export const AddTransactionModal: React.FC = () => {
         {/* Section: Catatan */}
         <NeoCard style={styles.card}>
           <NeoInput
-            label="CATATAN / KETERANGAN (OPSIONAL)"
-            placeholder="Misal: Makan siang geprek, beli bensin..."
+            label={language === 'id' ? 'CATATAN / KETERANGAN (OPSIONAL)' : 'NOTE (OPTIONAL)'}
+            placeholder={language === 'id' ? 'Misal: Makan siang, beli bensin...' : 'e.g. Lunch, groceries, fuel...'}
             value={note}
             onChangeText={setNote}
           />
@@ -728,7 +730,7 @@ export const AddTransactionModal: React.FC = () => {
 
         {/* Submit Button */}
         <NeoButton
-          title={isEditing ? 'SIMPAN PERUBAHAN' : 'CATAT TRANSAKSI SEKARANG'}
+          title={isEditing ? (language === 'id' ? 'SIMPAN PERUBAHAN' : 'SAVE CHANGES') : t.saveTransaction}
           variant="primary"
           size="lg"
           onPress={handleSave}

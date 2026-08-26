@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { TimePeriodFilter, TransactionType, Category, Account } from '../../types';
 import { NeoModal } from '../common/NeoModal';
 import { NeoButton } from '../common/NeoButton';
@@ -46,23 +47,24 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   accounts,
 }) => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 
   const PERIODS: { key: TimePeriodFilter; label: string }[] = [
-    { key: 'day', label: 'Hari Ini' },
-    { key: 'week', label: 'Minggu Ini' },
-    { key: 'month', label: 'Bulan Ini' },
-    { key: 'year', label: 'Tahun Ini' },
-    { key: 'all', label: 'Semua' },
+    { key: 'day', label: t.day },
+    { key: 'week', label: t.week },
+    { key: 'month', label: t.month },
+    { key: 'year', label: t.year },
+    { key: 'all', label: t.all },
   ];
 
   const TYPES: { key: TransactionType | 'all'; label: string; icon: string; color: string }[] = [
-    { key: 'all', label: 'Semua', icon: 'apps', color: theme.colors.cardSecondary },
-    { key: 'income', label: 'Masuk', icon: 'arrow-down', color: theme.colors.income },
-    { key: 'expense', label: 'Keluar', icon: 'arrow-up', color: theme.colors.expense },
-    { key: 'transfer', label: 'Transfer', icon: 'swap-horizontal', color: theme.colors.transfer },
+    { key: 'all', label: t.all, icon: 'apps', color: theme.colors.cardSecondary },
+    { key: 'income', label: t.income, icon: 'arrow-down', color: theme.colors.income },
+    { key: 'expense', label: t.expense, icon: 'arrow-up', color: theme.colors.expense },
+    { key: 'transfer', label: t.transfer, icon: 'swap-horizontal', color: theme.colors.transfer },
   ];
 
   const selectedAccountObj = accounts.find((a) => a.id === selectedAccountId);
@@ -91,7 +93,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         >
           <Ionicons name="search" size={16} color={theme.colors.textMuted} style={{ marginRight: 6 }} />
           <TextInput
-            placeholder="Cari transaksi atau nominal..."
+            placeholder={t.searchPlaceholder}
             placeholderTextColor={theme.colors.textMuted}
             value={searchQuery}
             onChangeText={onChangeSearchQuery}

@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { FilterBar } from '../../components/transactions/FilterBar';
 import { TransactionItem } from '../../components/transactions/TransactionItem';
@@ -36,6 +37,7 @@ interface DayGroup {
 
 export const TransactionsScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const { categories, accounts, refreshData, isLoading, transactions: globalTx } = useAppData();
 
@@ -130,7 +132,7 @@ export const TransactionsScreen: React.FC = () => {
         if (item.type === 'expense') dayExp += item.amount;
       });
 
-      const { relative, fullDate } = formatDetailedDateHeader(dateKey);
+      const { relative, fullDate } = formatDetailedDateHeader(dateKey, language);
 
       result.push({
         dateKey,
@@ -144,13 +146,13 @@ export const TransactionsScreen: React.FC = () => {
     });
 
     return result;
-  }, [transactions]);
+  }, [transactions, language]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       {/* Screen Title Header */}
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>RIWAYAT TRANSAKSI</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t.transactionsTitle}</Text>
       </View>
 
       {/* Filter Bar */}
@@ -174,7 +176,7 @@ export const TransactionsScreen: React.FC = () => {
       <NeoCard style={styles.summaryCard}>
         <View style={styles.summaryRow}>
           <View style={styles.summaryCol}>
-            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>PEMASUKAN</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>{t.income}</Text>
             <Text style={[styles.summaryAmount, { color: theme.colors.income }]}>
               +{formatCurrency(grandSummary.income)}
             </Text>
@@ -183,7 +185,7 @@ export const TransactionsScreen: React.FC = () => {
           <View style={[styles.summaryDivider, { backgroundColor: theme.colors.border }]} />
 
           <View style={styles.summaryCol}>
-            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>PENGELUARAN</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>{t.expense}</Text>
             <Text style={[styles.summaryAmount, { color: theme.colors.expense }]}>
               -{formatCurrency(grandSummary.expense)}
             </Text>
@@ -192,7 +194,7 @@ export const TransactionsScreen: React.FC = () => {
           <View style={[styles.summaryDivider, { backgroundColor: theme.colors.border }]} />
 
           <View style={styles.summaryCol}>
-            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>SELISIH (NET)</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>{t.netDiff}</Text>
             <Text
               style={[
                 styles.summaryAmount,

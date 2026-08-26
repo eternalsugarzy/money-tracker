@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoModal } from '../../components/common/NeoModal';
 import { NeoCard } from '../../components/common/NeoCard';
@@ -36,6 +37,7 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
   onRefresh,
 }) => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const { categories, accounts } = useAppData();
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -73,12 +75,12 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
 
   const handleSave = async () => {
     if (!title.trim()) {
-      Alert.alert('Nama Kosong', 'Harap masukkan nama shortcut.');
+      Alert.alert(language === 'id' ? 'Nama Kosong' : 'Empty Name', language === 'id' ? 'Harap masukkan nama shortcut.' : 'Please enter shortcut name.');
       return;
     }
     const evalRes = evaluateMathExpression(amountExpr);
     if (!evalRes.isValid || evalRes.value <= 0) {
-      Alert.alert('Nominal Tidak Valid', 'Harap masukkan nominal transaksi.');
+      Alert.alert(language === 'id' ? 'Nominal Tidak Valid' : 'Invalid Amount', language === 'id' ? 'Harap masukkan nominal transaksi.' : 'Please enter valid amount.');
       return;
     }
 
@@ -103,24 +105,28 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
         });
       }
       onRefresh();
-      setIsEditing(false);
-    } catch (err) {
-      Alert.alert('Error', 'Gagal menyimpan shortcut.');
+      resetForm();
+    } catch (err: any) {
+      Alert.alert(language === 'id' ? 'Gagal' : 'Failed', err.message || 'Error saving shortcut');
     }
   };
 
   const handleDelete = (id: string, name: string) => {
-    Alert.alert('Hapus Shortcut', `Hapus shortcut "${name}"?`, [
-      { text: 'Batal', style: 'cancel' },
-      {
-        text: 'Hapus',
-        style: 'destructive',
-        onPress: async () => {
-          await deleteShortcut(id);
-          onRefresh();
+    Alert.alert(
+      language === 'id' ? 'Hapus Shortcut' : 'Delete Shortcut',
+      language === 'id' ? `Hapus shortcut "${name}"?` : `Delete shortcut "${name}"?`,
+      [
+        { text: t.cancel, style: 'cancel' },
+        {
+          text: t.delete,
+          style: 'destructive',
+          onPress: async () => {
+            await deleteShortcut(id);
+            onRefresh();
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   return (
@@ -130,12 +136,20 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
         setIsEditing(false);
         onClose();
       }}
-      title={isEditing ? (editingId ? 'EDIT CATAT CEPAT' : 'TAMBAH CATAT CEPAT') : 'KELOLA CATAT CEPAT'}
+      title={
+        isEditing
+          ? editingId
+            ? (language === 'id' ? 'EDIT CATAT CEPAT' : 'EDIT QUICK SHORTCUT')
+            : (language === 'id' ? 'TAMBAH CATAT CEPAT' : 'ADD QUICK SHORTCUT')
+          : (language === 'id' ? 'KELOLA CATAT CEPAT' : 'MANAGE QUICK SHORTCUTS')
+      }
     >
       {isEditing ? (
         <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 520 }}>
           {/* Emoji Picker */}
-          <Text style={[styles.label, { color: theme.colors.text }]}>PILIH EMOJI / ICON</Text>
+          <Text style={[styles.label, { color: theme.colors.text }]}>
+            {language === 'id' ? 'PILIH EMOJI / ICON' : 'CHOOSE EMOJI / ICON'}
+          </Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.emojiRow}>
             {POPULAR_EMOJIS.map((em) => (
               <TouchableOpacity
@@ -157,15 +171,15 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
 
           {/* Title */}
           <NeoInput
-            label="NAMA TRANSAKSI"
-            placeholder="Misal: Kopi Susu, Bensin, Parkir..."
+            label={language === 'id' ? 'NAMA TRANSAKSI' : 'TRANSACTION NAME'}
+            placeholder={language === 'id' ? 'Misal: Kopi Susu, Bensin, Parkir...' : 'e.g. Coffee, Fuel, Parking...'}
             value={title}
             onChangeText={setTitle}
             containerStyle={{ marginTop: 10 }}
           />
 
           {/* Category Selector */}
-          <Text style={[styles.label, { color: theme.colors.text, marginTop: 12 }]}>KATEGORI</Text>
+          <Text style={[styles.label, { color: theme.colors.text, marginTop: 12 }]}>{t.category.toUpperCase()}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
             {categories.map((c) => {
               const isSelected = selectedCatId === c.id;
@@ -196,20 +210,22 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
           </ScrollView>
 
           {/* Amount Keypad */}
-          <Text style={[styles.label, { color: theme.colors.text, marginTop: 12 }]}>NOMINAL PENGELUARAN</Text>
+          <Text style={[styles.label, { color: theme.colors.text, marginTop: 12 }]}>
+            {language === 'id' ? 'NOMINAL PENGELUARAN' : 'EXPENSE AMOUNT'}
+          </Text>
           <NeoCalculator value={amountExpr} onChange={setAmountExpr} />
 
           {/* Save & Cancel Action */}
           <View style={styles.modalBtnRow}>
             <NeoButton
-              title="Batal"
+              title={t.cancel}
               variant="outline"
               size="md"
               onPress={() => setIsEditing(false)}
               style={{ flex: 1 }}
             />
             <NeoButton
-              title="Simpan Shortcut"
+              title={language === 'id' ? 'Simpan Shortcut' : 'Save Shortcut'}
               variant="primary"
               size="md"
               onPress={handleSave}
@@ -220,7 +236,7 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 460 }}>
           <NeoButton
-            title="+ TAMBAH SHORTCUT BARU"
+            title={`+ ${language === 'id' ? 'TAMBAH SHORTCUT BARU' : 'ADD NEW SHORTCUT'}`}
             variant="primary"
             onPress={handleOpenAdd}
             style={{ marginBottom: 12 }}

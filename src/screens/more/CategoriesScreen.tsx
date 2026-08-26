@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
@@ -21,6 +22,7 @@ import { deleteCategory } from '../../database/categoryRepo';
 
 export const CategoriesScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const { categories, refreshData } = useAppData();
 
@@ -35,18 +37,25 @@ export const CategoriesScreen: React.FC = () => {
 
   const handleDelete = (cat: Category) => {
     Alert.alert(
-      'Hapus / Arsipkan Kategori',
-      `Apakah Anda yakin ingin menghapus kategori "${cat.name}"? Jika ada transaksi atau budget terkait, kategori akan diarsipkan secara aman.`,
+      language === 'id' ? 'Hapus / Arsipkan Kategori' : 'Delete / Archive Category',
+      language === 'id'
+        ? `Apakah Anda yakin ingin menghapus kategori "${cat.name}"? Jika ada transaksi atau budget terkait, kategori akan diarsipkan secara aman.`
+        : `Are you sure you want to delete "${cat.name}"? If it is linked to transactions or budgets, it will be safely archived.`,
       [
-        { text: 'Batal', style: 'cancel' },
+        { text: t.cancel, style: 'cancel' },
         {
-          text: 'Hapus / Arsipkan',
+          text: language === 'id' ? 'Hapus / Arsipkan' : 'Delete / Archive',
           style: 'destructive',
           onPress: async () => {
             const res = await deleteCategory(cat.id);
             await refreshData();
             if (res.action === 'archived') {
-              Alert.alert('Diarsipkan', 'Kategori berhasil diarsipkan karena memiliki riwayat transaksi terkait.');
+              Alert.alert(
+                language === 'id' ? 'Diarsipkan' : 'Archived',
+                language === 'id'
+                  ? 'Kategori berhasil diarsipkan karena memiliki riwayat transaksi terkait.'
+                  : 'Category has been archived because it is linked to transaction history.'
+              );
             }
           },
         },
@@ -70,9 +79,9 @@ export const CategoriesScreen: React.FC = () => {
         >
           <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>KATEGORI</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t.categoriesTitle}</Text>
         <NeoButton
-          title="+ KATEGORI"
+          title={`+ ${t.category.toUpperCase()}`}
           size="sm"
           variant="primary"
           onPress={() => navigation.navigate('CategoryFormModal')}
@@ -94,7 +103,7 @@ export const CategoriesScreen: React.FC = () => {
             <Ionicons name="search" size={16} color={theme.colors.textMuted} />
             <TextInput
               style={[styles.searchInput, { color: theme.colors.text }]}
-              placeholder="Cari kategori (Makan, Transport, Gaji...)"
+              placeholder={t.searchPlaceholder}
               placeholderTextColor={theme.colors.textMuted}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -110,11 +119,13 @@ export const CategoriesScreen: React.FC = () => {
         {/* Categories Count & Toggle Archive */}
         <View style={styles.metaRow}>
           <Text style={[styles.metaCount, { color: theme.colors.textMuted }]}>
-            {displayedCategories.length} Kategori Tersedia (Untuk Pemasukan, Pengeluaran & Budget)
+            {displayedCategories.length} {language === 'id' ? 'Kategori Tersedia' : 'Categories Available'}
           </Text>
           <TouchableOpacity onPress={() => setShowArchived(!showArchived)}>
             <Text style={[styles.archiveToggleText, { color: theme.colors.textMuted }]}>
-              {showArchived ? 'Sembunyikan Arsip' : 'Tampilkan Arsip'}
+              {showArchived
+                ? (language === 'id' ? 'Sembunyikan Arsip' : 'Hide Archived')
+                : (language === 'id' ? 'Tampilkan Arsip' : 'Show Archived')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -137,7 +148,7 @@ export const CategoriesScreen: React.FC = () => {
                   </Text>
                   {cat.is_archived === 1 && (
                     <Text style={[styles.archivedLabel, { color: theme.colors.textMuted }]}>
-                      (Diarsipkan)
+                      ({language === 'id' ? 'Diarsipkan' : 'Archived'})
                     </Text>
                   )}
                 </View>

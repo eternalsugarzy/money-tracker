@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
@@ -22,6 +23,7 @@ import { deleteDebt, settleDebt } from '../../database/debtRepo';
 
 export const DebtsScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const { debts, accounts, refreshData } = useAppData();
 
@@ -37,17 +39,21 @@ export const DebtsScreen: React.FC = () => {
     .reduce((s, d) => s + d.amount, 0);
 
   const handleDelete = (debt: Debt) => {
-    Alert.alert('Hapus Catatan', `Hapus catatan untuk "${debt.person_name}"?`, [
-      { text: 'Batal', style: 'cancel' },
-      {
-        text: 'Hapus',
-        style: 'destructive',
-        onPress: async () => {
-          await deleteDebt(debt.id);
-          await refreshData();
+    Alert.alert(
+      language === 'id' ? 'Hapus Catatan' : 'Delete Record',
+      language === 'id' ? `Hapus catatan untuk "${debt.person_name}"?` : `Delete record for "${debt.person_name}"?`,
+      [
+        { text: t.cancel, style: 'cancel' },
+        {
+          text: t.delete,
+          style: 'destructive',
+          onPress: async () => {
+            await deleteDebt(debt.id);
+            await refreshData();
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleConfirmSettlement = async () => {
@@ -60,9 +66,9 @@ export const DebtsScreen: React.FC = () => {
       });
       await refreshData();
       setSettlingDebt(null);
-      Alert.alert('Sukses', 'Status berhasil diubah menjadi LUNAS.');
+      Alert.alert(language === 'id' ? 'Sukses' : 'Success', language === 'id' ? 'Status berhasil diubah menjadi LUNAS.' : 'Status marked as PAID.');
     } catch (err: any) {
-      Alert.alert('Gagal', err.message || 'Terjadi kesalahan');
+      Alert.alert(language === 'id' ? 'Gagal' : 'Failed', err.message || 'Error occurred');
     }
   };
 
@@ -82,9 +88,9 @@ export const DebtsScreen: React.FC = () => {
         >
           <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>HUTANG - PIUTANG</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t.debtsTitle}</Text>
         <NeoButton
-          title="+ CATAT"
+          title={`+ ${language === 'id' ? 'CATAT' : 'ADD'}`}
           size="sm"
           variant="primary"
           onPress={() => navigation.navigate('DebtFormModal', { defaultType: activeTab })}
@@ -99,11 +105,13 @@ export const DebtsScreen: React.FC = () => {
         >
           <Text style={styles.summaryLabel}>
             {activeTab === 'receivable'
-              ? 'TOTAL PIUTANG BELUM DIBAYAR KE SAYA'
-              : 'TOTAL SAYA BERHUTANG KE ORANG'}
+              ? (language === 'id' ? 'TOTAL PIUTANG BELUM DIBAYAR KE SAYA' : 'TOTAL UNPAID RECEIVABLES')
+              : (language === 'id' ? 'TOTAL SAYA BERHUTANG KE ORANG' : 'TOTAL PAYABLES I OWE')}
           </Text>
           <Text style={styles.summaryAmount}>{formatCurrency(totalUnpaidAmount)}</Text>
-          <Text style={styles.summarySub}>{unpaidCount} catatan belum lunas</Text>
+          <Text style={styles.summarySub}>
+            {unpaidCount} {language === 'id' ? 'catatan belum lunas' : 'unpaid records'}
+          </Text>
         </NeoCard>
 
         {/* Tab Selector: Piutang vs Utang */}
@@ -128,7 +136,7 @@ export const DebtsScreen: React.FC = () => {
                 },
               ]}
             >
-              Piutang (Saya Beri Pinjaman)
+              {t.receivableTab}
             </Text>
           </TouchableOpacity>
 
@@ -152,7 +160,7 @@ export const DebtsScreen: React.FC = () => {
                 },
               ]}
             >
-              Utang (Saya Meminjam)
+              {t.payableTab}
             </Text>
           </TouchableOpacity>
         </View>

@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
@@ -21,6 +22,7 @@ import { deleteAccount } from '../../database/accountRepo';
 
 export const AccountsScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const { accounts, totalNetWorth, refreshData } = useAppData();
   const [showArchived, setShowArchived] = useState(false);
@@ -31,18 +33,25 @@ export const AccountsScreen: React.FC = () => {
 
   const handleDelete = (acc: Account) => {
     Alert.alert(
-      'Hapus / Arsipkan Akun',
-      `Apakah Anda yakin ingin menghapus akun "${acc.name}"? Jika ada transaksi terkait, akun akan diarsipkan agar data transaksi tetap aman.`,
+      language === 'id' ? 'Hapus / Arsipkan Akun' : 'Delete / Archive Account',
+      language === 'id'
+        ? `Apakah Anda yakin ingin menghapus akun "${acc.name}"? Jika ada transaksi terkait, akun akan diarsipkan agar data transaksi tetap aman.`
+        : `Are you sure you want to delete "${acc.name}"? If it has transactions, it will be safely archived.`,
       [
-        { text: 'Batal', style: 'cancel' },
+        { text: t.cancel, style: 'cancel' },
         {
-          text: 'Hapus / Arsipkan',
+          text: language === 'id' ? 'Hapus / Arsipkan' : 'Delete / Archive',
           style: 'destructive',
           onPress: async () => {
             const res = await deleteAccount(acc.id);
             await refreshData();
             if (res.action === 'archived') {
-              Alert.alert('Diarsipkan', 'Akun berhasil diarsipkan karena memiliki riwayat transaksi terkait.');
+              Alert.alert(
+                language === 'id' ? 'Diarsipkan' : 'Archived',
+                language === 'id'
+                  ? 'Akun berhasil diarsipkan karena memiliki riwayat transaksi terkait.'
+                  : 'Account has been archived because it contains transaction history.'
+              );
             }
           },
         },
@@ -66,9 +75,9 @@ export const AccountsScreen: React.FC = () => {
         >
           <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>AKUN & DOMPET</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t.accountsTitle}</Text>
         <NeoButton
-          title="+ AKUN"
+          title={`+ ${t.account.toUpperCase()}`}
           size="sm"
           variant="primary"
           onPress={() => navigation.navigate('AccountFormModal')}
@@ -78,19 +87,23 @@ export const AccountsScreen: React.FC = () => {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Total Balance Card */}
         <NeoCard backgroundColor={theme.colors.primary} style={styles.totalCard}>
-          <Text style={styles.totalLabel}>TOTAL KEKAYAAN BERSIH (NET WORTH)</Text>
+          <Text style={styles.totalLabel}>{t.totalNetWorth}</Text>
           <Text style={styles.totalAmount}>{formatCurrency(totalNetWorth)}</Text>
-          <Text style={styles.totalSub}>Dari {displayedAccounts.length} akun aktif</Text>
+          <Text style={styles.totalSub}>
+            {language === 'id' ? `Dari ${displayedAccounts.length} akun aktif` : `From ${displayedAccounts.length} active accounts`}
+          </Text>
         </NeoCard>
 
         {/* List of Accounts */}
         <View style={styles.listHeader}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            DAFTAR DOMPET / REKENING
+            {language === 'id' ? 'DAFTAR DOMPET / REKENING' : 'WALLET / ACCOUNT LIST'}
           </Text>
           <TouchableOpacity onPress={() => setShowArchived(!showArchived)}>
             <Text style={[styles.archiveToggle, { color: theme.colors.textMuted }]}>
-              {showArchived ? 'Sembunyikan Arsip' : 'Tampilkan Arsip'}
+              {showArchived
+                ? (language === 'id' ? 'Sembunyikan Arsip' : 'Hide Archived')
+                : (language === 'id' ? 'Tampilkan Arsip' : 'Show Archived')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -117,13 +130,15 @@ export const AccountsScreen: React.FC = () => {
                         { backgroundColor: theme.colors.cardSecondary, borderColor: theme.colors.border },
                       ]}
                     >
-                      <Text style={[styles.archivedText, { color: theme.colors.textMuted }]}>Arsip</Text>
+                      <Text style={[styles.archivedText, { color: theme.colors.textMuted }]}>
+                        {language === 'id' ? 'Arsip' : 'Archived'}
+                      </Text>
                     </View>
                   )}
                 </View>
 
                 <Text style={[styles.accountType, { color: theme.colors.textMuted }]}>
-                  Tipe: {acc.type}
+                  {language === 'id' ? 'Tipe: ' : 'Type: '}{acc.type}
                 </Text>
 
                 <Text style={[styles.accountBalance, { color: theme.colors.text }]}>

@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoBadge } from '../../components/common/NeoBadge';
@@ -27,6 +28,7 @@ import {
 
 export const AnalyticsScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const { transactions, refreshData, isLoading } = useAppData();
 
@@ -76,10 +78,10 @@ export const AnalyticsScreen: React.FC = () => {
   };
 
   const PERIODS: { key: TimePeriodFilter; label: string }[] = [
-    { key: 'day', label: 'Hari Ini' },
-    { key: 'week', label: 'Minggu Ini' },
-    { key: 'month', label: 'Bulan Ini' },
-    { key: 'year', label: 'Tahun Ini' },
+    { key: 'day', label: t.day },
+    { key: 'week', label: t.week },
+    { key: 'month', label: t.month },
+    { key: 'year', label: t.year },
   ];
 
   return (
@@ -99,7 +101,7 @@ export const AnalyticsScreen: React.FC = () => {
           <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          STATISTIK & TREND LENGKAP
+          {t.analyticsTitle}
         </Text>
         <View style={{ width: 40 }} />
       </View>
@@ -155,17 +157,17 @@ export const AnalyticsScreen: React.FC = () => {
         {/* 1. Grand Financial Overview Card */}
         <NeoCard style={styles.card}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            RINGKASAN ARUS KAS ({period.toUpperCase()})
+            {t.summary} ({period === 'day' ? t.day.toUpperCase() : period === 'week' ? t.week.toUpperCase() : period === 'month' ? t.month.toUpperCase() : t.year.toUpperCase()})
           </Text>
           <View style={styles.summaryGrid}>
             <View style={[styles.summaryCol, { borderRightWidth: 1.5, borderRightColor: theme.colors.border }]}>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>PEMASUKAN</Text>
+              <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>{t.income}</Text>
               <Text style={[styles.summaryVal, { color: theme.colors.income }]}>
                 +{formatCurrency(summary.totalIncome)}
               </Text>
             </View>
             <View style={styles.summaryCol}>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>PENGELUARAN</Text>
+              <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>{t.expense}</Text>
               <Text style={[styles.summaryVal, { color: theme.colors.expense }]}>
                 -{formatCurrency(summary.totalExpense)}
               </Text>
@@ -173,7 +175,7 @@ export const AnalyticsScreen: React.FC = () => {
           </View>
 
           <View style={[styles.netRow, { backgroundColor: theme.colors.cardSecondary, borderColor: theme.colors.border }]}>
-            <Text style={[styles.netLabel, { color: theme.colors.text }]}>SELISIH BERSIH:</Text>
+            <Text style={[styles.netLabel, { color: theme.colors.text }]}>{t.netSavings}:</Text>
             <Text
               style={[
                 styles.netVal,
@@ -189,7 +191,7 @@ export const AnalyticsScreen: React.FC = () => {
         <NeoCard style={styles.card}>
           <View style={styles.chartHeaderRow}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              DISTRIBUSI KATEGORI
+              {language === 'id' ? 'DISTRIBUSI KATEGORI' : 'CATEGORY DISTRIBUTION'}
             </Text>
 
             <View style={styles.typeToggle}>
@@ -209,7 +211,7 @@ export const AnalyticsScreen: React.FC = () => {
                     { color: chartType === 'expense' ? '#FFFFFF' : theme.colors.text },
                   ]}
                 >
-                  Pengeluaran
+                  {t.expense}
                 </Text>
               </TouchableOpacity>
 
@@ -229,7 +231,7 @@ export const AnalyticsScreen: React.FC = () => {
                     { color: chartType === 'income' ? '#0A3B0A' : theme.colors.text },
                   ]}
                 >
-                  Pemasukan
+                  {t.income}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -241,10 +243,10 @@ export const AnalyticsScreen: React.FC = () => {
         {/* 3. Monthly Net Cashflow Trend Line Chart */}
         <NeoCard style={styles.card}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            TREN SELISIH BERSIH 6 BULAN TERAKHIR
+            {language === 'id' ? 'TREN SELISIH BERSIH 6 BULAN TERAKHIR' : '6-MONTH NET CASHFLOW TREND'}
           </Text>
           <Text style={[styles.trendSub, { color: theme.colors.textMuted }]}>
-            Grafik riwayat performa surplus/defisit bulanan
+            {language === 'id' ? 'Grafik riwayat performa surplus/defisit bulanan' : 'Monthly surplus / deficit performance history'}
           </Text>
 
           <NeoLineChart
@@ -258,11 +260,11 @@ export const AnalyticsScreen: React.FC = () => {
         {/* 4. Top Category Ranking List */}
         <NeoCard style={styles.card}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            PERINGKAT KATEGORI ({chartType === 'expense' ? 'PENGELUARAN' : 'PEMASUKAN'})
+            {language === 'id' ? 'PERINGKAT KATEGORI' : 'CATEGORY RANKING'} ({chartType === 'expense' ? t.expense.toUpperCase() : t.income.toUpperCase()})
           </Text>
           {breakdown.length === 0 ? (
             <Text style={[styles.emptyText, { color: theme.colors.textMuted }]}>
-              Belum ada data pada periode ini.
+              {language === 'id' ? 'Belum ada data pada periode ini.' : 'No transaction data for this period.'}
             </Text>
           ) : (
             breakdown.map((item, idx) => (

@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
@@ -23,6 +24,7 @@ import { getActiveBudgets, getBudgetHistory, BudgetHistoryMonth, deleteBudget } 
 
 export const BudgetScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const { refreshData, isLoading } = useAppData();
 
@@ -87,7 +89,7 @@ export const BudgetScreen: React.FC = () => {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>ANGGARAN & BUDGET</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t.budgetTitle}</Text>
         <NeoButton
           title="+ BUDGET"
           size="sm"
@@ -114,7 +116,7 @@ export const BudgetScreen: React.FC = () => {
         >
           <View style={styles.overviewHeader}>
             <Text style={[styles.overviewLabel, { color: theme.colors.textMuted }]}>
-              TOTAL ANGGARAN BULAN INI
+              {language === 'id' ? 'TOTAL ANGGARAN BULAN INI' : 'TOTAL MONTHLY BUDGET'}
             </Text>
             <View
               style={[
@@ -142,8 +144,8 @@ export const BudgetScreen: React.FC = () => {
 
           <Text style={[styles.sisaText, { color: theme.colors.textMuted }]}>
             {totalLimit >= totalSpent
-              ? `Tersisa: ${formatCurrency(totalLimit - totalSpent)}`
-              : `Melebihi budget sebesar ${formatCurrency(totalSpent - totalLimit)}`}
+              ? `${language === 'id' ? 'Tersisa' : 'Remaining'}: ${formatCurrency(totalLimit - totalSpent)}`
+              : `${language === 'id' ? 'Melebihi budget sebesar' : 'Over budget by'} ${formatCurrency(totalSpent - totalLimit)}`}
           </Text>
         </NeoCard>
 
@@ -169,7 +171,7 @@ export const BudgetScreen: React.FC = () => {
                 },
               ]}
             >
-              Budget Aktif ({budgets.length})
+              {t.activeBudgets} ({budgets.length})
             </Text>
           </TouchableOpacity>
 
@@ -193,7 +195,7 @@ export const BudgetScreen: React.FC = () => {
                 },
               ]}
             >
-              Riwayat Bulan Lalu
+              {t.historyBudgets}
             </Text>
           </TouchableOpacity>
         </View>
@@ -204,13 +206,15 @@ export const BudgetScreen: React.FC = () => {
             <NeoCard style={styles.emptyCard}>
               <Ionicons name="pie-chart-outline" size={44} color={theme.colors.textMuted} />
               <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
-                Belum Ada Budget Terpasang
+                {language === 'id' ? 'Belum Ada Budget Terpasang' : 'No Active Budgets Set'}
               </Text>
               <Text style={[styles.emptySubtitle, { color: theme.colors.textMuted }]}>
-                Atur batasan pengeluaran bulanan per kategori untuk mengontrol keuanganmu.
+                {language === 'id'
+                  ? 'Atur batasan pengeluaran bulanan per kategori untuk mengontrol keuanganmu.'
+                  : 'Set monthly category limits to control and track your expenses.'}
               </Text>
               <NeoButton
-                title="+ BUAT BUDGET PERTAMA"
+                title={t.addBudget}
                 variant="primary"
                 onPress={() => navigation.navigate('BudgetFormModal')}
                 style={{ marginTop: 14 }}

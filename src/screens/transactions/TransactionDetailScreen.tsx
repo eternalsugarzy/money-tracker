@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
@@ -23,6 +24,7 @@ import { getTransactionById, deleteTransaction } from '../../database/transactio
 
 export const TransactionDetailScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
   const { refreshData } = useAppData();
@@ -48,7 +50,7 @@ export const TransactionDetailScreen: React.FC = () => {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
             <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>DETAIL TRANSAKSI</Text>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t.txDetailTitle}</Text>
         </View>
       </SafeAreaView>
     );
@@ -64,18 +66,18 @@ export const TransactionDetailScreen: React.FC = () => {
     ? theme.colors.expense
     : theme.colors.transfer;
 
-  const typeLabel = isIncome ? 'PEMASUKAN' : isExpense ? 'PENGELUARAN' : 'TRANSFER SALDO';
+  const typeLabel = isIncome ? t.income : isExpense ? t.expense : t.transfer;
 
   const receiptImages: string[] = JSON.parse(transaction.receipt_images || '[]');
 
   const handleDelete = () => {
     Alert.alert(
-      'Hapus Transaksi',
-      'Apakah Anda yakin ingin menghapus transaksi ini? Saldo akun akan dikoreksi kembali otomatis.',
+      language === 'id' ? 'Hapus Transaksi' : 'Delete Transaction',
+      t.deleteTxConfirm,
       [
-        { text: 'Batal', style: 'cancel' },
+        { text: t.cancel, style: 'cancel' },
         {
-          text: 'Hapus',
+          text: t.delete,
           style: 'destructive',
           onPress: async () => {
             await deleteTransaction(transaction.id);
@@ -139,7 +141,7 @@ export const TransactionDetailScreen: React.FC = () => {
           </Text>
 
           <Text style={styles.dateDisplay}>
-            {formatFullDate(transaction.date)}
+            {formatFullDate(transaction.date, language)}
           </Text>
         </NeoCard>
 
@@ -148,7 +150,7 @@ export const TransactionDetailScreen: React.FC = () => {
           {/* Category (if not transfer) */}
           {!isTransfer && (
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.colors.textMuted }]}>KATEGORI</Text>
+              <Text style={[styles.infoLabel, { color: theme.colors.textMuted }]}>{t.category}</Text>
               <View style={styles.infoValueRow}>
                 <NeoBadge
                   icon={transaction.category_icon || 'help-circle'}
@@ -157,7 +159,7 @@ export const TransactionDetailScreen: React.FC = () => {
                   size="sm"
                 />
                 <Text style={[styles.infoValueText, { color: theme.colors.text, marginLeft: 8 }]}>
-                  {transaction.category_name || 'Lain-lain'}
+                  {transaction.category_name || (language === 'id' ? 'Lain-lain' : 'Others')}
                 </Text>
               </View>
             </View>
@@ -166,7 +168,7 @@ export const TransactionDetailScreen: React.FC = () => {
           {/* Account Source */}
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: theme.colors.textMuted }]}>
-              {isTransfer ? 'AKUN ASAL' : 'AKUN / DOMPET'}
+              {isTransfer ? t.fromAccount : t.account}
             </Text>
             <View style={styles.infoValueRow}>
               <NeoBadge
@@ -175,7 +177,7 @@ export const TransactionDetailScreen: React.FC = () => {
                 size="sm"
               />
               <Text style={[styles.infoValueText, { color: theme.colors.text, marginLeft: 8 }]}>
-                {transaction.account_name || 'Akun Utama'}
+                {transaction.account_name || (language === 'id' ? 'Akun Utama' : 'Main Account')}
               </Text>
             </View>
           </View>
@@ -183,11 +185,11 @@ export const TransactionDetailScreen: React.FC = () => {
           {/* Transfer Destination */}
           {isTransfer && (
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.colors.textMuted }]}>AKUN TUJUAN</Text>
+              <Text style={[styles.infoLabel, { color: theme.colors.textMuted }]}>{t.toAccount}</Text>
               <View style={styles.infoValueRow}>
                 <NeoBadge icon="arrow-forward" color={theme.colors.transfer} size="sm" />
                 <Text style={[styles.infoValueText, { color: theme.colors.text, marginLeft: 8 }]}>
-                  {transaction.to_account_name || 'Akun Tujuan'}
+                  {transaction.to_account_name || (language === 'id' ? 'Akun Tujuan' : 'Destination Account')}
                 </Text>
               </View>
             </View>
@@ -195,7 +197,7 @@ export const TransactionDetailScreen: React.FC = () => {
 
           {/* Notes */}
           <View style={styles.infoRow}>
-            <Text style={[styles.infoLabel, { color: theme.colors.textMuted }]}>CATATAN</Text>
+            <Text style={[styles.infoLabel, { color: theme.colors.textMuted }]}>{t.note}</Text>
             <Text style={[styles.infoValueText, { color: theme.colors.text, flex: 1, textAlign: 'right' }]}>
               {transaction.note || '-'}
             </Text>
@@ -203,9 +205,11 @@ export const TransactionDetailScreen: React.FC = () => {
 
           {/* Created Timestamp */}
           <View style={[styles.infoRow, { borderBottomWidth: 0 }]}>
-            <Text style={[styles.infoLabel, { color: theme.colors.textMuted }]}>DICATAT PADA</Text>
+            <Text style={[styles.infoLabel, { color: theme.colors.textMuted }]}>
+              {language === 'id' ? 'DICATAT PADA' : 'RECORDED AT'}
+            </Text>
             <Text style={[styles.infoTimestamp, { color: theme.colors.textMuted }]}>
-              {new Date(transaction.created_at).toLocaleString('id-ID')}
+              {new Date(transaction.created_at).toLocaleString(language === 'id' ? 'id-ID' : 'en-US')}
             </Text>
           </View>
         </NeoCard>
@@ -214,7 +218,7 @@ export const TransactionDetailScreen: React.FC = () => {
         {receiptImages.length > 0 && (
           <NeoCard style={styles.receiptCard}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              FOTO STRUK ({receiptImages.length})
+              {language === 'id' ? 'FOTO STRUK' : 'RECEIPT PHOTOS'} ({receiptImages.length})
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
               {receiptImages.map((uri, idx) => (

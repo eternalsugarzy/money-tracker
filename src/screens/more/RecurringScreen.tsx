@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
@@ -22,17 +23,20 @@ import { createTransaction } from '../../database/transactionRepo';
 
 export const RecurringScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const { recurring, refreshData } = useAppData();
 
   const handleCreateFromTemplate = (rec: RecurringTransaction) => {
     Alert.alert(
-      'Catat Transaksi Sekarang',
-      `Buat transaksi riil "${rec.note || rec.category_name || 'Transaksi Berulang'}" sebesar ${formatCurrency(rec.amount)} untuk hari ini?`,
+      language === 'id' ? 'Catat Transaksi Sekarang' : 'Record Transaction Now',
+      language === 'id'
+        ? `Buat transaksi riil "${rec.note || rec.category_name || 'Transaksi Berulang'}" sebesar ${formatCurrency(rec.amount)} untuk hari ini?`
+        : `Create actual transaction "${rec.note || rec.category_name || 'Recurring'}" of ${formatCurrency(rec.amount)} for today?`,
       [
-        { text: 'Batal', style: 'cancel' },
+        { text: t.cancel, style: 'cancel' },
         {
-          text: 'Konfirmasi Catat',
+          text: language === 'id' ? 'Konfirmasi Catat' : 'Confirm & Record',
           onPress: async () => {
             await createTransaction({
               type: rec.type,
@@ -41,11 +45,11 @@ export const RecurringScreen: React.FC = () => {
               account_id: rec.account_id,
               to_account_id: rec.to_account_id,
               category_id: rec.category_id,
-              note: `[Berulang] ${rec.note || ''}`,
+              note: `[${language === 'id' ? 'Berulang' : 'Recurring'}] ${rec.note || ''}`,
               receipt_images: '[]',
             });
             await refreshData();
-            Alert.alert('Sukses', 'Transaksi berhasil dicatat ke dalam database.');
+            Alert.alert(language === 'id' ? 'Sukses' : 'Success', language === 'id' ? 'Transaksi berhasil dicatat ke dalam database.' : 'Transaction successfully recorded.');
           },
         },
       ]
@@ -54,12 +58,12 @@ export const RecurringScreen: React.FC = () => {
 
   const handleDelete = (rec: RecurringTransaction) => {
     Alert.alert(
-      'Hapus Template Berulang',
-      `Hapus template transaksi berulang ini?`,
+      language === 'id' ? 'Hapus Template Berulang' : 'Delete Recurring Template',
+      language === 'id' ? 'Hapus template transaksi berulang ini?' : 'Delete this recurring template?',
       [
-        { text: 'Batal', style: 'cancel' },
+        { text: t.cancel, style: 'cancel' },
         {
-          text: 'Hapus',
+          text: t.delete,
           style: 'destructive',
           onPress: async () => {
             await deleteRecurring(rec.id);
@@ -73,14 +77,14 @@ export const RecurringScreen: React.FC = () => {
   const getIntervalLabel = (interval: string) => {
     switch (interval) {
       case 'daily':
-        return 'Harian';
+        return language === 'id' ? 'Harian' : 'Daily';
       case 'weekly':
-        return 'Mingguan';
+        return language === 'id' ? 'Mingguan' : 'Weekly';
       case 'yearly':
-        return 'Tahunan';
+        return language === 'id' ? 'Tahunan' : 'Yearly';
       case 'monthly':
       default:
-        return 'Bulanan';
+        return language === 'id' ? 'Bulanan' : 'Monthly';
     }
   };
 
@@ -100,9 +104,9 @@ export const RecurringScreen: React.FC = () => {
         >
           <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>TRANSAKSI BERULANG</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t.recurringTitle}</Text>
         <NeoButton
-          title="+ RECURRING"
+          title="+ TEMPLATE"
           size="sm"
           variant="primary"
           onPress={() => navigation.navigate('RecurringFormModal')}

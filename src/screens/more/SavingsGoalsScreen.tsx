@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
@@ -56,6 +57,7 @@ const DEFAULT_GOALS: SavingsGoal[] = [
 
 export const SavingsGoalsScreen: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const navigation = useNavigation<any>();
   const [goals, setGoals] = useState<SavingsGoal[]>(DEFAULT_GOALS);
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
@@ -67,12 +69,12 @@ export const SavingsGoalsScreen: React.FC = () => {
 
   const handleCreateGoal = () => {
     if (!newTitle.trim()) {
-      Alert.alert('Nama Kosong', 'Harap masukkan nama target celengan.');
+      Alert.alert(language === 'id' ? 'Nama Kosong' : 'Empty Name', language === 'id' ? 'Harap masukkan nama target celengan.' : 'Please enter goal title.');
       return;
     }
     const evalRes = evaluateMathExpression(newTargetExpr);
     if (!evalRes.isValid || evalRes.value <= 0) {
-      Alert.alert('Target Tidak Valid', 'Silakan masukkan target nominal.');
+      Alert.alert(language === 'id' ? 'Target Tidak Valid' : 'Invalid Target', language === 'id' ? 'Silakan masukkan target nominal.' : 'Please enter valid target amount.');
       return;
     }
 
@@ -88,14 +90,14 @@ export const SavingsGoalsScreen: React.FC = () => {
     setNewTitle('');
     setNewTargetExpr('');
     setShowAddModal(false);
-    Alert.alert('Sukses', `Target celengan "${newGoal.title}" berhasil dibuat!`);
+    Alert.alert(language === 'id' ? 'Sukses' : 'Success', `Target "${newGoal.title}" ${language === 'id' ? 'berhasil dibuat!' : 'created successfully!'}`);
   };
 
   const handleDepositMoney = () => {
     if (!savingToGoal) return;
     const evalRes = evaluateMathExpression(addMoneyExpr);
     if (!evalRes.isValid || evalRes.value <= 0) {
-      Alert.alert('Nominal Tidak Valid', 'Masukkan nominal tabungan.');
+      Alert.alert(language === 'id' ? 'Nominal Tidak Valid' : 'Invalid Amount', language === 'id' ? 'Masukkan nominal tabungan.' : 'Enter valid deposit amount.');
       return;
     }
 
@@ -108,18 +110,25 @@ export const SavingsGoalsScreen: React.FC = () => {
     );
     setAddMoneyExpr('');
     setSavingToGoal(null);
-    Alert.alert('Berhasil Menabung', `Tabungan sebesar ${formatCurrency(evalRes.value)} telah ditambahkan ke ${savingToGoal.title}!`);
+    Alert.alert(
+      language === 'id' ? 'Berhasil Menabung' : 'Deposit Successful',
+      `${formatCurrency(evalRes.value)} ${language === 'id' ? 'telah ditambahkan ke' : 'has been added to'} ${savingToGoal.title}!`
+    );
   };
 
   const handleDeleteGoal = (goalId: string) => {
-    Alert.alert('Hapus Celengan', 'Hapus target celengan ini?', [
-      { text: 'Batal', style: 'cancel' },
-      {
-        text: 'Hapus',
-        style: 'destructive',
-        onPress: () => setGoals(goals.filter((g) => g.id !== goalId)),
-      },
-    ]);
+    Alert.alert(
+      language === 'id' ? 'Hapus Celengan' : 'Delete Goal',
+      language === 'id' ? 'Hapus target celengan ini?' : 'Delete this savings goal?',
+      [
+        { text: t.cancel, style: 'cancel' },
+        {
+          text: t.delete,
+          style: 'destructive',
+          onPress: () => setGoals(goals.filter((g) => g.id !== goalId)),
+        },
+      ]
+    );
   };
 
   const totalTarget = goals.reduce((sum, g) => sum + g.targetAmount, 0);
@@ -143,7 +152,7 @@ export const SavingsGoalsScreen: React.FC = () => {
           <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          CELENGAN & TARGET IMPIAN
+          {t.savingsGoalsTitle}
         </Text>
         <TouchableOpacity
           onPress={() => setShowAddModal(true)}
@@ -162,9 +171,13 @@ export const SavingsGoalsScreen: React.FC = () => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* Total Progress Summary Card */}
         <NeoCard backgroundColor={theme.colors.primary} style={styles.grandCard}>
-          <Text style={styles.grandLabel}>AKUMULASI CELENGAN IMPIAN</Text>
+          <Text style={styles.grandLabel}>
+            {language === 'id' ? 'AKUMULASI CELENGAN IMPIAN' : 'TOTAL SAVINGS ACCUMULATION'}
+          </Text>
           <Text style={styles.grandAmount}>{formatCurrency(totalSaved)}</Text>
-          <Text style={styles.grandSub}>dari target {formatCurrency(totalTarget)} ({formatPercentage(overallPct)})</Text>
+          <Text style={styles.grandSub}>
+            {language === 'id' ? 'dari target' : 'of target'} {formatCurrency(totalTarget)} ({formatPercentage(overallPct)})
+          </Text>
           <View style={{ marginTop: 8 }}>
             <NeoProgressBar percentage={overallPct} height={10} />
           </View>
@@ -172,7 +185,7 @@ export const SavingsGoalsScreen: React.FC = () => {
 
         {/* Goals List */}
         <Text style={[styles.sectionTitle, { color: theme.colors.text, marginTop: 14 }]}>
-          DAFTAR TARGET TABUNGAN ({goals.length})
+          {language === 'id' ? 'DAFTAR TARGET TABUNGAN' : 'SAVINGS GOALS LIST'} ({goals.length})
         </Text>
 
         {goals.map((item) => {
@@ -202,46 +215,41 @@ export const SavingsGoalsScreen: React.FC = () => {
                       { backgroundColor: theme.colors.income, borderColor: theme.colors.border },
                     ]}
                   >
-                    <Text style={styles.doneText}>TERCAPAI 🎉</Text>
+                    <Text style={styles.doneBadgeText}>{language === 'id' ? 'TERCAPAI' : 'ACHIEVED'}</Text>
                   </View>
                 ) : (
                   <TouchableOpacity
                     onPress={() => handleDeleteGoal(item.id)}
-                    style={styles.deleteBtn}
+                    style={styles.deleteIconBtn}
                   >
-                    <Ionicons name="trash-outline" size={16} color={theme.colors.expense} />
+                    <Ionicons name="trash-outline" size={16} color={theme.colors.danger} />
                   </TouchableOpacity>
                 )}
               </View>
 
-              {/* Progress Bar */}
-              <View style={{ marginVertical: 10 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <Text style={[styles.progressVal, { color: theme.colors.income }]}>
-                    {formatCurrency(item.currentAmount)}
-                  </Text>
-                  <Text style={[styles.progressPct, { color: theme.colors.text }]}>
-                    {formatPercentage(pct)}
-                  </Text>
-                </View>
-                <NeoProgressBar percentage={pct} height={8} />
-                {!isDone && (
-                  <Text style={[styles.sisaText, { color: theme.colors.textMuted }]}>
-                    Kurang {formatCurrency(sisa)} lagi
-                  </Text>
-                )}
+              <View style={{ marginVertical: 8 }}>
+                <NeoProgressBar percentage={pct} height={12} />
               </View>
 
-              {/* Add Money Button */}
-              {!isDone && (
-                <NeoButton
-                  title="+ ISI TABUNGAN"
-                  size="sm"
-                  variant="primary"
-                  onPress={() => setSavingToGoal(item)}
-                  style={{ marginTop: 4 }}
-                />
-              )}
+              <View style={styles.goalBottomRow}>
+                <Text style={[styles.goalProgressText, { color: theme.colors.textMuted }]}>
+                  {language === 'id' ? 'Terkumpul' : 'Saved'}: {formatCurrency(item.currentAmount)} ({formatPercentage(pct)})
+                </Text>
+                {!isDone && (
+                  <TouchableOpacity
+                    onPress={() => setSavingToGoal(item)}
+                    style={[
+                      styles.addMoneyBtn,
+                      { backgroundColor: theme.colors.primary, borderColor: theme.colors.border },
+                    ]}
+                  >
+                    <Ionicons name="wallet-outline" size={13} color="#121212" />
+                    <Text style={styles.addMoneyBtnText}>
+                      + {language === 'id' ? 'ISI TABUNGAN' : 'ADD SAVINGS'}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </NeoCard>
           );
         })}
@@ -250,23 +258,50 @@ export const SavingsGoalsScreen: React.FC = () => {
       </ScrollView>
 
       {/* Modal Add Goal */}
-      <NeoModal visible={showAddModal} onClose={() => setShowAddModal(false)} title="TARGET CELENGAN BARU">
+      <NeoModal
+        visible={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        title={language === 'id' ? 'TARGET CELENGAN BARU' : 'NEW SAVINGS GOAL'}
+      >
         <View style={{ paddingVertical: 10 }}>
-          <NeoInput label="NAMA TARGET IMPIAN" placeholder="Misal: Beli Laptop Baru, Liburan..." value={newTitle} onChangeText={setNewTitle} />
+          <NeoInput
+            label={language === 'id' ? 'NAMA TARGET IMPIAN' : 'GOAL TITLE'}
+            placeholder={language === 'id' ? 'Misal: Beli Laptop Baru, Liburan...' : 'e.g. New Laptop, Vacation...'}
+            value={newTitle}
+            onChangeText={setNewTitle}
+          />
           <View style={{ marginVertical: 8 }}>
-            <Text style={[styles.modalLabel, { color: theme.colors.text }]}>TARGET NOMINAL</Text>
+            <Text style={[styles.modalLabel, { color: theme.colors.text }]}>
+              {language === 'id' ? 'TARGET NOMINAL' : 'TARGET AMOUNT'}
+            </Text>
             <NeoCalculator value={newTargetExpr} onChange={setNewTargetExpr} />
           </View>
-          <NeoButton title="BUAT TARGET SEKARANG" variant="primary" onPress={handleCreateGoal} style={{ marginTop: 10 }} />
+          <NeoButton
+            title={language === 'id' ? 'BUAT TARGET SEKARANG' : 'CREATE GOAL NOW'}
+            variant="primary"
+            onPress={handleCreateGoal}
+            style={{ marginTop: 10 }}
+          />
         </View>
       </NeoModal>
 
       {/* Modal Deposit Money to Goal */}
-      <NeoModal visible={!!savingToGoal} onClose={() => setSavingToGoal(null)} title={`MENABUNG: ${savingToGoal?.title}`}>
+      <NeoModal
+        visible={!!savingToGoal}
+        onClose={() => setSavingToGoal(null)}
+        title={`${language === 'id' ? 'MENABUNG' : 'DEPOSIT'}: ${savingToGoal?.title}`}
+      >
         <View style={{ paddingVertical: 10 }}>
-          <Text style={[styles.modalLabel, { color: theme.colors.text }]}>NOMINAL YANG DITABUNG</Text>
+          <Text style={[styles.modalLabel, { color: theme.colors.text }]}>
+            {language === 'id' ? 'NOMINAL YANG DITABUNG' : 'DEPOSIT AMOUNT'}
+          </Text>
           <NeoCalculator value={addMoneyExpr} onChange={setAddMoneyExpr} />
-          <NeoButton title="SIMPAN TABUNGAN" variant="income" onPress={handleDepositMoney} style={{ marginTop: 10 }} />
+          <NeoButton
+            title={language === 'id' ? 'SIMPAN TABUNGAN' : 'SAVE DEPOSIT'}
+            variant="income"
+            onPress={handleDepositMoney}
+            style={{ marginTop: 10 }}
+          />
         </View>
       </NeoModal>
     </SafeAreaView>
@@ -299,39 +334,37 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
   },
   grandCard: {
     padding: 16,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   grandLabel: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: '900',
-    letterSpacing: 0.5,
     color: '#121212',
+    letterSpacing: 0.5,
   },
   grandAmount: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '900',
     color: '#121212',
     marginVertical: 4,
   },
   grandSub: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#121212',
+    fontSize: 12,
+    fontWeight: '600',
+    color: 'rgba(0,0,0,0.7)',
   },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: '900',
     letterSpacing: 0.5,
-    marginBottom: 8,
-    textTransform: 'uppercase',
+    marginBottom: 10,
   },
   goalCard: {
     padding: 14,
-    marginVertical: 6,
+    marginBottom: 12,
   },
   goalHeader: {
     flexDirection: 'row',
@@ -347,40 +380,51 @@ const styles = StyleSheet.create({
     fontSize: 26,
   },
   goalTitle: {
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: 15,
+    fontWeight: '800',
   },
   goalTarget: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
     marginTop: 2,
   },
   doneBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1.5,
   },
-  doneText: {
-    fontSize: 10,
+  doneBadgeText: {
+    fontSize: 11,
     fontWeight: '900',
     color: '#0A3B0A',
   },
-  deleteBtn: {
+  deleteIconBtn: {
     padding: 6,
   },
-  progressVal: {
-    fontSize: 12,
-    fontWeight: '900',
+  goalBottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 6,
   },
-  progressPct: {
+  goalProgressText: {
     fontSize: 12,
-    fontWeight: '900',
-  },
-  sisaText: {
-    fontSize: 10,
     fontWeight: '700',
-    marginTop: 4,
+  },
+  addMoneyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
+    borderWidth: 1.5,
+  },
+  addMoneyBtnText: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#121212',
   },
   modalLabel: {
     fontSize: 11,
