@@ -103,8 +103,9 @@ export const SettingsScreen: React.FC = () => {
               <Switch
                 value={isDark}
                 onValueChange={toggleTheme}
-                trackColor={{ false: '#CCCCCC', true: theme.colors.primary }}
-                thumbColor={isDark ? '#121212' : '#FFFFFF'}
+                trackColor={{ false: '#3A3A3C', true: theme.colors.primary }}
+                thumbColor={isDark ? '#121212' : '#FFE600'}
+                ios_backgroundColor="#3A3A3C"
               />
             </View>
           </View>
@@ -139,8 +140,9 @@ export const SettingsScreen: React.FC = () => {
               <Switch
                 value={reminderEnabled}
                 onValueChange={handleToggleReminder}
-                trackColor={{ false: '#CCCCCC', true: theme.colors.income }}
-                thumbColor={reminderEnabled ? '#0A3B0A' : '#FFFFFF'}
+                trackColor={{ false: '#3A3A3C', true: theme.colors.income }}
+                thumbColor={reminderEnabled ? '#121212' : '#FFFFFF'}
+                ios_backgroundColor="#3A3A3C"
               />
             </View>
           </View>
