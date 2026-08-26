@@ -14,7 +14,6 @@ import { TimePeriodFilter, TransactionType, Category, Account } from '../../type
 import { NeoModal } from '../common/NeoModal';
 import { NeoButton } from '../common/NeoButton';
 import { NeoBadge } from '../common/NeoBadge';
-import { NeoDatePicker } from '../common/NeoDatePicker';
 import { formatDateLabel } from '../../utils/formatters';
 
 interface FilterBarProps {
@@ -26,15 +25,24 @@ interface FilterBarProps {
   selectedType: TransactionType | 'all';
   onSelectType: (type: TransactionType | 'all') => void;
   selectedAccountId?: string;
-  onSelectAccount: (accId?: string) => void;
+  onSelectAccount(accId?: string): void;
   selectedCategoryIds: string[];
-  onToggleCategory: (catId: string) => void;
-  onClearCategories: () => void;
+  onToggleCategory(catId: string): void;
+  onClearCategories(): void;
   searchQuery: string;
-  onChangeSearchQuery: (query: string) => void;
+  onChangeSearchQuery(query: string): void;
   categories: Category[];
   accounts: Account[];
 }
+
+const MONTH_NAMES_ID = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+];
+const MONTH_NAMES_EN = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
 export const FilterBar: React.FC<FilterBarProps> = ({
   selectedPeriod,
@@ -64,12 +72,19 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   // Custom Date Range Modal State
   const [showDateRangeModal, setShowDateRangeModal] = useState(false);
   const [tempStartDate, setTempStartDate] = useState<string>(
-    startDate || new Date(new Date().setDate(1)).toISOString().slice(0, 10)
+    startDate || new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10)
   );
   const [tempEndDate, setTempEndDate] = useState<string>(
     endDate || new Date().toISOString().slice(0, 10)
   );
-  const [datePickerMode, setDatePickerMode] = useState<'start' | 'end' | null>(null);
+  const [activeDateTarget, setActiveDateTarget] = useState<'start' | 'end'>('start');
+
+  // Calendar View Month & Year Navigation
+  const now = new Date();
+  const [calYear, setCalYear] = useState<number>(now.getFullYear());
+  const [calMonth, setCalMonth] = useState<number>(now.getMonth());
+
+  const monthNames = language === 'id' ? MONTH_NAMES_ID : MONTH_NAMES_EN;
 
   const PERIODS: { key: TimePeriodFilter; label: string }[] = [
     { key: 'day', label: t.day },
@@ -99,6 +114,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
   const handlePeriodPress = (periodKey: TimePeriodFilter) => {
     if (periodKey === 'custom') {
+      // Sync initial calendar view to current tempStartDate
+      const cur = new Date(tempStartDate || new Date());
+      if (!isNaN(cur.getTime())) {
+        setCalYear(cur.getFullYear());
+        setCalMonth(cur.getMonth());
+      }
       setShowDateRangeModal(true);
     } else {
       onSelectPeriod(periodKey);
@@ -109,7 +130,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     let finalStart = tempStartDate;
     let finalEnd = tempEndDate;
     if (finalStart > finalEnd) {
-      // Auto-swap if start is after end
+      // Swap if user selected start date after end date
       const tmp = finalStart;
       finalStart = finalEnd;
       finalEnd = tmp;
@@ -124,32 +145,85 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   };
 
   const handlePresetDateRange = (preset: '7days' | '30days' | 'thisMonth' | 'lastMonth' | 'thisYear') => {
-    const now = new Date();
-    const todayStr = now.toISOString().slice(0, 10);
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
 
     if (preset === '7days') {
       const past7 = new Date();
-      past7.setDate(now.getDate() - 6);
-      setTempStartDate(past7.toISOString().slice(0, 10));
+      past7.setDate(today.getDate() - 6);
+      const start = past7.toISOString().slice(0, 10);
+      setTempStartDate(start);
       setTempEndDate(todayStr);
+      setCalYear(past7.getFullYear());
+      setCalMonth(past7.getMonth());
     } else if (preset === '30days') {
       const past30 = new Date();
-      past30.setDate(now.getDate() - 29);
-      setTempStartDate(past30.toISOString().slice(0, 10));
+      past30.setDate(today.getDate() - 29);
+      const start = past30.toISOString().slice(0, 10);
+      setTempStartDate(start);
       setTempEndDate(todayStr);
+      setCalYear(past30.getFullYear());
+      setCalMonth(past30.getMonth());
     } else if (preset === 'thisMonth') {
-      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-      setTempStartDate(firstDay.toISOString().slice(0, 10));
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      const start = firstDay.toISOString().slice(0, 10);
+      setTempStartDate(start);
       setTempEndDate(todayStr);
+      setCalYear(today.getFullYear());
+      setCalMonth(today.getMonth());
     } else if (preset === 'lastMonth') {
-      const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+      const firstDayLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const lastDayLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
       setTempStartDate(firstDayLastMonth.toISOString().slice(0, 10));
       setTempEndDate(lastDayLastMonth.toISOString().slice(0, 10));
+      setCalYear(firstDayLastMonth.getFullYear());
+      setCalMonth(firstDayLastMonth.getMonth());
     } else if (preset === 'thisYear') {
-      const firstDayYear = new Date(now.getFullYear(), 0, 1);
+      const firstDayYear = new Date(today.getFullYear(), 0, 1);
       setTempStartDate(firstDayYear.toISOString().slice(0, 10));
       setTempEndDate(todayStr);
+      setCalYear(today.getFullYear());
+      setCalMonth(0);
+    }
+  };
+
+  const handlePrevCalMonth = () => {
+    if (calMonth === 0) {
+      setCalMonth(11);
+      setCalYear((y) => y - 1);
+    } else {
+      setCalMonth((m) => m - 1);
+    }
+  };
+
+  const handleNextCalMonth = () => {
+    if (calMonth === 11) {
+      setCalMonth(0);
+      setCalYear((y) => y + 1);
+    } else {
+      setCalMonth((m) => m + 1);
+    }
+  };
+
+  const handleDaySelect = (dayNumber: number) => {
+    const yStr = calYear.toString();
+    const mStr = String(calMonth + 1).padStart(2, '0');
+    const dStr = String(dayNumber).padStart(2, '0');
+    const formattedDate = `${yStr}-${mStr}-${dStr}`;
+
+    if (activeDateTarget === 'start') {
+      setTempStartDate(formattedDate);
+      // Auto move focus to End date if end date is before new start date
+      if (formattedDate > tempEndDate) {
+        setTempEndDate(formattedDate);
+      }
+      setActiveDateTarget('end');
+    } else {
+      if (formattedDate < tempStartDate) {
+        setTempStartDate(formattedDate);
+      } else {
+        setTempEndDate(formattedDate);
+      }
     }
   };
 
@@ -159,6 +233,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     onClearCategories();
     onChangeSearchQuery('');
   };
+
+  // Calendar geometry calculations
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const firstDayOfWeek = new Date(calYear, calMonth, 1).getDay(); // 0 = Sunday
 
   return (
     <View style={styles.container}>
@@ -251,7 +329,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       {/* Active Custom Date Range Indicator Banner */}
       {selectedPeriod === 'custom' && startDate && endDate && (
         <TouchableOpacity
-          onPress={() => setShowDateRangeModal(true)}
+          onPress={() => {
+            const cur = new Date(startDate);
+            if (!isNaN(cur.getTime())) {
+              setCalYear(cur.getFullYear());
+              setCalMonth(cur.getMonth());
+            }
+            setShowDateRangeModal(true);
+          }}
           style={[
             styles.customRangeBanner,
             {
@@ -401,12 +486,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </View>
       )}
 
-      {/* Date Range Modal */}
+      {/* Integrated Single-Modal Custom Date Range Picker */}
       <NeoModal
         visible={showDateRangeModal}
         onClose={() => setShowDateRangeModal(false)}
         title={language === 'id' ? 'RENTANG TANGGAL KUSTOM' : 'CUSTOM DATE RANGE'}
-        subtitle={language === 'id' ? 'Pilih batas awal & akhir tanggal transaksi' : 'Select start and end dates'}
+        subtitle={language === 'id' ? 'Pilih tanggal awal dan akhir transaksi' : 'Select start and end dates'}
       >
         <View style={styles.modalContent}>
           {/* Quick Presets */}
@@ -418,13 +503,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               onPress={() => handlePresetDateRange('7days')}
               style={[styles.presetChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
             >
-              <Text style={[styles.presetChipText, { color: theme.colors.text }]}>7 Hari</Text>
+              <Text style={[styles.presetChipText, { color: theme.colors.text }]}>⚡ 7 Hari</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => handlePresetDateRange('30days')}
               style={[styles.presetChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
             >
-              <Text style={[styles.presetChipText, { color: theme.colors.text }]}>30 Hari</Text>
+              <Text style={[styles.presetChipText, { color: theme.colors.text }]}>⚡ 30 Hari</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => handlePresetDateRange('thisMonth')}
@@ -452,48 +537,166 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             </TouchableOpacity>
           </ScrollView>
 
-          {/* Date Pickers Row (Start & End) */}
+          {/* Start Date vs End Date Target Selector Tabs */}
           <View style={styles.rangeBoxesRow}>
-            {/* Start Date Box */}
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.rangeBoxLabel, { color: theme.colors.textMuted }]}>
-                {language === 'id' ? 'DARI TANGGAL:' : 'START DATE:'}
+            {/* Start Date Target Tab */}
+            <TouchableOpacity
+              onPress={() => setActiveDateTarget('start')}
+              style={[
+                styles.rangeDateTab,
+                {
+                  backgroundColor: activeDateTarget === 'start' ? theme.colors.primary : theme.colors.surface,
+                  borderColor: theme.colors.border,
+                  borderWidth: activeDateTarget === 'start' ? 2 : 1.5,
+                },
+              ]}
+            >
+              <Text style={[styles.rangeBoxLabel, { color: activeDateTarget === 'start' ? '#121212' : theme.colors.textMuted }]}>
+                {language === 'id' ? '1. DARI TANGGAL' : '1. START DATE'}
               </Text>
-              <TouchableOpacity
-                onPress={() => setDatePickerMode('start')}
-                style={[
-                  styles.rangeDateBtn,
-                  { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                ]}
-              >
-                <Ionicons name="calendar-outline" size={16} color={theme.colors.text} />
-                <Text style={[styles.rangeDateText, { color: theme.colors.text }]} numberOfLines={1}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                <Ionicons
+                  name="calendar"
+                  size={14}
+                  color={activeDateTarget === 'start' ? '#121212' : theme.colors.text}
+                  style={{ marginRight: 4 }}
+                />
+                <Text style={[styles.rangeDateText, { color: activeDateTarget === 'start' ? '#121212' : theme.colors.text }]} numberOfLines={1}>
                   {tempStartDate}
                 </Text>
-              </TouchableOpacity>
-            </View>
+              </View>
+            </TouchableOpacity>
 
             <View style={styles.rangeArrow}>
               <Ionicons name="arrow-forward" size={16} color={theme.colors.textMuted} />
             </View>
 
-            {/* End Date Box */}
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.rangeBoxLabel, { color: theme.colors.textMuted }]}>
-                {language === 'id' ? 'SAMPAI TANGGAL:' : 'END DATE:'}
+            {/* End Date Target Tab */}
+            <TouchableOpacity
+              onPress={() => setActiveDateTarget('end')}
+              style={[
+                styles.rangeDateTab,
+                {
+                  backgroundColor: activeDateTarget === 'end' ? theme.colors.primary : theme.colors.surface,
+                  borderColor: theme.colors.border,
+                  borderWidth: activeDateTarget === 'end' ? 2 : 1.5,
+                },
+              ]}
+            >
+              <Text style={[styles.rangeBoxLabel, { color: activeDateTarget === 'end' ? '#121212' : theme.colors.textMuted }]}>
+                {language === 'id' ? '2. SAMPAI TANGGAL' : '2. END DATE'}
               </Text>
-              <TouchableOpacity
-                onPress={() => setDatePickerMode('end')}
-                style={[
-                  styles.rangeDateBtn,
-                  { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                ]}
-              >
-                <Ionicons name="calendar-outline" size={16} color={theme.colors.text} />
-                <Text style={[styles.rangeDateText, { color: theme.colors.text }]} numberOfLines={1}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                <Ionicons
+                  name="calendar"
+                  size={14}
+                  color={activeDateTarget === 'end' ? '#121212' : theme.colors.text}
+                  style={{ marginRight: 4 }}
+                />
+                <Text style={[styles.rangeDateText, { color: activeDateTarget === 'end' ? '#121212' : theme.colors.text }]} numberOfLines={1}>
                   {tempEndDate}
                 </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Embedded Calendar Grid */}
+          <View
+            style={[
+              styles.calendarContainer,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            {/* Month & Year Navigator */}
+            <View style={styles.calNavHeader}>
+              <TouchableOpacity onPress={handlePrevCalMonth} style={styles.calNavBtn}>
+                <Ionicons name="chevron-back" size={18} color={theme.colors.text} />
               </TouchableOpacity>
+              <Text style={[styles.calNavTitle, { color: theme.colors.text }]}>
+                {monthNames[calMonth]} {calYear}
+              </Text>
+              <TouchableOpacity onPress={handleNextCalMonth} style={styles.calNavBtn}>
+                <Ionicons name="chevron-forward" size={18} color={theme.colors.text} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Day Names Row */}
+            <View style={styles.dayNamesRow}>
+              {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((d, i) => (
+                <Text
+                  key={d}
+                  style={[
+                    styles.dayNameText,
+                    { color: i === 0 ? theme.colors.expense : theme.colors.textMuted },
+                  ]}
+                >
+                  {d}
+                </Text>
+              ))}
+            </View>
+
+            {/* Days Grid */}
+            <View style={styles.calendarGrid}>
+              {Array.from({ length: firstDayOfWeek }).map((_, idx) => (
+                <View key={`empty_${idx}`} style={styles.dayCell} />
+              ))}
+              {Array.from({ length: daysInMonth }).map((_, idx) => {
+                const dayNum = idx + 1;
+                const mStr = String(calMonth + 1).padStart(2, '0');
+                const dStr = String(dayNum).padStart(2, '0');
+                const cellDate = `${calYear}-${mStr}-${dStr}`;
+
+                const isStart = cellDate === tempStartDate;
+                const isEnd = cellDate === tempEndDate;
+                const isInRange = cellDate > tempStartDate && cellDate < tempEndDate;
+
+                return (
+                  <TouchableOpacity
+                    key={`day_${dayNum}`}
+                    onPress={() => handleDaySelect(dayNum)}
+                    style={[
+                      styles.dayCell,
+                      isStart && [
+                        styles.selectedDayCell,
+                        {
+                          backgroundColor: theme.colors.primary,
+                          borderColor: theme.colors.border,
+                          borderWidth: 1.5,
+                        },
+                      ],
+                      isEnd && [
+                        styles.selectedDayCell,
+                        {
+                          backgroundColor: theme.colors.primary,
+                          borderColor: theme.colors.border,
+                          borderWidth: 1.5,
+                        },
+                      ],
+                      isInRange && [
+                        styles.inRangeDayCell,
+                        {
+                          backgroundColor: theme.isDark ? '#2A2A1A' : '#FFF9C4',
+                        },
+                      ],
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.dayText,
+                        {
+                          color: (isStart || isEnd) ? '#121212' : theme.colors.text,
+                          fontWeight: (isStart || isEnd) ? '900' : isInRange ? '800' : '600',
+                        },
+                      ]}
+                    >
+                      {dayNum}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
 
@@ -502,27 +705,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             title={language === 'id' ? 'TERAPKAN RENTANG TANGGAL' : 'APPLY DATE RANGE'}
             variant="primary"
             onPress={handleApplyCustomDateRange}
-            style={{ marginTop: 16 }}
+            style={{ marginTop: 14 }}
           />
         </View>
       </NeoModal>
-
-      {/* Date Picker Component for Selecting Start or End Date */}
-      {datePickerMode && (
-        <NeoDatePicker
-          visible={!!datePickerMode}
-          onClose={() => setDatePickerMode(null)}
-          selectedDate={datePickerMode === 'start' ? tempStartDate : tempEndDate}
-          onSelectDate={(pickedDate) => {
-            if (datePickerMode === 'start') {
-              setTempStartDate(pickedDate);
-            } else {
-              setTempEndDate(pickedDate);
-            }
-            setDatePickerMode(null);
-          }}
-        />
-      )}
 
       {/* Category Multi-Select Modal */}
       <NeoModal
@@ -824,7 +1010,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalContent: {
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   presetTitle: {
     fontSize: 10,
@@ -834,7 +1020,7 @@ const styles = StyleSheet.create({
   },
   presetScroll: {
     flexDirection: 'row',
-    marginBottom: 14,
+    marginBottom: 10,
   },
   presetChip: {
     paddingHorizontal: 10,
@@ -852,28 +1038,79 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 6,
+    marginBottom: 10,
+  },
+  rangeDateTab: {
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
   rangeBoxLabel: {
     fontSize: 9,
     fontWeight: '900',
     letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  rangeDateBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1.5,
   },
   rangeDateText: {
     fontSize: 12,
     fontWeight: '800',
   },
   rangeArrow: {
-    paddingTop: 16,
+    paddingTop: 8,
+  },
+  calendarContainer: {
+    borderRadius: 8,
+    borderWidth: 1.5,
+    padding: 8,
+  },
+  calNavHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  calNavBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  calNavTitle: {
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  dayNamesRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 6,
+  },
+  dayNameText: {
+    width: 32,
+    textAlign: 'center',
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  calendarGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  dayCell: {
+    width: '14.28%',
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 1,
+    borderRadius: 6,
+  },
+  selectedDayCell: {
+    borderRadius: 6,
+  },
+  inRangeDayCell: {
+    borderRadius: 2,
+  },
+  dayText: {
+    fontSize: 11,
   },
   modalScroll: {
     maxHeight: 320,
