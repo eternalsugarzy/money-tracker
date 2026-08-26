@@ -62,9 +62,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
   const TYPES: { key: TransactionType | 'all'; label: string; icon: string; color: string }[] = [
     { key: 'all', label: t.all, icon: 'apps', color: theme.colors.cardSecondary },
-    { key: 'income', label: t.income, icon: 'arrow-down', color: theme.colors.income },
-    { key: 'expense', label: t.expense, icon: 'arrow-up', color: theme.colors.expense },
-    { key: 'transfer', label: t.transfer, icon: 'swap-horizontal', color: theme.colors.transfer },
+    { key: 'income', label: language === 'id' ? 'Masuk' : 'Income', icon: 'arrow-down', color: theme.colors.income },
+    { key: 'expense', label: language === 'id' ? 'Keluar' : 'Expense', icon: 'arrow-up', color: theme.colors.expense },
+    { key: 'transfer', label: 'Transfer', icon: 'swap-horizontal', color: theme.colors.transfer },
   ];
 
   const selectedAccountObj = accounts.find((a) => a.id === selectedAccountId);
@@ -180,7 +180,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           {/* Transaction Type Row */}
           <View style={styles.filterSection}>
             <Text style={[styles.filterMiniTitle, { color: theme.colors.textMuted }]}>
-              TIPE TRANSAKSI:
+              {language === 'id' ? 'TIPE TRANSAKSI:' : 'TRANSACTION TYPE:'}
             </Text>
             <View style={styles.typeButtonsRow}>
               {TYPES.map((t) => {
@@ -200,9 +200,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   >
                     <Ionicons
                       name={t.icon as any}
-                      size={12}
+                      size={11}
                       color={isSelected ? '#121212' : theme.colors.text}
-                      style={{ marginRight: 4 }}
+                      style={{ marginRight: 3 }}
                     />
                     <Text
                       style={[
@@ -235,15 +235,16 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 },
               ]}
             >
-              <Ionicons name="wallet-outline" size={14} color={theme.colors.text} />
+              <Ionicons name="wallet-outline" size={13} color={theme.colors.text} />
               <Text
                 style={[
                   styles.selectTriggerText,
                   { color: theme.colors.text },
                 ]}
                 numberOfLines={1}
+                ellipsizeMode="tail"
               >
-                {selectedAccountObj ? selectedAccountObj.name : 'Semua Dompet'}
+                {selectedAccountObj ? selectedAccountObj.name : (language === 'id' ? 'Semua Dompet' : 'All Wallets')}
               </Text>
               <Ionicons name="chevron-down" size={12} color={theme.colors.text} />
             </TouchableOpacity>
@@ -259,17 +260,18 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 },
               ]}
             >
-              <Ionicons name="grid-outline" size={14} color={theme.colors.text} />
+              <Ionicons name="grid-outline" size={13} color={theme.colors.text} />
               <Text
                 style={[
                   styles.selectTriggerText,
                   { color: theme.colors.text },
                 ]}
                 numberOfLines={1}
+                ellipsizeMode="tail"
               >
                 {selectedCategoryIds.length > 0
-                  ? `${selectedCategoryIds.length} Kategori`
-                  : 'Semua Kategori'}
+                  ? (language === 'id' ? `${selectedCategoryIds.length} Kategori` : `${selectedCategoryIds.length} Categories`)
+                  : (language === 'id' ? 'Semua Kategori' : 'All Categories')}
               </Text>
               <Ionicons name="chevron-down" size={12} color={theme.colors.text} />
             </TouchableOpacity>

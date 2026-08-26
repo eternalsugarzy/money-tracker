@@ -176,8 +176,14 @@ export const TransactionsScreen: React.FC = () => {
       <NeoCard style={styles.summaryCard}>
         <View style={styles.summaryRow}>
           <View style={styles.summaryCol}>
-            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>{t.income}</Text>
-            <Text style={[styles.summaryAmount, { color: theme.colors.income }]}>
+            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]} numberOfLines={1}>
+              {t.income}
+            </Text>
+            <Text
+              style={[styles.summaryAmount, { color: theme.colors.income }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
               +{formatCurrency(grandSummary.income)}
             </Text>
           </View>
@@ -185,8 +191,14 @@ export const TransactionsScreen: React.FC = () => {
           <View style={[styles.summaryDivider, { backgroundColor: theme.colors.border }]} />
 
           <View style={styles.summaryCol}>
-            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>{t.expense}</Text>
-            <Text style={[styles.summaryAmount, { color: theme.colors.expense }]}>
+            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]} numberOfLines={1}>
+              {t.expense}
+            </Text>
+            <Text
+              style={[styles.summaryAmount, { color: theme.colors.expense }]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+            >
               -{formatCurrency(grandSummary.expense)}
             </Text>
           </View>
@@ -194,12 +206,16 @@ export const TransactionsScreen: React.FC = () => {
           <View style={[styles.summaryDivider, { backgroundColor: theme.colors.border }]} />
 
           <View style={styles.summaryCol}>
-            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]}>{t.netDiff}</Text>
+            <Text style={[styles.summaryLabel, { color: theme.colors.textMuted }]} numberOfLines={1}>
+              {t.netDiff}
+            </Text>
             <Text
               style={[
                 styles.summaryAmount,
                 { color: grandSummary.net >= 0 ? theme.colors.income : theme.colors.expense },
               ]}
+              numberOfLines={1}
+              adjustsFontSizeToFit
             >
               {formatCurrency(grandSummary.net, { showSign: true })}
             </Text>
