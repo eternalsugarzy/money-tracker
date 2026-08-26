@@ -144,6 +144,20 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     setShowDateRangeModal(false);
   };
 
+  const handleResetDateRange = () => {
+    onSelectPeriod('month');
+    const firstDayThisMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
+    const todayStr = new Date().toISOString().slice(0, 10);
+    setTempStartDate(firstDayThisMonth);
+    setTempEndDate(todayStr);
+    setCalYear(new Date().getFullYear());
+    setCalMonth(new Date().getMonth());
+    if (onSelectDateRange) {
+      onSelectDateRange(firstDayThisMonth, todayStr);
+    }
+    setShowDateRangeModal(false);
+  };
+
   const handlePresetDateRange = (preset: '7days' | '30days' | 'thisMonth' | 'lastMonth' | 'thisYear') => {
     const today = new Date();
     const todayStr = today.toISOString().slice(0, 10);
@@ -328,15 +342,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
       {/* Active Custom Date Range Indicator Banner */}
       {selectedPeriod === 'custom' && startDate && endDate && (
-        <TouchableOpacity
-          onPress={() => {
-            const cur = new Date(startDate);
-            if (!isNaN(cur.getTime())) {
-              setCalYear(cur.getFullYear());
-              setCalMonth(cur.getMonth());
-            }
-            setShowDateRangeModal(true);
-          }}
+        <View
           style={[
             styles.customRangeBanner,
             {
@@ -345,16 +351,40 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             },
           ]}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+          <TouchableOpacity
+            onPress={() => {
+              const cur = new Date(startDate);
+              if (!isNaN(cur.getTime())) {
+                setCalYear(cur.getFullYear());
+                setCalMonth(cur.getMonth());
+              }
+              setShowDateRangeModal(true);
+            }}
+            style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
+          >
             <Ionicons name="calendar" size={14} color={theme.colors.primary} style={{ marginRight: 6 }} />
             <Text style={[styles.customRangeText, { color: theme.colors.text }]} numberOfLines={1}>
               {language === 'id' ? 'Rentang' : 'Range'}: {startDate} s/d {endDate}
             </Text>
-          </View>
-          <Text style={[styles.customRangeEdit, { color: theme.colors.primary }]}>
-            {language === 'id' ? 'Ubah >' : 'Edit >'}
-          </Text>
-        </TouchableOpacity>
+            <Text style={[styles.customRangeEdit, { color: theme.colors.primary }]}>
+              {language === 'id' ? ' (Ubah)' : ' (Edit)'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Quick Reset Button back to Default (Month) */}
+          <TouchableOpacity
+            onPress={handleResetDateRange}
+            style={[
+              styles.resetBannerBtn,
+              { backgroundColor: theme.colors.expense, borderColor: theme.colors.border },
+            ]}
+          >
+            <Ionicons name="close-circle" size={13} color="#FFFFFF" style={{ marginRight: 3 }} />
+            <Text style={styles.resetBannerBtnText}>
+              {language === 'id' ? 'Reset' : 'Reset'}
+            </Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       {/* Extra Filters Drawer / Bar (Collapsible or Shown when toggled/active) */}
@@ -700,13 +730,23 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             </View>
           </View>
 
-          {/* Apply Button */}
-          <NeoButton
-            title={language === 'id' ? 'TERAPKAN RENTANG TANGGAL' : 'APPLY DATE RANGE'}
-            variant="primary"
-            onPress={handleApplyCustomDateRange}
-            style={{ marginTop: 14 }}
-          />
+          {/* Action Buttons: Reset & Apply */}
+          <View style={styles.dateModalActionRow}>
+            <NeoButton
+              title={language === 'id' ? 'RESET KE BULAN INI' : 'RESET TO THIS MONTH'}
+              variant="outline"
+              size="sm"
+              onPress={handleResetDateRange}
+              style={{ flex: 1, marginRight: 8 }}
+            />
+            <NeoButton
+              title={language === 'id' ? 'TERAPKAN' : 'APPLY'}
+              variant="primary"
+              size="sm"
+              onPress={handleApplyCustomDateRange}
+              style={{ flex: 1 }}
+            />
+          </View>
         </View>
       </NeoModal>
 
@@ -1150,5 +1190,23 @@ const styles = StyleSheet.create({
   },
   accountModalText: {
     fontSize: 13,
+  },
+  resetBannerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    marginLeft: 6,
+  },
+  resetBannerBtnText: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  dateModalActionRow: {
+    flexDirection: 'row',
+    marginTop: 14,
   },
 });
