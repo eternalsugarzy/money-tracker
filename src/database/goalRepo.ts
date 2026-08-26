@@ -94,6 +94,20 @@ export async function deleteGoal(id: string): Promise<void> {
 
 export async function seedDefaultGoalsIfEmpty(): Promise<void> {
   const db = await getDatabase();
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+  `);
+
+  const alreadySeeded = await db.getFirstAsync<{ value: string }>(
+    `SELECT value FROM app_settings WHERE key = 'seeded_goals_v1'`
+  );
+  if (alreadySeeded) {
+    return; // Already initialized in the past; respect user's deletions!
+  }
+
   const countRes = await db.getFirstAsync<{ count: number }>(
     `SELECT COUNT(*) as count FROM savings_goals`
   );
@@ -108,10 +122,14 @@ export async function seedDefaultGoalsIfEmpty(): Promise<void> {
 
     for (const d of defaults) {
       await db.runAsync(
-        `INSERT INTO savings_goals (id, title, target_amount, current_amount, emoji, target_date, created_at, updated_at)
+        `INSERT OR IGNORE INTO savings_goals (id, title, target_amount, current_amount, emoji, target_date, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, NULL, ?, ?)`,
         [d.id, d.title, d.target_amount, d.current_amount, d.emoji, now, now]
       );
     }
   }
+
+  await db.runAsync(
+    `INSERT OR REPLACE INTO app_settings (key, value) VALUES ('seeded_goals_v1', 'true')`
+  );
 }

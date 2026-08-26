@@ -59,7 +59,6 @@ export const SavingsGoalsScreen: React.FC = () => {
   const loadGoalsData = useCallback(async () => {
     try {
       setLoading(true);
-      await seedDefaultGoalsIfEmpty();
       const rows = await getAllGoals();
       setGoals(rows);
     } catch (err) {
@@ -274,88 +273,108 @@ export const SavingsGoalsScreen: React.FC = () => {
           {language === 'id' ? 'DAFTAR TARGET TABUNGAN' : 'SAVINGS GOALS LIST'} ({goals.length})
         </Text>
 
-        {goals.map((item) => {
-          const pct = item.target_amount > 0 ? (item.current_amount / item.target_amount) * 100 : 0;
-          const isDone = item.current_amount >= item.target_amount;
+        {goals.length === 0 ? (
+          <NeoCard style={styles.emptyCard}>
+            <Ionicons name="trophy-outline" size={48} color={theme.colors.textMuted} />
+            <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
+              {language === 'id' ? 'Belum Ada Target Celengan' : 'No Savings Goals Yet'}
+            </Text>
+            <Text style={[styles.emptySub, { color: theme.colors.textMuted }]}>
+              {language === 'id'
+                ? 'Semua target celengan telah dihapus. Tekan tombol di bawah untuk mulai membuat target impian baru!'
+                : 'All savings goals have been deleted. Tap below to create your new dream goal!'}
+            </Text>
+            <NeoButton
+              title={language === 'id' ? '+ BUAT TARGET SEKARANG' : '+ CREATE GOAL NOW'}
+              variant="primary"
+              onPress={() => setShowAddModal(true)}
+              style={{ marginTop: 16, width: '100%' }}
+            />
+          </NeoCard>
+        ) : (
+          goals.map((item) => {
+            const pct = item.target_amount > 0 ? (item.current_amount / item.target_amount) * 100 : 0;
+            const isDone = item.current_amount >= item.target_amount;
 
-          return (
-            <NeoCard key={item.id} style={styles.goalCard}>
-              <View style={styles.goalHeader}>
-                <View style={styles.goalTitleRow}>
-                  <Text style={styles.goalEmoji}>{item.emoji}</Text>
-                  <View style={{ marginLeft: 8, flex: 1 }}>
-                    <Text style={[styles.goalTitle, { color: theme.colors.text }]} numberOfLines={1}>
-                      {item.title}
-                    </Text>
-                    <Text style={[styles.goalTarget, { color: theme.colors.textMuted }]}>
-                      Target: {formatCurrency(item.target_amount)}
-                    </Text>
+            return (
+              <NeoCard key={item.id} style={styles.goalCard}>
+                <View style={styles.goalHeader}>
+                  <View style={styles.goalTitleRow}>
+                    <Text style={styles.goalEmoji}>{item.emoji}</Text>
+                    <View style={{ marginLeft: 8, flex: 1 }}>
+                      <Text style={[styles.goalTitle, { color: theme.colors.text }]} numberOfLines={1}>
+                        {item.title}
+                      </Text>
+                      <Text style={[styles.goalTarget, { color: theme.colors.textMuted }]}>
+                        Target: {formatCurrency(item.target_amount)}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Status and Action Buttons */}
+                  <View style={styles.actionRow}>
+                    {isDone && (
+                      <View
+                        style={[
+                          styles.doneBadge,
+                          { backgroundColor: theme.colors.income, borderColor: theme.colors.border },
+                        ]}
+                      >
+                        <Text style={styles.doneBadgeText}>{language === 'id' ? 'TERCAPAI' : 'ACHIEVED'}</Text>
+                      </View>
+                    )}
+
+                    {/* Edit Button */}
+                    <TouchableOpacity
+                      onPress={() => handleOpenEdit(item)}
+                      style={[
+                        styles.actionIconBtn,
+                        { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                      ]}
+                    >
+                      <Ionicons name="pencil" size={14} color={theme.colors.text} />
+                    </TouchableOpacity>
+
+                    {/* Delete Button */}
+                    <TouchableOpacity
+                      onPress={() => handleDeleteGoal(item)}
+                      style={[
+                        styles.actionIconBtn,
+                        { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                      ]}
+                    >
+                      <Ionicons name="trash-outline" size={14} color={theme.colors.danger} />
+                    </TouchableOpacity>
                   </View>
                 </View>
 
-                {/* Status and Action Buttons */}
-                <View style={styles.actionRow}>
-                  {isDone && (
-                    <View
+                <View style={{ marginVertical: 8 }}>
+                  <NeoProgressBar percentage={pct} height={12} />
+                </View>
+
+                <View style={styles.goalBottomRow}>
+                  <Text style={[styles.goalProgressText, { color: theme.colors.textMuted }]}>
+                    {language === 'id' ? 'Terkumpul' : 'Saved'}: {formatCurrency(item.current_amount)} ({formatPercentage(pct)})
+                  </Text>
+                  {!isDone && (
+                    <TouchableOpacity
+                      onPress={() => setSavingToGoal(item)}
                       style={[
-                        styles.doneBadge,
-                        { backgroundColor: theme.colors.income, borderColor: theme.colors.border },
+                        styles.addMoneyBtn,
+                        { backgroundColor: theme.colors.primary, borderColor: theme.colors.border },
                       ]}
                     >
-                      <Text style={styles.doneBadgeText}>{language === 'id' ? 'TERCAPAI' : 'ACHIEVED'}</Text>
-                    </View>
+                      <Ionicons name="wallet-outline" size={13} color="#121212" />
+                      <Text style={styles.addMoneyBtnText}>
+                        + {language === 'id' ? 'ISI TABUNGAN' : 'ADD SAVINGS'}
+                      </Text>
+                    </TouchableOpacity>
                   )}
-
-                  {/* Edit Button */}
-                  <TouchableOpacity
-                    onPress={() => handleOpenEdit(item)}
-                    style={[
-                      styles.actionIconBtn,
-                      { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                    ]}
-                  >
-                    <Ionicons name="pencil" size={14} color={theme.colors.text} />
-                  </TouchableOpacity>
-
-                  {/* Delete Button */}
-                  <TouchableOpacity
-                    onPress={() => handleDeleteGoal(item)}
-                    style={[
-                      styles.actionIconBtn,
-                      { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
-                    ]}
-                  >
-                    <Ionicons name="trash-outline" size={14} color={theme.colors.danger} />
-                  </TouchableOpacity>
                 </View>
-              </View>
-
-              <View style={{ marginVertical: 8 }}>
-                <NeoProgressBar percentage={pct} height={12} />
-              </View>
-
-              <View style={styles.goalBottomRow}>
-                <Text style={[styles.goalProgressText, { color: theme.colors.textMuted }]}>
-                  {language === 'id' ? 'Terkumpul' : 'Saved'}: {formatCurrency(item.current_amount)} ({formatPercentage(pct)})
-                </Text>
-                {!isDone && (
-                  <TouchableOpacity
-                    onPress={() => setSavingToGoal(item)}
-                    style={[
-                      styles.addMoneyBtn,
-                      { backgroundColor: theme.colors.primary, borderColor: theme.colors.border },
-                    ]}
-                  >
-                    <Ionicons name="wallet-outline" size={13} color="#121212" />
-                    <Text style={styles.addMoneyBtnText}>
-                      + {language === 'id' ? 'ISI TABUNGAN' : 'ADD SAVINGS'}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </NeoCard>
-          );
-        })}
+              </NeoCard>
+            );
+          })
+        )}
 
         <View style={{ height: 60 }} />
       </ScrollView>
@@ -649,5 +668,23 @@ const styles = StyleSheet.create({
   },
   emojiText: {
     fontSize: 18,
+  },
+  emptyCard: {
+    padding: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    marginTop: 12,
+  },
+  emptySub: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 6,
+    lineHeight: 18,
   },
 });
