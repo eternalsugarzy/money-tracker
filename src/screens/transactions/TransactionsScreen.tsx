@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
@@ -94,66 +94,61 @@ export const TransactionsScreen: React.FC = () => {
     );
   }, [fetchTransactionsWith, period, startDate, endDate, typeFilter, selectedAccountId, selectedCategoryIds, searchQuery]);
 
-  // Sync immediately on focus when incoming navigation has a fresh timestamp (_ts)
-  // and reset filters to default ('week' / Minggu Ini) when leaving Transactions tab
-  useFocusEffect(
-    useCallback(() => {
-      const paramTs = route.params?._ts;
-      if (paramTs && paramTs !== lastProcessedTsRef.current) {
-        lastProcessedTsRef.current = paramTs;
+  // 1. Handle incoming parameters from pie chart clicks or other screens
+  useEffect(() => {
+    const paramTs = route.params?._ts;
+    if (paramTs && paramTs !== lastProcessedTsRef.current) {
+      lastProcessedTsRef.current = paramTs;
 
-        const newCatIds = route.params?.categoryId ? [route.params.categoryId] : [];
-        const newType = route.params?.type || 'all';
-        const newPeriod = route.params?.period || 'week';
-        const newStartDate = route.params?.startDate;
-        const newEndDate = route.params?.endDate;
+      const newCatIds = route.params?.categoryId ? [route.params.categoryId] : [];
+      const newType = route.params?.type || 'all';
+      const newPeriod = route.params?.period || 'week';
+      const newStartDate = route.params?.startDate;
+      const newEndDate = route.params?.endDate;
 
-        setSelectedCategoryIds(newCatIds);
-        setTypeFilter(newType);
-        setPeriod(newPeriod);
-        setStartDate(newStartDate);
-        setEndDate(newEndDate);
+      setSelectedCategoryIds(newCatIds);
+      setTypeFilter(newType);
+      setPeriod(newPeriod);
+      setStartDate(newStartDate);
+      setEndDate(newEndDate);
+    }
+  }, [route.params]);
 
-        // Fetch IMMEDIATELY with the fresh params without waiting for next state cycle!
-        fetchTransactionsWith(
-          newPeriod,
-          newStartDate,
-          newEndDate,
-          newType,
-          selectedAccountId,
-          newCatIds,
-          searchQuery
-        );
-      } else {
-        fetchTransactions();
-      }
+  // 2. Handle focus events to ensure data is fresh
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchTransactions();
+    });
+    return unsubscribe;
+  }, [navigation, fetchTransactions]);
 
-      // Cleanup when leaving Transactions tab: auto-reset filters and return to default "Minggu Ini" ('week')
-      return () => {
-        try {
-          navigation.setParams({
-            categoryId: undefined,
-            type: undefined,
-            period: undefined,
-            startDate: undefined,
-            endDate: undefined,
-            _ts: undefined,
-          });
-        } catch (e) {}
+  // 3. Handle blur events to reset filters to default ('week') when leaving tab
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      try {
+        navigation.setParams({
+          categoryId: undefined,
+          type: undefined,
+          period: undefined,
+          startDate: undefined,
+          endDate: undefined,
+          _ts: undefined,
+        });
+      } catch (e) {}
 
-        setSelectedCategoryIds([]);
-        setSelectedAccountId(undefined);
-        setTypeFilter('all');
-        setPeriod('week');
-        setStartDate(undefined);
-        setEndDate(undefined);
-        setSearchQuery('');
-        lastProcessedTsRef.current = 0;
-      };
-    }, [route.params, navigation, fetchTransactions, fetchTransactionsWith, selectedAccountId, searchQuery])
-  );
+      setSelectedCategoryIds([]);
+      setSelectedAccountId(undefined);
+      setTypeFilter('all');
+      setPeriod('week');
+      setStartDate(undefined);
+      setEndDate(undefined);
+      setSearchQuery('');
+      lastProcessedTsRef.current = 0;
+    });
+    return unsubscribe;
+  }, [navigation]);
 
-  // Run fetch whenever manual filter state on screen changes
+  // 4. Run fetch whenever manual filter state on screen changes
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
