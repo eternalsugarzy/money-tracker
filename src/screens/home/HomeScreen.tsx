@@ -582,7 +582,16 @@ export const HomeScreen: React.FC = () => {
           </ScrollView>
 
           {/* Donut Chart Component */}
-          <NeoPieChart data={chartData} />
+          <NeoPieChart
+            data={chartData}
+            onCategoryPress={(categoryId) => {
+              navigation.navigate('TransactionsTab', {
+                categoryId,
+                type: chartType,
+                period: chartPeriod,
+              });
+            }}
+          />
         </NeoCard>
 
         {/* 7. Recent Transactions List */}

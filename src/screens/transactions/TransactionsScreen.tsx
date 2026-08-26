@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
@@ -38,15 +38,18 @@ interface DayGroup {
 export const TransactionsScreen: React.FC = () => {
   const { theme } = useTheme();
   const { t, language } = useLanguage();
+  const route = useRoute<any>();
   const navigation = useNavigation<any>();
   const { categories, accounts, refreshData, isLoading, transactions: globalTx } = useAppData();
 
-  const [period, setPeriod] = useState<TimePeriodFilter>('month');
-  const [startDate, setStartDate] = useState<string | undefined>();
-  const [endDate, setEndDate] = useState<string | undefined>();
-  const [typeFilter, setTypeFilter] = useState<TransactionType | 'all'>('all');
+  const [period, setPeriod] = useState<TimePeriodFilter>(route.params?.period || 'month');
+  const [startDate, setStartDate] = useState<string | undefined>(route.params?.startDate);
+  const [endDate, setEndDate] = useState<string | undefined>(route.params?.endDate);
+  const [typeFilter, setTypeFilter] = useState<TransactionType | 'all'>(route.params?.type || 'all');
   const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>();
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>(
+    route.params?.categoryId ? [route.params.categoryId] : []
+  );
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [refreshing, setRefreshing] = useState(false);

@@ -240,7 +240,16 @@ export const AnalyticsScreen: React.FC = () => {
             </View>
           </View>
 
-          <NeoPieChart data={breakdown} />
+          <NeoPieChart
+            data={breakdown}
+            onCategoryPress={(categoryId) => {
+              navigation.navigate('TransactionsTab', {
+                categoryId,
+                type: chartType,
+                period,
+              });
+            }}
+          />
         </NeoCard>
 
         {/* 3. Monthly Net Cashflow Trend Line Chart */}

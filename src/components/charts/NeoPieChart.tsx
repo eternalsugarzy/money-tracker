@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Svg, G, Path, Circle } from 'react-native-svg';
 import { CategorySpendingSummary } from '../../types';
 import { useTheme } from '../../context/ThemeContext';
@@ -9,11 +9,13 @@ import { NeoBadge } from '../common/NeoBadge';
 interface NeoPieChartProps {
   data: CategorySpendingSummary[];
   size?: number;
+  onCategoryPress?: (categoryId: string) => void;
 }
 
 export const NeoPieChart: React.FC<NeoPieChartProps> = ({
   data,
   size = Dimensions.get('window').width - 72,
+  onCategoryPress,
 }) => {
   const { theme } = useTheme();
 
@@ -109,8 +111,10 @@ export const NeoPieChart: React.FC<NeoPieChartProps> = ({
       {/* Legend / Breakdown List */}
       <View style={styles.legendContainer}>
         {data.map((item) => (
-          <View
+          <TouchableOpacity
             key={item.categoryId}
+            onPress={() => onCategoryPress?.(item.categoryId)}
+            activeOpacity={onCategoryPress ? 0.7 : 1}
             style={[
               styles.legendRow,
               {
@@ -152,7 +156,7 @@ export const NeoPieChart: React.FC<NeoPieChartProps> = ({
                 <Text style={styles.pctText}>{formatPercentage(item.percentage)}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </View>
