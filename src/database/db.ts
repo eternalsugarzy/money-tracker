@@ -2,14 +2,21 @@ import { openDatabaseAsync, type SQLiteDatabase } from 'expo-sqlite';
 import { seedInitialData } from './seed';
 
 let dbInstance: SQLiteDatabase | null = null;
+let initPromise: Promise<SQLiteDatabase> | null = null;
 
 export async function getDatabase(): Promise<SQLiteDatabase> {
   if (dbInstance) {
     return dbInstance;
   }
-  dbInstance = await openDatabaseAsync('money_tracker.db');
-  await initDatabase(dbInstance);
-  return dbInstance;
+  if (!initPromise) {
+    initPromise = (async () => {
+      const db = await openDatabaseAsync('money_tracker.db');
+      await initDatabase(db);
+      dbInstance = db;
+      return db;
+    })();
+  }
+  return initPromise;
 }
 
 export async function initDatabase(db: SQLiteDatabase): Promise<void> {
@@ -17,6 +24,11 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
   await db.execAsync(`
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
+
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
 
     CREATE TABLE IF NOT EXISTS accounts (
       id TEXT PRIMARY KEY,
@@ -132,26 +144,6 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
     );
   `);
 
-  // Clean up unused legacy categories, shortcuts, and accounts from previous builds
-  try {
-    await db.execAsync(`
-      DELETE FROM accounts 
-      WHERE id NOT IN ('acc_bri', 'acc_cash', 'acc_seabank');
-
-      DELETE FROM categories 
-      WHERE (id LIKE 'cat_exp_%' OR id LIKE 'cat_inc_%')
-      AND id NOT IN (SELECT DISTINCT category_id FROM transactions WHERE category_id IS NOT NULL)
-      AND id NOT IN (SELECT DISTINCT category_id FROM budgets WHERE category_id IS NOT NULL);
-
-      DELETE FROM shortcuts 
-      WHERE id NOT IN (
-        SELECT MIN(id) FROM shortcuts GROUP BY LOWER(TRIM(title))
-      );
-    `);
-  } catch (e) {
-    // Ignore if table was just created
-  }
-
-  // Seed default categories, accounts, and shortcuts from authentic dataset
+  // Seed default categories, accounts, and shortcuts from authentic dataset (only on initial database creation)
   await seedInitialData(db);
 }

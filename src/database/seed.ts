@@ -3,98 +3,98 @@ import { SEED_ACCOUNTS, SEED_CATEGORIES, SEED_TRANSACTIONS } from './initialMone
 import { seedDefaultGoalsIfEmpty } from './goalRepo';
 
 export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
+  // 1. Check if database has already been seeded in the past
+  const alreadySeeded = await db.getFirstAsync<{ value: string }>(
+    `SELECT value FROM app_settings WHERE key = 'app_seeded_v1'`
+  );
+  if (alreadySeeded) {
+    return; // Already initialized in the past; respect ALL user edits, additions, and custom wallets!
+  }
+
   const now = new Date().toISOString();
 
-  // 1. Remove any unneeded/dummy accounts from previous runs, keeping ONLY authentic Money+ accounts
-  await db.runAsync(`
-    DELETE FROM accounts WHERE id NOT IN ('acc_bri', 'acc_cash', 'acc_seabank');
-  `);
-
-  // 2. Insert or update the 3 authentic accounts: BRI, UANG CASH, Sea Bank
-  for (const acc of SEED_ACCOUNTS) {
-    const existing = await db.getFirstAsync<{ id: string }>(
-      `SELECT id FROM accounts WHERE id = ?`,
-      [acc.id]
-    );
-
-    if (existing) {
+  // 2. Insert initial accounts only if accounts table is empty
+  const countAcc = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM accounts`);
+  if (!countAcc || countAcc.count === 0) {
+    for (const acc of SEED_ACCOUNTS) {
       await db.runAsync(
-        `UPDATE accounts SET name = ?, type = ?, icon = ?, icon_family = ?, color = ?, updated_at = ? WHERE id = ?`,
-        [acc.name, acc.type, acc.icon, acc.icon_family, acc.color, now, acc.id]
-      );
-    } else {
-      await db.runAsync(
-        `INSERT INTO accounts (id, name, type, initial_balance, current_balance, icon, icon_family, color, is_archived, created_at, updated_at)
+        `INSERT OR IGNORE INTO accounts (id, name, type, initial_balance, current_balance, icon, icon_family, color, is_archived, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
         [acc.id, acc.name, acc.type, acc.initial_balance, acc.current_balance, acc.icon, acc.icon_family, acc.color, now, now]
       );
     }
   }
 
-  // 3. Insert Categories from Money+ dataset
-  for (const cat of SEED_CATEGORIES) {
-    await db.runAsync(
-      `INSERT OR IGNORE INTO categories (id, name, type, icon, icon_family, color, is_archived, created_at, updated_at)
-       VALUES (?, ?, ?, ?, 'Ionicons', ?, 0, ?, ?)`,
-      [cat.id, cat.name, cat.type, cat.icon, cat.color, now, now]
-    );
-  }
-
-  // 4. Insert All 722 Historical Transactions from Money+
-  await db.withTransactionAsync(async () => {
-    for (const tx of SEED_TRANSACTIONS) {
+  // 3. Insert Categories from Money+ dataset if categories table is empty
+  const countCat = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM categories`);
+  if (!countCat || countCat.count === 0) {
+    for (const cat of SEED_CATEGORIES) {
       await db.runAsync(
-        `INSERT OR IGNORE INTO transactions (id, type, amount, date, account_id, to_account_id, category_id, note, receipt_images, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, '[]', ?, ?)`,
-        [
-          tx.id,
-          tx.type,
-          tx.amount,
-          tx.date,
-          tx.account_id,
-          tx.to_account_id,
-          tx.category_id,
-          tx.note || '',
-          now,
-          now,
-        ]
+        `INSERT OR IGNORE INTO categories (id, name, type, icon, icon_family, color, is_archived, created_at, updated_at)
+         VALUES (?, ?, ?, ?, 'Ionicons', ?, 0, ?, ?)`,
+        [cat.id, cat.name, cat.type, cat.icon, cat.color, now, now]
       );
     }
-  });
-
-  // 5. Recalculate each account's exact real-world balance from transaction flow
-  for (const acc of SEED_ACCOUNTS) {
-    const incRes = await db.getFirstAsync<{ sum: number | null }>(
-      `SELECT SUM(amount) as sum FROM transactions WHERE type = 'income' AND account_id = ?`,
-      [acc.id]
-    );
-    const expRes = await db.getFirstAsync<{ sum: number | null }>(
-      `SELECT SUM(amount) as sum FROM transactions WHERE type = 'expense' AND account_id = ?`,
-      [acc.id]
-    );
-    const trInRes = await db.getFirstAsync<{ sum: number | null }>(
-      `SELECT SUM(amount) as sum FROM transactions WHERE type = 'transfer' AND to_account_id = ?`,
-      [acc.id]
-    );
-    const trOutRes = await db.getFirstAsync<{ sum: number | null }>(
-      `SELECT SUM(amount) as sum FROM transactions WHERE type = 'transfer' AND account_id = ?`,
-      [acc.id]
-    );
-
-    const totalInc = incRes?.sum || 0;
-    const totalExp = expRes?.sum || 0;
-    const totalTrIn = trInRes?.sum || 0;
-    const totalTrOut = trOutRes?.sum || 0;
-
-    const accurateBalance = acc.initial_balance + totalInc - totalExp + totalTrIn - totalTrOut;
-
-    await db.runAsync(
-      `UPDATE accounts SET current_balance = ?, updated_at = ? WHERE id = ?`,
-      [accurateBalance, now, acc.id]
-    );
   }
 
-  // 6. Authentic Quick-Add Shortcuts
+  // 4. Insert All 722 Historical Transactions from Money+ if transactions table is empty
+  const countTx = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM transactions`);
+  if (!countTx || countTx.count === 0) {
+    await db.withTransactionAsync(async () => {
+      for (const tx of SEED_TRANSACTIONS) {
+        await db.runAsync(
+          `INSERT OR IGNORE INTO transactions (id, type, amount, date, account_id, to_account_id, category_id, note, receipt_images, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, '[]', ?, ?)`,
+          [
+            tx.id,
+            tx.type,
+            tx.amount,
+            tx.date,
+            tx.account_id,
+            tx.to_account_id,
+            tx.category_id,
+            tx.note || '',
+            now,
+            now,
+          ]
+        );
+      }
+    });
+
+    // Calculate initial accurate real-world balance from transaction flow
+    for (const acc of SEED_ACCOUNTS) {
+      const incRes = await db.getFirstAsync<{ sum: number | null }>(
+        `SELECT SUM(amount) as sum FROM transactions WHERE type = 'income' AND account_id = ?`,
+        [acc.id]
+      );
+      const expRes = await db.getFirstAsync<{ sum: number | null }>(
+        `SELECT SUM(amount) as sum FROM transactions WHERE type = 'expense' AND account_id = ?`,
+        [acc.id]
+      );
+      const trInRes = await db.getFirstAsync<{ sum: number | null }>(
+        `SELECT SUM(amount) as sum FROM transactions WHERE type = 'transfer' AND to_account_id = ?`,
+        [acc.id]
+      );
+      const trOutRes = await db.getFirstAsync<{ sum: number | null }>(
+        `SELECT SUM(amount) as sum FROM transactions WHERE type = 'transfer' AND account_id = ?`,
+        [acc.id]
+      );
+
+      const totalInc = incRes?.sum || 0;
+      const totalExp = expRes?.sum || 0;
+      const totalTrIn = trInRes?.sum || 0;
+      const totalTrOut = trOutRes?.sum || 0;
+
+      const accurateBalance = acc.initial_balance + totalInc - totalExp + totalTrIn - totalTrOut;
+
+      await db.runAsync(
+        `UPDATE accounts SET current_balance = ?, updated_at = ? WHERE id = ?`,
+        [accurateBalance, now, acc.id]
+      );
+    }
+  }
+
+  // 5. Authentic Quick-Add Shortcuts
   const defaultShortcuts = [
     { id: 'sc_def_nongkrong', title: 'Nongkrongs', emoji: '☕', amount: 20000, category_id: 'cat_nongkrong', type: 'expense' },
     { id: 'sc_def_makan', title: 'Food (Makanan)', emoji: '🍽️', amount: 25000, category_id: 'cat_makan', type: 'expense' },
@@ -112,6 +112,11 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
     );
   }
 
-  // 7. Default Savings Goals (only on first app install)
+  // 6. Default Savings Goals (only on first app install)
   await seedDefaultGoalsIfEmpty();
+
+  // 7. Mark app as permanently seeded
+  await db.runAsync(
+    `INSERT OR REPLACE INTO app_settings (key, value) VALUES ('app_seeded_v1', 'true')`
+  );
 }
