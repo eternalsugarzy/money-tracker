@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,9 +17,16 @@ import { NeoCard } from '../../components/common/NeoCard';
 import { NeoBadge } from '../../components/common/NeoBadge';
 import { NeoPieChart } from '../../components/charts/NeoPieChart';
 import { TransactionItem } from '../../components/transactions/TransactionItem';
+import { QuickShortcutsModal } from './QuickShortcutsModal';
 import { formatCurrency, formatPercentage } from '../../utils/formatters';
-import { TimePeriodFilter, SummaryData, CategorySpendingSummary, Transaction } from '../../types';
-import { getSummaryForPeriod, getCategorySpendingBreakdown, getRecentTransactions } from '../../database/transactionRepo';
+import { TimePeriodFilter, SummaryData, CategorySpendingSummary, Transaction, QuickShortcut } from '../../types';
+import {
+  getSummaryForPeriod,
+  getCategorySpendingBreakdown,
+  getRecentTransactions,
+  createTransaction,
+} from '../../database/transactionRepo';
+import { getAllShortcuts } from '../../database/shortcutRepo';
 
 export const HomeScreen: React.FC = () => {
   const { theme } = useTheme();
@@ -37,6 +45,7 @@ export const HomeScreen: React.FC = () => {
   const [chartPeriod, setChartPeriod] = useState<TimePeriodFilter>('month');
   const [chartType, setChartType] = useState<'expense' | 'income'>('expense');
   const [showBalance, setShowBalance] = useState<boolean>(true);
+  const [showShortcutsModal, setShowShortcutsModal] = useState<boolean>(false);
 
   const [periodSummary, setPeriodSummary] = useState<SummaryData>({
     totalIncome: 0,
@@ -46,18 +55,21 @@ export const HomeScreen: React.FC = () => {
   });
   const [chartData, setChartData] = useState<CategorySpendingSummary[]>([]);
   const [recentTx, setRecentTx] = useState<Transaction[]>([]);
+  const [shortcuts, setShortcuts] = useState<QuickShortcut[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadHomeData = useCallback(async () => {
     try {
-      const [sum, breakdown, recent] = await Promise.all([
+      const [sum, breakdown, recent, scList] = await Promise.all([
         getSummaryForPeriod(period),
         getCategorySpendingBreakdown(chartPeriod, undefined, undefined, chartType),
         getRecentTransactions(5),
+        getAllShortcuts(),
       ]);
       setPeriodSummary(sum);
       setChartData(breakdown);
       setRecentTx(recent);
+      setShortcuts(scList);
     } catch (err) {
       console.warn('Error loading home data:', err);
     }
@@ -80,8 +92,6 @@ export const HomeScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  const topSpendingCategory = chartData.length > 0 ? chartData[0] : null;
-
   // Financial Health Score Calculation
   const savingsRate =
     periodSummary.totalIncome > 0
@@ -94,7 +104,7 @@ export const HomeScreen: React.FC = () => {
     if (savingsRate >= 30) {
       return {
         label: 'SEHAT FINANSIAL',
-        desc: `Keren! Kamu menabung ${savingsRate}% dari pemasukanmu hari ini/bulan ini.`,
+        desc: `Keren! Kamu menabung ${savingsRate}% dari pemasukanmu.`,
         color: theme.colors.income,
         textColor: '#0A3B0A',
         icon: 'checkmark-circle',
@@ -110,8 +120,8 @@ export const HomeScreen: React.FC = () => {
       };
     }
     return {
-      label: 'WASPADA / OVERSPENDING',
-      desc: 'Pengeluaran mendekati atau melampaui pemasukan. Evaluasi pengeluaranmu.',
+      label: 'WASPADA (DEFISIT)',
+      desc: 'Pengeluaran mendekati atau melebihi pemasukan. Cek budgetmu.',
       color: theme.colors.expense,
       textColor: '#3B0A18',
       icon: 'warning',
@@ -123,16 +133,33 @@ export const HomeScreen: React.FC = () => {
   // Smart Budget Alerts Check (>80% or >100%)
   const overBudgets = budgets.filter((b) => (b.percentage || 0) >= 80);
 
-  // Quick 1-Tap Preset Shortcut Handler
-  const handleQuickAddShortcut = (catNameSearch: string, amount: number) => {
-    const matchedCat = categories.find((c) =>
-      c.name.toLowerCase().includes(catNameSearch.toLowerCase())
-    );
-    navigation.navigate('AddModal', {
-      initialCategoryId: matchedCat?.id,
-      initialAmount: amount,
-      initialType: 'expense',
-    });
+  // True 1-TAP Instant Record Handler
+  const handleInstantRecord = async (sc: QuickShortcut) => {
+    try {
+      const targetAccId = sc.account_id || accounts[0]?.id;
+      if (!targetAccId) {
+        Alert.alert('Akun Belum Ada', 'Silakan buat akun/dompet terlebih dahulu.');
+        return;
+      }
+      await createTransaction({
+        type: sc.type || 'expense',
+        amount: sc.amount,
+        date: new Date().toISOString(),
+        account_id: targetAccId,
+        to_account_id: null,
+        category_id: sc.category_id || categories[0]?.id || null,
+        note: `Catat Cepat: ${sc.title}`,
+        receipt_images: '[]',
+      });
+      await refreshData();
+      await loadHomeData();
+      Alert.alert(
+        '⚡ Transaksi Langsung Tercatat!',
+        `${sc.emoji} ${sc.title} (${formatCurrency(sc.amount)}) berhasil dicatat secara instan.`
+      );
+    } catch (err) {
+      Alert.alert('Error', 'Gagal mencatat transaksi.');
+    }
   };
 
   return (
@@ -249,10 +276,10 @@ export const HomeScreen: React.FC = () => {
           </ScrollView>
         </NeoCard>
 
-        {/* 2. Financial Health Score Widget */}
+        {/* 2. Financial Health Score Widget (Clean No-Overlap Flexbox) */}
         <NeoCard style={styles.healthCard}>
           <View style={styles.healthHeader}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
+            <View style={styles.healthTitleRow}>
               <Ionicons name={healthStatus.icon as any} size={18} color={healthStatus.color} />
               <Text style={[styles.healthTitle, { color: theme.colors.text }]}>
                 SKOR KESEHATAN KEUANGAN
@@ -292,50 +319,66 @@ export const HomeScreen: React.FC = () => {
           </NeoCard>
         )}
 
-        {/* 4. Quick-Add 1-Tap Shortcuts */}
+        {/* 4. Quick-Add 1-Tap Shortcuts with CRUD Manager */}
         <View style={styles.quickAddSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text, marginHorizontal: 16 }]}>
-            ⚡ CATAT CEPAT (1-TAP)
-          </Text>
+          <View style={styles.quickAddHeaderRow}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              ⚡ CATAT CEPAT (1-TAP INSTAN)
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowShortcutsModal(true)}
+              style={[
+                styles.manageShortcutsBtn,
+                { backgroundColor: theme.colors.cardSecondary, borderColor: theme.colors.border },
+              ]}
+            >
+              <Ionicons name="options-outline" size={13} color={theme.colors.text} />
+              <Text style={[styles.manageShortcutsText, { color: theme.colors.text }]}>
+                Kelola ({shortcuts.length})
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.quickAddScroll}
           >
-            <TouchableOpacity
-              onPress={() => handleQuickAddShortcut('kopi', 25000)}
-              style={[styles.quickAddChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-            >
-              <Text style={styles.quickAddEmoji}>☕</Text>
-              <Text style={[styles.quickAddLabel, { color: theme.colors.text }]}>Kopi / Cafe</Text>
-              <Text style={[styles.quickAddNominal, { color: theme.colors.expense }]}>Rp 25rb</Text>
-            </TouchableOpacity>
+            {shortcuts.map((sc) => (
+              <TouchableOpacity
+                key={sc.id}
+                onPress={() => handleInstantRecord(sc)}
+                activeOpacity={0.7}
+                style={[
+                  styles.quickAddChip,
+                  {
+                    backgroundColor: theme.colors.surface,
+                    borderColor: theme.colors.border,
+                  },
+                ]}
+              >
+                <Text style={styles.quickAddEmoji}>{sc.emoji}</Text>
+                <Text style={[styles.quickAddLabel, { color: theme.colors.text }]}>
+                  {sc.title}
+                </Text>
+                <Text style={[styles.quickAddNominal, { color: theme.colors.expense }]}>
+                  {formatCurrency(sc.amount)}
+                </Text>
+              </TouchableOpacity>
+            ))}
 
             <TouchableOpacity
-              onPress={() => handleQuickAddShortcut('makan', 35000)}
-              style={[styles.quickAddChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+              onPress={() => setShowShortcutsModal(true)}
+              style={[
+                styles.quickAddAddBtn,
+                {
+                  backgroundColor: theme.colors.cardSecondary,
+                  borderColor: theme.colors.border,
+                },
+              ]}
             >
-              <Text style={styles.quickAddEmoji}>🍽️</Text>
-              <Text style={[styles.quickAddLabel, { color: theme.colors.text }]}>Makan Siang</Text>
-              <Text style={[styles.quickAddNominal, { color: theme.colors.expense }]}>Rp 35rb</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => handleQuickAddShortcut('transport', 50000)}
-              style={[styles.quickAddChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-            >
-              <Text style={styles.quickAddEmoji}>⛽</Text>
-              <Text style={[styles.quickAddLabel, { color: theme.colors.text }]}>Bensin BBM</Text>
-              <Text style={[styles.quickAddNominal, { color: theme.colors.expense }]}>Rp 50rb</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => handleQuickAddShortcut('belanja', 100000)}
-              style={[styles.quickAddChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
-            >
-              <Text style={styles.quickAddEmoji}>🛒</Text>
-              <Text style={[styles.quickAddLabel, { color: theme.colors.text }]}>Supermarket</Text>
-              <Text style={[styles.quickAddNominal, { color: theme.colors.expense }]}>Rp 100rb</Text>
+              <Ionicons name="add" size={20} color={theme.colors.text} />
+              <Text style={[styles.quickAddAddText, { color: theme.colors.text }]}>Tambah</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -567,6 +610,14 @@ export const HomeScreen: React.FC = () => {
 
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* Quick Shortcuts CRUD Manager Modal */}
+      <QuickShortcutsModal
+        visible={showShortcutsModal}
+        onClose={() => setShowShortcutsModal(false)}
+        shortcuts={shortcuts}
+        onRefresh={loadHomeData}
+      />
     </SafeAreaView>
   );
 };
@@ -683,12 +734,20 @@ const styles = StyleSheet.create({
   healthCard: {
     marginHorizontal: 16,
     marginTop: 10,
-    padding: 12,
+    padding: 14,
   },
   healthHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  healthTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexShrink: 1,
   },
   healthTitle: {
     fontSize: 11,
@@ -708,7 +767,7 @@ const styles = StyleSheet.create({
   healthDesc: {
     fontSize: 11,
     fontWeight: '600',
-    marginTop: 4,
+    marginTop: 6,
     lineHeight: 16,
   },
   budgetWarningCard: {
@@ -729,11 +788,31 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   quickAddSection: {
-    marginTop: 12,
+    marginTop: 14,
+  },
+  quickAddHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginBottom: 6,
+  },
+  manageShortcutsBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1.5,
+  },
+  manageShortcutsText: {
+    fontSize: 10,
+    fontWeight: '800',
   },
   quickAddScroll: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 4,
     gap: 8,
   },
   quickAddChip: {
@@ -746,7 +825,7 @@ const styles = StyleSheet.create({
     minWidth: 88,
   },
   quickAddEmoji: {
-    fontSize: 18,
+    fontSize: 20,
     marginBottom: 2,
   },
   quickAddLabel: {
@@ -756,6 +835,21 @@ const styles = StyleSheet.create({
   quickAddNominal: {
     fontSize: 11,
     fontWeight: '900',
+    marginTop: 2,
+  },
+  quickAddAddBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 70,
+  },
+  quickAddAddText: {
+    fontSize: 10,
+    fontWeight: '800',
     marginTop: 2,
   },
   summaryCard: {

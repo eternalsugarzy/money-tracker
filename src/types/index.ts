@@ -146,3 +146,16 @@ export interface CategorySpendingSummary {
   percentage: number;
   transactionCount: number;
 }
+
+export interface QuickShortcut {
+  id: string;
+  title: string;
+  emoji: string;
+  amount: number;
+  category_id: string | null;
+  account_id: string | null;
+  type: TransactionType;
+  created_at: string;
+  category_name?: string;
+  account_name?: string;
+}

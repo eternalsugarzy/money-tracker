@@ -108,6 +108,17 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
       updated_at TEXT NOT NULL,
       FOREIGN KEY (settled_account_id) REFERENCES accounts(id) ON DELETE SET NULL
     );
+
+    CREATE TABLE IF NOT EXISTS shortcuts (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      emoji TEXT NOT NULL,
+      amount REAL NOT NULL,
+      category_id TEXT,
+      account_id TEXT,
+      type TEXT NOT NULL DEFAULT 'expense',
+      created_at TEXT NOT NULL
+    );
   `);
 
   // Clean up unused legacy categories from previous builds
@@ -124,4 +135,12 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
 
   // Seed default categories and default accounts if empty
   await seedInitialData(db);
+
+  // Seed default shortcuts if empty
+  try {
+    const { seedDefaultShortcutsIfEmpty } = await import('./shortcutRepo');
+    await seedDefaultShortcutsIfEmpty();
+  } catch (e) {
+    // Ignore
+  }
 }

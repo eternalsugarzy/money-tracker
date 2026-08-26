@@ -6,23 +6,31 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
 import { useTheme } from '../../context/ThemeContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
+import { NeoModal } from '../../components/common/NeoModal';
 import { exportTransactionsToCSV, exportFullBackupJSON } from '../../services/exportService';
+import { importDataFromMoneyPlus } from '../../services/moneyPlusImportService';
 
 export const ExportReportScreen: React.FC = () => {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
-  const { transactions, accounts, categories, budgets, debts } = useAppData();
+  const { transactions, accounts, categories, budgets, refreshData } = useAppData();
 
   const [loadingCSV, setLoadingCSV] = useState(false);
   const [loadingJSON, setLoadingJSON] = useState(false);
+  const [loadingImport, setLoadingImport] = useState(false);
+  const [showPasteModal, setShowPasteModal] = useState(false);
+  const [pastedText, setPastedText] = useState('');
 
   const handleExportCSV = async () => {
     try {
@@ -48,6 +56,61 @@ export const ExportReportScreen: React.FC = () => {
     }
   };
 
+  const handlePickAndImportFile = async () => {
+    try {
+      setLoadingImport(true);
+      const res = await DocumentPicker.getDocumentAsync({
+        type: ['text/*', 'application/json', 'text/csv', 'text/comma-separated-values', '*/*'],
+        copyToCacheDirectory: true,
+      });
+
+      if (res.canceled || !res.assets || res.assets.length === 0) {
+        setLoadingImport(false);
+        return;
+      }
+
+      const fileUri = res.assets[0].uri;
+      const fileContent = await FileSystem.readAsStringAsync(fileUri);
+
+      const importResult = await importDataFromMoneyPlus(fileContent);
+
+      if (importResult.success) {
+        await refreshData();
+        Alert.alert('✅ Impor Berhasil!', importResult.message);
+      } else {
+        Alert.alert('Gagal Impor', importResult.message);
+      }
+    } catch (err: any) {
+      Alert.alert('Gagal Membaca File', err?.message || 'Terjadi kesalahan saat membaca file');
+    } finally {
+      setLoadingImport(false);
+    }
+  };
+
+  const handleImportPastedContent = async () => {
+    if (!pastedText.trim()) {
+      Alert.alert('Teks Kosong', 'Harap tempel teks CSV atau JSON dari Money+');
+      return;
+    }
+    try {
+      setLoadingImport(true);
+      const importResult = await importDataFromMoneyPlus(pastedText);
+
+      if (importResult.success) {
+        await refreshData();
+        setShowPasteModal(false);
+        setPastedText('');
+        Alert.alert('✅ Impor Berhasil!', importResult.message);
+      } else {
+        Alert.alert('Gagal Impor', importResult.message);
+      }
+    } catch (err: any) {
+      Alert.alert('Error', err?.message || 'Gagal memproses data.');
+    } finally {
+      setLoadingImport(false);
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       {/* Header */}
@@ -64,7 +127,7 @@ export const ExportReportScreen: React.FC = () => {
         >
           <Ionicons name="arrow-back" size={20} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>LAPORAN & EKSPOR</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>LAPORAN & DATA</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -89,6 +152,46 @@ export const ExportReportScreen: React.FC = () => {
               <Text style={styles.statNumber}>{budgets.length}</Text>
               <Text style={styles.statLabel}>Budget</Text>
             </View>
+          </View>
+        </NeoCard>
+
+        {/* 📥 IMPORT DATA SECTION */}
+        <NeoCard style={styles.actionCard}>
+          <View style={styles.cardHeader}>
+            <View
+              style={[
+                styles.iconBox,
+                { backgroundColor: theme.colors.warning, borderColor: theme.colors.border },
+              ]}
+            >
+              <Ionicons name="file-tray-full" size={24} color="#121212" />
+            </View>
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Text style={[styles.actionTitle, { color: theme.colors.text }]}>
+                Impor Data dari Money+ (CSV / JSON)
+              </Text>
+              <Text style={[styles.actionDesc, { color: theme.colors.textMuted }]}>
+                Pindahkan seluruh data transaksi lamamu dari aplikasi Money+ atau spreadsheet Excel secara otomatis ke SuFiKer+.
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 14 }}>
+            <NeoButton
+              title="PILIH FILE"
+              variant="primary"
+              loading={loadingImport}
+              icon={<Ionicons name="folder-open" size={16} color="#121212" />}
+              onPress={handlePickAndImportFile}
+              style={{ flex: 1 }}
+            />
+            <NeoButton
+              title="PASTE TEKS"
+              variant="outline"
+              icon={<Ionicons name="clipboard-outline" size={16} color={theme.colors.text} />}
+              onPress={() => setShowPasteModal(true)}
+              style={{ flex: 1 }}
+            />
           </View>
         </NeoCard>
 
@@ -154,6 +257,42 @@ export const ExportReportScreen: React.FC = () => {
 
         <View style={{ height: 100 }} />
       </ScrollView>
+
+      {/* Modal Paste CSV/JSON */}
+      <NeoModal
+        visible={showPasteModal}
+        onClose={() => setShowPasteModal(false)}
+        title="PASTE DATA MONEY+"
+      >
+        <View style={{ paddingVertical: 8 }}>
+          <Text style={[styles.pasteHint, { color: theme.colors.textMuted }]}>
+            Tempelkan isi file CSV atau JSON export dari Money+ di bawah ini:
+          </Text>
+          <TextInput
+            multiline
+            numberOfLines={8}
+            placeholder="Date,Type,Category,Amount,Account,Note..."
+            placeholderTextColor={theme.colors.textMuted}
+            value={pastedText}
+            onChangeText={setPastedText}
+            style={[
+              styles.pasteInput,
+              {
+                backgroundColor: theme.colors.inputBg,
+                borderColor: theme.colors.border,
+                color: theme.colors.text,
+              },
+            ]}
+          />
+          <NeoButton
+            title="PROSES IMPOR DATA"
+            variant="primary"
+            loading={loadingImport}
+            onPress={handleImportPastedContent}
+            style={{ marginTop: 12 }}
+          />
+        </View>
+      </NeoModal>
     </SafeAreaView>
   );
 };
@@ -218,7 +357,7 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     padding: 16,
-    marginVertical: 8,
+    marginVertical: 6,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -229,17 +368,30 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: 8,
     borderWidth: 2,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   actionTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '900',
   },
   actionDesc: {
     fontSize: 11,
     fontWeight: '600',
-    marginTop: 4,
-    lineHeight: 16,
+    marginTop: 3,
+    lineHeight: 15,
+  },
+  pasteHint: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  pasteInput: {
+    height: 160,
+    borderWidth: 2,
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 12,
+    textAlignVertical: 'top',
   },
 });
