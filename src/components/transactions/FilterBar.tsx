@@ -14,10 +14,15 @@ import { TimePeriodFilter, TransactionType, Category, Account } from '../../type
 import { NeoModal } from '../common/NeoModal';
 import { NeoButton } from '../common/NeoButton';
 import { NeoBadge } from '../common/NeoBadge';
+import { NeoDatePicker } from '../common/NeoDatePicker';
+import { formatDateLabel } from '../../utils/formatters';
 
 interface FilterBarProps {
   selectedPeriod: TimePeriodFilter;
   onSelectPeriod: (period: TimePeriodFilter) => void;
+  startDate?: string;
+  endDate?: string;
+  onSelectDateRange?: (startDate: string, endDate: string) => void;
   selectedType: TransactionType | 'all';
   onSelectType: (type: TransactionType | 'all') => void;
   selectedAccountId?: string;
@@ -34,6 +39,9 @@ interface FilterBarProps {
 export const FilterBar: React.FC<FilterBarProps> = ({
   selectedPeriod,
   onSelectPeriod,
+  startDate,
+  endDate,
+  onSelectDateRange,
   selectedType,
   onSelectType,
   selectedAccountId,
@@ -48,9 +56,20 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 }) => {
   const { theme } = useTheme();
   const { t, language } = useLanguage();
+
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
+
+  // Custom Date Range Modal State
+  const [showDateRangeModal, setShowDateRangeModal] = useState(false);
+  const [tempStartDate, setTempStartDate] = useState<string>(
+    startDate || new Date(new Date().setDate(1)).toISOString().slice(0, 10)
+  );
+  const [tempEndDate, setTempEndDate] = useState<string>(
+    endDate || new Date().toISOString().slice(0, 10)
+  );
+  const [datePickerMode, setDatePickerMode] = useState<'start' | 'end' | null>(null);
 
   const PERIODS: { key: TimePeriodFilter; label: string }[] = [
     { key: 'day', label: t.day },
@@ -58,6 +77,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     { key: 'month', label: t.month },
     { key: 'year', label: t.year },
     { key: 'all', label: t.all },
+    {
+      key: 'custom',
+      label:
+        selectedPeriod === 'custom' && startDate && endDate
+          ? `📅 ${startDate.slice(5).replace('-', '/')} - ${endDate.slice(5).replace('-', '/')}`
+          : (language === 'id' ? '📅 Rentang Tgl' : '📅 Date Range'),
+    },
   ];
 
   const TYPES: { key: TransactionType | 'all'; label: string; icon: string; color: string }[] = [
@@ -70,6 +96,62 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   const selectedAccountObj = accounts.find((a) => a.id === selectedAccountId);
   const hasActiveExtraFilters =
     selectedType !== 'all' || !!selectedAccountId || selectedCategoryIds.length > 0;
+
+  const handlePeriodPress = (periodKey: TimePeriodFilter) => {
+    if (periodKey === 'custom') {
+      setShowDateRangeModal(true);
+    } else {
+      onSelectPeriod(periodKey);
+    }
+  };
+
+  const handleApplyCustomDateRange = () => {
+    let finalStart = tempStartDate;
+    let finalEnd = tempEndDate;
+    if (finalStart > finalEnd) {
+      // Auto-swap if start is after end
+      const tmp = finalStart;
+      finalStart = finalEnd;
+      finalEnd = tmp;
+    }
+
+    if (onSelectDateRange) {
+      onSelectDateRange(finalStart, finalEnd);
+    } else {
+      onSelectPeriod('custom');
+    }
+    setShowDateRangeModal(false);
+  };
+
+  const handlePresetDateRange = (preset: '7days' | '30days' | 'thisMonth' | 'lastMonth' | 'thisYear') => {
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
+
+    if (preset === '7days') {
+      const past7 = new Date();
+      past7.setDate(now.getDate() - 6);
+      setTempStartDate(past7.toISOString().slice(0, 10));
+      setTempEndDate(todayStr);
+    } else if (preset === '30days') {
+      const past30 = new Date();
+      past30.setDate(now.getDate() - 29);
+      setTempStartDate(past30.toISOString().slice(0, 10));
+      setTempEndDate(todayStr);
+    } else if (preset === 'thisMonth') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      setTempStartDate(firstDay.toISOString().slice(0, 10));
+      setTempEndDate(todayStr);
+    } else if (preset === 'lastMonth') {
+      const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+      setTempStartDate(firstDayLastMonth.toISOString().slice(0, 10));
+      setTempEndDate(lastDayLastMonth.toISOString().slice(0, 10));
+    } else if (preset === 'thisYear') {
+      const firstDayYear = new Date(now.getFullYear(), 0, 1);
+      setTempStartDate(firstDayYear.toISOString().slice(0, 10));
+      setTempEndDate(todayStr);
+    }
+  };
 
   const handleResetFilters = () => {
     onSelectType('all');
@@ -139,7 +221,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           return (
             <TouchableOpacity
               key={p.key}
-              onPress={() => onSelectPeriod(p.key)}
+              onPress={() => handlePeriodPress(p.key)}
               style={[
                 styles.periodChip,
                 {
@@ -165,6 +247,30 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           );
         })}
       </ScrollView>
+
+      {/* Active Custom Date Range Indicator Banner */}
+      {selectedPeriod === 'custom' && startDate && endDate && (
+        <TouchableOpacity
+          onPress={() => setShowDateRangeModal(true)}
+          style={[
+            styles.customRangeBanner,
+            {
+              backgroundColor: theme.colors.cardSecondary,
+              borderColor: theme.colors.border,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <Ionicons name="calendar" size={14} color={theme.colors.primary} style={{ marginRight: 6 }} />
+            <Text style={[styles.customRangeText, { color: theme.colors.text }]} numberOfLines={1}>
+              {language === 'id' ? 'Rentang' : 'Range'}: {startDate} s/d {endDate}
+            </Text>
+          </View>
+          <Text style={[styles.customRangeEdit, { color: theme.colors.primary }]}>
+            {language === 'id' ? 'Ubah >' : 'Edit >'}
+          </Text>
+        </TouchableOpacity>
+      )}
 
       {/* Extra Filters Drawer / Bar (Collapsible or Shown when toggled/active) */}
       {showAdvanceFilters && (
@@ -293,6 +399,129 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             )}
           </View>
         </View>
+      )}
+
+      {/* Date Range Modal */}
+      <NeoModal
+        visible={showDateRangeModal}
+        onClose={() => setShowDateRangeModal(false)}
+        title={language === 'id' ? 'RENTANG TANGGAL KUSTOM' : 'CUSTOM DATE RANGE'}
+        subtitle={language === 'id' ? 'Pilih batas awal & akhir tanggal transaksi' : 'Select start and end dates'}
+      >
+        <View style={styles.modalContent}>
+          {/* Quick Presets */}
+          <Text style={[styles.presetTitle, { color: theme.colors.textMuted }]}>
+            {language === 'id' ? 'PILIHAN CEPAT (PRESET):' : 'QUICK PRESETS:'}
+          </Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.presetScroll}>
+            <TouchableOpacity
+              onPress={() => handlePresetDateRange('7days')}
+              style={[styles.presetChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            >
+              <Text style={[styles.presetChipText, { color: theme.colors.text }]}>7 Hari</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handlePresetDateRange('30days')}
+              style={[styles.presetChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            >
+              <Text style={[styles.presetChipText, { color: theme.colors.text }]}>30 Hari</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handlePresetDateRange('thisMonth')}
+              style={[styles.presetChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            >
+              <Text style={[styles.presetChipText, { color: theme.colors.text }]}>
+                {language === 'id' ? 'Bulan Ini' : 'This Month'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handlePresetDateRange('lastMonth')}
+              style={[styles.presetChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            >
+              <Text style={[styles.presetChipText, { color: theme.colors.text }]}>
+                {language === 'id' ? 'Bulan Lalu' : 'Last Month'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handlePresetDateRange('thisYear')}
+              style={[styles.presetChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            >
+              <Text style={[styles.presetChipText, { color: theme.colors.text }]}>
+                {language === 'id' ? 'Tahun Ini' : 'This Year'}
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+
+          {/* Date Pickers Row (Start & End) */}
+          <View style={styles.rangeBoxesRow}>
+            {/* Start Date Box */}
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.rangeBoxLabel, { color: theme.colors.textMuted }]}>
+                {language === 'id' ? 'DARI TANGGAL:' : 'START DATE:'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setDatePickerMode('start')}
+                style={[
+                  styles.rangeDateBtn,
+                  { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                ]}
+              >
+                <Ionicons name="calendar-outline" size={16} color={theme.colors.text} />
+                <Text style={[styles.rangeDateText, { color: theme.colors.text }]} numberOfLines={1}>
+                  {tempStartDate}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.rangeArrow}>
+              <Ionicons name="arrow-forward" size={16} color={theme.colors.textMuted} />
+            </View>
+
+            {/* End Date Box */}
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.rangeBoxLabel, { color: theme.colors.textMuted }]}>
+                {language === 'id' ? 'SAMPAI TANGGAL:' : 'END DATE:'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setDatePickerMode('end')}
+                style={[
+                  styles.rangeDateBtn,
+                  { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+                ]}
+              >
+                <Ionicons name="calendar-outline" size={16} color={theme.colors.text} />
+                <Text style={[styles.rangeDateText, { color: theme.colors.text }]} numberOfLines={1}>
+                  {tempEndDate}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Apply Button */}
+          <NeoButton
+            title={language === 'id' ? 'TERAPKAN RENTANG TANGGAL' : 'APPLY DATE RANGE'}
+            variant="primary"
+            onPress={handleApplyCustomDateRange}
+            style={{ marginTop: 16 }}
+          />
+        </View>
+      </NeoModal>
+
+      {/* Date Picker Component for Selecting Start or End Date */}
+      {datePickerMode && (
+        <NeoDatePicker
+          visible={!!datePickerMode}
+          onClose={() => setDatePickerMode(null)}
+          selectedDate={datePickerMode === 'start' ? tempStartDate : tempEndDate}
+          onSelectDate={(pickedDate) => {
+            if (datePickerMode === 'start') {
+              setTempStartDate(pickedDate);
+            } else {
+              setTempEndDate(pickedDate);
+            }
+            setDatePickerMode(null);
+          }}
+        />
       )}
 
       {/* Category Multi-Select Modal */}
@@ -512,6 +741,25 @@ const styles = StyleSheet.create({
   periodChipText: {
     fontSize: 11,
   },
+  customRangeBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    marginBottom: 6,
+  },
+  customRangeText: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  customRangeEdit: {
+    fontSize: 11,
+    fontWeight: '900',
+    marginLeft: 6,
+  },
   extraFilterBox: {
     borderRadius: 10,
     borderWidth: 2,
@@ -537,10 +785,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 6,
+    paddingHorizontal: 2,
     borderRadius: 6,
+    borderWidth: 1.5,
   },
   typeChipText: {
-    fontSize: 10,
+    fontSize: 9.5,
+    fontWeight: '900',
+    textAlign: 'center',
   },
   pickerButtonsRow: {
     flexDirection: 'row',
@@ -558,7 +810,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
   },
   selectTriggerText: {
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: '800',
     flex: 1,
     marginHorizontal: 4,
@@ -572,43 +824,92 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalContent: {
-    paddingTop: 8,
+    paddingVertical: 6,
+  },
+  presetTitle: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  },
+  presetScroll: {
+    flexDirection: 'row',
+    marginBottom: 14,
+  },
+  presetChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    marginRight: 6,
+  },
+  presetChipText: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  rangeBoxesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 6,
+  },
+  rangeBoxLabel: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  rangeDateBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1.5,
+  },
+  rangeDateText: {
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  rangeArrow: {
+    paddingTop: 16,
   },
   modalScroll: {
-    maxHeight: 340,
+    maxHeight: 320,
   },
   catGridModal: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    paddingBottom: 10,
+    paddingVertical: 4,
   },
   catModalCard: {
-    width: '30.5%',
-    paddingVertical: 10,
-    paddingHorizontal: 4,
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    width: '48%',
   },
   catModalName: {
-    fontSize: 10,
-    marginTop: 4,
-    textAlign: 'center',
+    fontSize: 11,
+    marginLeft: 6,
+    flex: 1,
   },
   modalActionRow: {
     flexDirection: 'row',
-    marginTop: 10,
+    marginTop: 14,
   },
   accountModalItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1.5,
-    marginVertical: 4,
+    marginBottom: 8,
   },
   accountModalText: {
     fontSize: 13,

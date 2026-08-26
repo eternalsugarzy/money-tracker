@@ -47,9 +47,21 @@ export async function getTransactions(filter?: TransactionFilterOptions): Promis
       const currentYearStr = now.getFullYear().toString();
       conditions.push(`t.date LIKE ?`);
       params.push(`${currentYearStr}%`);
-    } else if (filter.period === 'custom' && filter.startDate && filter.endDate) {
-      conditions.push(`t.date >= ? AND t.date <= ?`);
-      params.push(filter.startDate, filter.endDate + 'T23:59:59');
+    } else if (filter.period === 'custom') {
+      if (filter.startDate && filter.endDate) {
+        const startStr = filter.startDate.slice(0, 10);
+        const endStr = filter.endDate.slice(0, 10);
+        conditions.push(`SUBSTR(t.date, 1, 10) >= ? AND SUBSTR(t.date, 1, 10) <= ?`);
+        params.push(startStr, endStr);
+      } else if (filter.startDate) {
+        const startStr = filter.startDate.slice(0, 10);
+        conditions.push(`SUBSTR(t.date, 1, 10) >= ?`);
+        params.push(startStr);
+      } else if (filter.endDate) {
+        const endStr = filter.endDate.slice(0, 10);
+        conditions.push(`SUBSTR(t.date, 1, 10) <= ?`);
+        params.push(endStr);
+      }
     }
 
     // Type filter

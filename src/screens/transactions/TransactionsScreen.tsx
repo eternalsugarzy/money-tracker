@@ -42,6 +42,8 @@ export const TransactionsScreen: React.FC = () => {
   const { categories, accounts, refreshData, isLoading, transactions: globalTx } = useAppData();
 
   const [period, setPeriod] = useState<TimePeriodFilter>('month');
+  const [startDate, setStartDate] = useState<string | undefined>();
+  const [endDate, setEndDate] = useState<string | undefined>();
   const [typeFilter, setTypeFilter] = useState<TransactionType | 'all'>('all');
   const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>();
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
@@ -53,6 +55,8 @@ export const TransactionsScreen: React.FC = () => {
     try {
       const filters: TransactionFilterOptions = {
         period,
+        startDate: period === 'custom' ? startDate : undefined,
+        endDate: period === 'custom' ? endDate : undefined,
         type: typeFilter,
         accountId: selectedAccountId,
         categoryIds: selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined,
@@ -63,7 +67,7 @@ export const TransactionsScreen: React.FC = () => {
     } catch (err) {
       console.warn('Error fetching transactions:', err);
     }
-  }, [period, typeFilter, selectedAccountId, selectedCategoryIds, searchQuery]);
+  }, [period, startDate, endDate, typeFilter, selectedAccountId, selectedCategoryIds, searchQuery]);
 
   useFocusEffect(
     useCallback(() => {
@@ -159,6 +163,13 @@ export const TransactionsScreen: React.FC = () => {
       <FilterBar
         selectedPeriod={period}
         onSelectPeriod={setPeriod}
+        startDate={startDate}
+        endDate={endDate}
+        onSelectDateRange={(start, end) => {
+          setStartDate(start);
+          setEndDate(end);
+          setPeriod('custom');
+        }}
         selectedType={typeFilter}
         onSelectType={setTypeFilter}
         selectedAccountId={selectedAccountId}
