@@ -1,7 +1,7 @@
 # 💰 Money+ — iOS Personal Finance Tracker (Neo-Brutalism)
 
 > **Aplikasi Mobile iOS Pencatatan Keuangan Pribadi dengan Desain Neo-Brutalism & Local SQLite Database.**  
-> **Versi: 1.1.0**  
+> **Versi: 1.2.0 (Latest Release)**  
 > **Dibuat dengan ❤️ oleh Muhammad ([@eternalsugarzy](https://github.com/eternalsugarzy))**
 
 ---

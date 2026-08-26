@@ -13,10 +13,6 @@ export async function getAllCategories(
   if (!includeArchived) {
     conditions.push('is_archived = 0');
   }
-  if (type && type !== 'all') {
-    conditions.push('(type = ? OR type = \'all\' OR type IS NULL)');
-    params.push(type);
-  }
 
   if (conditions.length > 0) {
     query += ' WHERE ' + conditions.join(' AND ');
@@ -24,7 +20,20 @@ export async function getAllCategories(
 
   query += ' ORDER BY name ASC';
 
-  return (await db.getAllAsync<Category>(query, params)) || [];
+  const rows = (await db.getAllAsync<Category>(query, params)) || [];
+
+  // Deduplicate by lowercase name to ensure no duplicates appear
+  const seen = new Set<string>();
+  const uniqueList: Category[] = [];
+  for (const cat of rows) {
+    const key = cat.name.trim().toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueList.push(cat);
+    }
+  }
+
+  return uniqueList;
 }
 
 export async function getCategoryById(id: string): Promise<Category | null> {

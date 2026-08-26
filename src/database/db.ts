@@ -110,6 +110,18 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
     );
   `);
 
+  // Clean up unused legacy categories from previous builds
+  try {
+    await db.execAsync(`
+      DELETE FROM categories 
+      WHERE (id LIKE 'cat_exp_%' OR id LIKE 'cat_inc_%')
+      AND id NOT IN (SELECT DISTINCT category_id FROM transactions WHERE category_id IS NOT NULL)
+      AND id NOT IN (SELECT DISTINCT category_id FROM budgets WHERE category_id IS NOT NULL);
+    `);
+  } catch (e) {
+    // Ignore if table was just created
+  }
+
   // Seed default categories and default accounts if empty
   await seedInitialData(db);
 }

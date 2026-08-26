@@ -403,11 +403,30 @@ export const AddTransactionModal: React.FC = () => {
         {activeTab !== 'debt' && activeTab !== 'transfer' && (
           <NeoCard style={styles.card}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                DOMPET / AKUN (DEFAULT: TERAKHIR DIGUNAKAN)
-              </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('AccountFormModal')}>
-                <Text style={[styles.addNewText, { color: theme.colors.primary }]}>+ Akun Baru</Text>
+              <View style={styles.headerLeftGroup}>
+                <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                  DOMPET / AKUN
+                </Text>
+                <View
+                  style={[
+                    styles.lastUsedBadge,
+                    {
+                      backgroundColor: theme.colors.cardSecondary,
+                      borderColor: theme.colors.border,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.lastUsedBadgeText, { color: theme.colors.text }]}>
+                    Auto-Pilih
+                  </Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                onPress={() => navigation.navigate('AccountFormModal')}
+                style={styles.addAccountBtn}
+              >
+                <Text style={[styles.addNewText, { color: theme.colors.text }]}>+ Akun Baru</Text>
               </TouchableOpacity>
             </View>
 
@@ -841,6 +860,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
+  headerLeftGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flex: 1,
+  },
+  lastUsedBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  lastUsedBadgeText: {
+    fontSize: 9,
+    fontWeight: '800',
+  },
+  addAccountBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: '#121212',
+    backgroundColor: '#FFE600',
+  },
   sectionTitle: {
     fontSize: 11,
     fontWeight: '900',
@@ -848,7 +891,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   addNewText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '900',
   },
   chipsScroll: {

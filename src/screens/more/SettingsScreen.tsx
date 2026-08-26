@@ -196,7 +196,7 @@ export const SettingsScreen: React.FC = () => {
             </View>
             <Text style={[styles.appName, { color: theme.colors.text }]}>Money+ Finance Tracker</Text>
             <Text style={[styles.appVersion, { color: theme.colors.textMuted }]}>
-              Versi 1.1.0 (Build 2026.08)
+              Versi 1.2.0 (Build 2026.08)
             </Text>
 
             <View

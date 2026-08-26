@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
@@ -27,6 +27,7 @@ export const HomeScreen: React.FC = () => {
   const {
     totalNetWorth,
     accounts,
+    transactions,
     refreshData,
     isLoading,
   } = useAppData();
@@ -43,7 +44,7 @@ export const HomeScreen: React.FC = () => {
   const [recentTx, setRecentTx] = useState<Transaction[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const loadHomeData = async () => {
+  const loadHomeData = useCallback(async () => {
     try {
       const [sum, breakdown, recent] = await Promise.all([
         getSummaryForPeriod(period),
@@ -56,11 +57,17 @@ export const HomeScreen: React.FC = () => {
     } catch (err) {
       console.warn('Error loading home data:', err);
     }
-  };
+  }, [period, chartPeriod]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadHomeData();
+    }, [loadHomeData, transactions])
+  );
 
   useEffect(() => {
     loadHomeData();
-  }, [period, chartPeriod]);
+  }, [loadHomeData, transactions, period, chartPeriod]);
 
   const onRefresh = async () => {
     setRefreshing(true);
