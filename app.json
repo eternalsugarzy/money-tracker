@@ -2,7 +2,8 @@
   "expo": {
     "name": "SUFIKER+ (Sugarzy Finance Tracker)",
     "slug": "sufiker-tracker",
-    "version": "1.4.0",
+    "owner": "eternalsugarzy",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -20,7 +21,10 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFE600"
       },
-      "package": "com.moneytracker.ios"
+      "package": "com.moneytracker.ios",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
       [
@@ -38,6 +42,11 @@
         }
       ],
       "expo-sqlite"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "bc488bc2-4c9c-4a24-bb60-2bbed9e54c00"
+      }
+    }
   }
 }
