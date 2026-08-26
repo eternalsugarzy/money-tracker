@@ -247,6 +247,7 @@ export const AnalyticsScreen: React.FC = () => {
                 categoryId,
                 type: chartType,
                 period,
+                _ts: Date.now(),
               });
             }}
           />

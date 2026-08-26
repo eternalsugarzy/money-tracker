@@ -54,6 +54,25 @@ export const TransactionsScreen: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Sync filters whenever route params change (e.g. repeatedly clicked from Home or Analytics chart)
+  useEffect(() => {
+    if (route.params?.categoryId !== undefined) {
+      setSelectedCategoryIds(route.params.categoryId ? [route.params.categoryId] : []);
+    }
+    if (route.params?.type !== undefined) {
+      setTypeFilter(route.params.type);
+    }
+    if (route.params?.period !== undefined) {
+      setPeriod(route.params.period);
+    }
+    if (route.params?.startDate !== undefined) {
+      setStartDate(route.params.startDate);
+    }
+    if (route.params?.endDate !== undefined) {
+      setEndDate(route.params.endDate);
+    }
+  }, [route.params]);
+
   const fetchTransactions = useCallback(async () => {
     try {
       const filters: TransactionFilterOptions = {
@@ -71,6 +90,11 @@ export const TransactionsScreen: React.FC = () => {
       console.warn('Error fetching transactions:', err);
     }
   }, [period, startDate, endDate, typeFilter, selectedAccountId, selectedCategoryIds, searchQuery]);
+
+  // Run fetch whenever filter criteria changes
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
 
   useFocusEffect(
     useCallback(() => {

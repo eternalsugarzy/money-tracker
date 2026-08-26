@@ -589,6 +589,7 @@ export const HomeScreen: React.FC = () => {
                 categoryId,
                 type: chartType,
                 period: chartPeriod,
+                _ts: Date.now(),
               });
             }}
           />
