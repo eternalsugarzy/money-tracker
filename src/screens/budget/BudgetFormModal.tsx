@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -122,31 +124,37 @@ export const BudgetFormModal: React.FC = () => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={[
-            styles.closeBtn,
-            {
-              backgroundColor: theme.colors.surface,
-              borderColor: theme.colors.border,
-            },
-          ]}
-        >
-          <Ionicons name="close" size={22} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          {isEditing ? 'EDIT BUDGET' : 'TAMBAH BUDGET BARU'}
-        </Text>
-        <View style={{ width: 40 }} />
-      </View>
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
+        style={{ flex: 1 }}
       >
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={[
+              styles.closeBtn,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <Ionicons name="close" size={22} color={theme.colors.text} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+            {isEditing ? 'EDIT BUDGET' : 'TAMBAH BUDGET BARU'}
+          </Text>
+          <View style={{ width: 40 }} />
+        </View>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets={true}
+        >
         {/* Manual Budget Name */}
         <NeoCard style={styles.card}>
           <NeoInput
@@ -361,20 +369,21 @@ export const BudgetFormModal: React.FC = () => {
         <View style={{ height: 60 }} />
       </ScrollView>
 
-      {/* Date Pickers */}
-      <NeoDatePicker
-        visible={showStartDatePicker}
-        selectedDate={startDate}
-        onSelectDate={setStartDate}
-        onClose={() => setShowStartDatePicker(false)}
-      />
+        {/* Date Pickers */}
+        <NeoDatePicker
+          visible={showStartDatePicker}
+          selectedDate={startDate}
+          onSelectDate={setStartDate}
+          onClose={() => setShowStartDatePicker(false)}
+        />
 
-      <NeoDatePicker
-        visible={showEndDatePicker}
-        selectedDate={endDate || getTodayDateString()}
-        onSelectDate={setEndDate}
-        onClose={() => setShowEndDatePicker(false)}
-      />
+        <NeoDatePicker
+          visible={showEndDatePicker}
+          selectedDate={endDate || getTodayDateString()}
+          onSelectDate={setEndDate}
+          onClose={() => setShowEndDatePicker(false)}
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -206,31 +208,37 @@ export const AddTransactionModal: React.FC = () => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
-      {/* Modal Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={[
-            styles.closeBtn,
-            {
-              backgroundColor: theme.colors.surface,
-              borderColor: theme.colors.border,
-            },
-          ]}
-        >
-          <Ionicons name="close" size={22} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          {isEditing ? t.editTxTitle : t.addTxTitle}
-        </Text>
-        <View style={{ width: 40 }} />
-      </View>
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
+        style={{ flex: 1 }}
       >
+        {/* Modal Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={[
+              styles.closeBtn,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <Ionicons name="close" size={22} color={theme.colors.text} />
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+            {isEditing ? t.editTxTitle : t.addTxTitle}
+          </Text>
+          <View style={{ width: 40 }} />
+        </View>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets={true}
+        >
         {/* 4 Big Mode Buttons */}
         {!isEditing && (
           <View style={styles.typeSelectorRow}>
@@ -740,20 +748,21 @@ export const AddTransactionModal: React.FC = () => {
         <View style={{ height: 60 }} />
       </ScrollView>
 
-      {/* Date Pickers */}
-      <NeoDatePicker
-        visible={showDatePicker}
-        selectedDate={selectedDate}
-        onSelectDate={setSelectedDate}
-        onClose={() => setShowDatePicker(false)}
-      />
+        {/* Date Pickers */}
+        <NeoDatePicker
+          visible={showDatePicker}
+          selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
+          onClose={() => setShowDatePicker(false)}
+        />
 
-      <NeoDatePicker
-        visible={showDueDatePicker}
-        selectedDate={debtDueDate || getTodayDateString()}
-        onSelectDate={setDebtDueDate}
-        onClose={() => setShowDueDatePicker(false)}
-      />
+        <NeoDatePicker
+          visible={showDueDatePicker}
+          selectedDate={debtDueDate || getTodayDateString()}
+          onSelectDate={setDebtDueDate}
+          onClose={() => setShowDueDatePicker(false)}
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
