@@ -1,43 +1,20 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
+import { SEED_ACCOUNTS, SEED_CATEGORIES, SEED_TRANSACTIONS } from './initialMoneyPlusData';
 
 export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
   const now = new Date().toISOString();
 
-  // Universal Default Categories (usable across Income, Expense, Budget, etc.)
-  const defaultCategories = [
-    { id: 'cat_makan', name: 'Makan', type: 'all', icon: 'restaurant', icon_family: 'Ionicons', color: '#FF5D8F' },
-    { id: 'cat_cemilan', name: 'Cemilan & Kopi', type: 'all', icon: 'cafe', icon_family: 'Ionicons', color: '#FF9E00' },
-    { id: 'cat_transport', name: 'Transport', type: 'all', icon: 'car', icon_family: 'Ionicons', color: '#00F0FF' },
-    { id: 'cat_belanja', name: 'Belanja', type: 'all', icon: 'cart', icon_family: 'Ionicons', color: '#FFE600' },
-    { id: 'cat_tagihan', name: 'Tagihan & Listrik', type: 'all', icon: 'flash', icon_family: 'Ionicons', color: '#FF7A00' },
-    { id: 'cat_hiburan', name: 'Hiburan & Hobi', type: 'all', icon: 'game-controller', icon_family: 'Ionicons', color: '#A06CD5' },
-    { id: 'cat_kesehatan', name: 'Kesehatan', type: 'all', icon: 'medkit', icon_family: 'Ionicons', color: '#FF3366' },
-    { id: 'cat_pendidikan', name: 'Pendidikan', type: 'all', icon: 'school', icon_family: 'Ionicons', color: '#3A86FF' },
-    { id: 'cat_rumah', name: 'Rumah Tangga', type: 'all', icon: 'home', icon_family: 'Ionicons', color: '#52B788' },
-    { id: 'cat_gaji', name: 'Gaji', type: 'all', icon: 'cash', icon_family: 'Ionicons', color: '#54E346' },
-    { id: 'cat_bonus', name: 'Bonus & THR', type: 'all', icon: 'trophy', icon_family: 'Ionicons', color: '#FFE600' },
-    { id: 'cat_usaha', name: 'Usaha / Freelance', type: 'all', icon: 'briefcase', icon_family: 'Ionicons', color: '#00F0FF' },
-    { id: 'cat_investasi', name: 'Investasi', type: 'all', icon: 'trending-up', icon_family: 'Ionicons', color: '#A06CD5' },
-    { id: 'cat_hadiah', name: 'Hadiah & Sedekah', type: 'all', icon: 'gift', icon_family: 'Ionicons', color: '#FF5D8F' },
-    { id: 'cat_lainnya', name: 'Lainnya', type: 'all', icon: 'ellipsis-horizontal-circle', icon_family: 'Ionicons', color: '#8338EC' },
-  ];
-
-  for (const cat of defaultCategories) {
+  // 1. Insert Categories from Money+ and Defaults
+  for (const cat of SEED_CATEGORIES) {
     await db.runAsync(
       `INSERT OR IGNORE INTO categories (id, name, type, icon, icon_family, color, is_archived, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)`,
-      [cat.id, cat.name, cat.type, cat.icon, cat.icon_family, cat.color, now, now]
+       VALUES (?, ?, ?, ?, 'Ionicons', ?, 0, ?, ?)`,
+      [cat.id, cat.name, cat.type, cat.icon, cat.color, now, now]
     );
   }
 
-  // Default Initial Accounts
-  const defaultAccounts = [
-    { id: 'acc_cash', name: 'Dompet Tunai', type: 'Cash', initial_balance: 500000, current_balance: 500000, icon: 'cash', icon_family: 'Ionicons', color: '#54E346' },
-    { id: 'acc_bca', name: 'Rekening Bank (BCA)', type: 'Bank', initial_balance: 5000000, current_balance: 5000000, icon: 'card', icon_family: 'Ionicons', color: '#3A86FF' },
-    { id: 'acc_gopay', name: 'GoPay / E-Wallet', type: 'E-Wallet', initial_balance: 350000, current_balance: 350000, icon: 'wallet', icon_family: 'Ionicons', color: '#00F0FF' },
-  ];
-
-  for (const acc of defaultAccounts) {
+  // 2. Insert Accounts from Money+
+  for (const acc of SEED_ACCOUNTS) {
     await db.runAsync(
       `INSERT OR IGNORE INTO accounts (id, name, type, initial_balance, current_balance, icon, icon_family, color, is_archived, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
@@ -45,18 +22,75 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
     );
   }
 
-  // Default Shortcuts
+  // 3. Insert Historical Transactions (722 Transactions from Money+ Backup)
+  // Execute in transactions chunk
+  await db.withTransactionAsync(async () => {
+    for (const tx of SEED_TRANSACTIONS) {
+      await db.runAsync(
+        `INSERT OR IGNORE INTO transactions (id, type, amount, date, account_id, to_account_id, category_id, note, receipt_images, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, '[]', ?, ?)`,
+        [
+          tx.id,
+          tx.type,
+          tx.amount,
+          tx.date,
+          tx.account_id,
+          tx.to_account_id,
+          tx.category_id,
+          tx.note || '',
+          now,
+          now,
+        ]
+      );
+    }
+  });
+
+  // 4. Recalculate each account's accurate current balance based on transactions
+  for (const acc of SEED_ACCOUNTS) {
+    const incRes = await db.getFirstAsync<{ sum: number | null }>(
+      `SELECT SUM(amount) as sum FROM transactions WHERE type = 'income' AND account_id = ?`,
+      [acc.id]
+    );
+    const expRes = await db.getFirstAsync<{ sum: number | null }>(
+      `SELECT SUM(amount) as sum FROM transactions WHERE type = 'expense' AND account_id = ?`,
+      [acc.id]
+    );
+    const trInRes = await db.getFirstAsync<{ sum: number | null }>(
+      `SELECT SUM(amount) as sum FROM transactions WHERE type = 'transfer' AND to_account_id = ?`,
+      [acc.id]
+    );
+    const trOutRes = await db.getFirstAsync<{ sum: number | null }>(
+      `SELECT SUM(amount) as sum FROM transactions WHERE type = 'transfer' AND account_id = ?`,
+      [acc.id]
+    );
+
+    const totalInc = incRes?.sum || 0;
+    const totalExp = expRes?.sum || 0;
+    const totalTrIn = trInRes?.sum || 0;
+    const totalTrOut = trOutRes?.sum || 0;
+
+    const accurateBalance = acc.initial_balance + totalInc - totalExp + totalTrIn - totalTrOut;
+
+    await db.runAsync(
+      `UPDATE accounts SET current_balance = ?, updated_at = ? WHERE id = ?`,
+      [accurateBalance, now, acc.id]
+    );
+  }
+
+  // 5. Default Quick-Add Shortcuts tailored to user habits
   const defaultShortcuts = [
-    { id: 'sc_def_kopi', title: 'Kopi / Cafe', emoji: '☕', amount: 25000, category_id: 'cat_cemilan', type: 'expense' },
-    { id: 'sc_def_makan', title: 'Makan Siang', emoji: '🍽️', amount: 35000, category_id: 'cat_makan', type: 'expense' },
-    { id: 'sc_def_bensin', title: 'Bensin BBM', emoji: '⛽', amount: 50000, category_id: 'cat_transport', type: 'expense' },
-    { id: 'sc_def_supermarket', title: 'Supermarket', emoji: '🛒', amount: 100000, category_id: 'cat_belanja', type: 'expense' },
+    { id: 'sc_def_nongkrong', title: 'Nongkrong & Kopi', emoji: '☕', amount: 20000, category_id: 'cat_nongkrong', type: 'expense' },
+    { id: 'sc_def_makan', title: 'Makan (Food)', emoji: '🍽️', amount: 25000, category_id: 'cat_makan', type: 'expense' },
+    { id: 'sc_def_cemilan', title: 'Cemal Cemil', emoji: '🥐', amount: 10000, category_id: 'cat_cemilan', type: 'expense' },
+    { id: 'sc_def_bensin', title: 'Bensin BBM', emoji: '⛽', amount: 50000, category_id: 'cat_bensin', type: 'expense' },
+    { id: 'sc_def_parkir', title: 'Parkir / Ojol', emoji: '🛵', amount: 2000, category_id: 'cat_parkir', type: 'expense' },
+    { id: 'sc_def_pet', title: 'Makanan Kucing', emoji: '🐱', amount: 15000, category_id: 'cat_pet', type: 'expense' },
   ];
 
   for (const sc of defaultShortcuts) {
     await db.runAsync(
       `INSERT OR IGNORE INTO shortcuts (id, title, emoji, amount, category_id, account_id, type, created_at)
-       VALUES (?, ?, ?, ?, ?, NULL, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, 'acc_cash', ?, ?)`,
       [sc.id, sc.title, sc.emoji, sc.amount, sc.category_id, sc.type, now]
     );
   }

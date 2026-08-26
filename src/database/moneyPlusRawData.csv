@@ -1,0 +1,723 @@
+ID,Tanggal,Jenis,Nama Transaksi,Akun,Akun Tujuan (Transfer),Anggota,Kategori,Jumlah (IDR),Catatan
+1,2026-01-06 09:53:17,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+2,2026-01-06 09:54:27,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,18000,tengah hari coffee
+3,2026-01-06 11:21:16,Pemasukan,basedata.wage,BRI,,basedata.myself,Mingguan Ortu,300000,
+4,2026-01-06 11:51:40,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+5,2026-01-06 15:55:20,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,17000,telur
+6,2026-01-06 15:55:20,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,mentos
+7,2026-01-07 09:12:47,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,4000,isi ulang galon
+8,2026-01-07 09:12:47,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,30000,chicken pok pok
+9,2026-01-07 09:12:47,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,mentos
+10,2026-01-07 09:12:47,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",5000,
+11,2026-01-07 09:13:21,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+12,2026-01-07 09:13:21,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,22000,nordu coffee
+13,2026-01-07 14:03:02,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+14,2026-01-08 14:43:31,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+15,2026-01-08 14:43:31,Pengeluaran,basedata.recreation,UANG CASH,,basedata.myself,basedata.recreation,2000,domino
+16,2026-01-09 12:26:36,Pengeluaran,basedata.pet,UANG CASH,,basedata.myself,basedata.pet,18000,wet food
+17,2026-01-09 12:26:36,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,30000,pentol pemko
+18,2026-01-09 12:26:36,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,pentol goreng
+19,2026-01-09 12:26:36,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,minum
+20,2026-01-09 13:56:08,Pemasukan,basedata.wage,BRI,,basedata.myself,Mingguan Ortu,300000,
+21,2026-01-10 10:59:34,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+22,2026-01-10 10:59:34,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,pempek hksn
+23,2026-01-10 10:59:34,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,34000,"telur, beras, mie instant"
+24,2026-01-10 13:32:08,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,50000,soto ayam cak hari
+25,2026-01-11 13:18:11,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,16000,pentol goreng gatsu
+26,2026-01-12 02:00:43,Pemasukan,basedata.wage,BRI,,basedata.myself,Mingguan Ortu,400000,
+27,2026-01-12 06:14:17,Pengeluaran,basedata.communication,BRI,,basedata.myself,basedata.communication,200000,"tempered glass, case"
+28,2026-01-12 06:14:17,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+29,2026-01-12 06:14:17,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,50000,ayam geprek solo
+30,2026-01-12 14:58:58,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,50000,
+31,2026-01-12 14:58:58,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+32,2026-01-12 14:58:58,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,es teh jumbo
+33,2026-01-13 11:34:12,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,pukis laba laba
+34,2026-01-13 11:34:12,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,tengah hari coffee
+35,2026-01-13 11:34:12,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+36,2026-01-13 15:31:39,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,50000,mie gacoan
+37,2026-01-13 15:31:39,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+38,2026-01-14 13:35:31,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,7000,pukis laba laba
+39,2026-01-14 13:35:31,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,es sirup jumbo
+40,2026-01-15 09:40:03,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+41,2026-01-15 09:40:03,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,39000,"telur, minyak, kecap"
+42,2026-01-15 09:40:03,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,18000,gas portable
+43,2026-01-16 11:00:08,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,18000,tengah hari coffee
+44,2026-01-16 11:00:08,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",4000,
+45,2026-01-16 11:00:08,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,22000,ayam geprek solo
+46,2026-01-16 14:34:50,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+47,2026-01-17 15:04:09,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,150000,
+48,2026-01-18 10:27:04,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+49,2026-01-18 10:27:04,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,30000,seblak nr sabila
+50,2026-01-18 10:27:04,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,es teh jumbo
+51,2026-01-18 10:27:04,Pengeluaran,basedata.education,UANG CASH,,basedata.myself,basedata.education,2000,print
+52,2026-01-18 10:27:04,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,25000,"telur, tempe, bawang"
+53,2026-01-18 10:27:04,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,15000,beras
+61,2026-01-18 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,33000,circle k
+54,2026-01-19 10:27:22,Pengeluaran,House needs,BRI,,basedata.myself,House needs ,50000,wifi kos
+55,2026-01-19 10:27:22,Pengeluaran,Random Stuff,UANG CASH,,basedata.myself,Random Stuff,5000,kapitan
+56,2026-01-19 10:27:22,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+57,2026-01-19 10:28:45,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,1000,es batu
+58,2026-01-19 13:40:17,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+59,2026-01-19 13:40:17,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,es teh jumbo
+60,2026-01-19 13:40:17,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,pentol goreng gatsu
+67,2026-01-20 16:00:00,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,150000,
+62,2026-01-21 12:40:45,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,3000,bengbeng
+63,2026-01-21 12:40:45,Pengeluaran,Olahraga,UANG CASH,,basedata.myself,Olahraga ,9000,badminton
+64,2026-01-21 12:41:56,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,3000,es batu
+68,2026-01-21 16:00:00,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+69,2026-01-21 16:00:00,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,50000,potong rambut
+70,2026-01-21 16:00:00,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,100000,perfume
+71,2026-01-21 16:00:00,Pengeluaran,basedata.recreation,BRI,,basedata.myself,basedata.recreation,300000,tiket konser
+65,2026-01-22 14:00:16,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,18000,tengah hari coffee
+66,2026-01-22 14:00:16,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+72,2026-01-22 14:01:58,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+73,2026-01-22 14:59:30,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,16000,nasi goreng cah solo
+74,2026-01-23 12:27:27,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,pempek hksn
+75,2026-01-23 12:27:38,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,50000,
+76,2026-01-23 14:52:16,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+77,2026-01-23 14:52:16,Pengeluaran,basedata.recreation,BRI,,basedata.myself,basedata.recreation,100000,konser
+78,2026-01-23 14:52:16,Pengeluaran,basedata.communication,UANG CASH,,basedata.myself,basedata.communication,27000,pulsa
+79,2026-01-23 14:52:16,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,3000,air mineral
+80,2026-01-23 14:52:16,Pengeluaran,basedata.tax,UANG CASH,,basedata.myself,basedata.tax,2000,donasi
+81,2026-01-23 14:52:16,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,30000,nasi kuning handil bakti
+82,2026-01-23 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,bengbeng
+84,2026-01-24 16:00:00,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,20000,"telur, mie"
+85,2026-01-24 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,batagor
+86,2026-01-24 16:00:00,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,1000,es batu
+87,2026-01-24 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,45000,nasi kuning handil bakti
+88,2026-01-24 16:00:00,Pengeluaran,basedata.tax,BRI,,basedata.myself,basedata.tax,100000,shopee
+89,2026-01-24 16:00:00,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+90,2026-01-24 16:00:00,Transfer,UANG CASH,BRI,UANG CASH,,,200000,
+91,2026-01-26 11:34:40,Pengeluaran,basedata.pet,UANG CASH,,basedata.myself,basedata.pet,15000,"wet food, dry food"
+92,2026-01-26 11:34:40,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,cemilan random
+93,2026-01-27 12:04:09,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+94,2026-01-27 12:04:09,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,12000,ayam geprek midodari
+95,2026-01-28 09:58:28,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,23000,paijo
+96,2026-01-28 09:58:28,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,19000,cemilan anugerah
+97,2026-01-28 09:58:50,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+98,2026-01-28 09:59:29,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,2000,es batu
+99,2026-01-29 10:05:08,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,18000,tengah hari coffee
+100,2026-01-29 10:05:08,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+101,2026-01-29 10:05:08,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,11000,laundry
+102,2026-01-29 12:21:16,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,pentol
+103,2026-01-30 15:01:30,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,40000,paijo
+111,2026-01-30 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,17000,ayam geprek midodari
+113,2026-01-30 16:00:00,Pemasukan,basedata.bonus,BRI,,basedata.myself,basedata.bonus,100000,
+104,2026-01-31 14:47:30,Transfer,UANG CASH,BRI,UANG CASH,,,200000,
+105,2026-01-31 14:47:30,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,29000,"telur, beras"
+106,2026-01-31 14:47:30,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,50000,
+107,2026-01-31 14:47:30,Pengeluaran,basedata.tax,UANG CASH,,basedata.myself,basedata.tax,50000,utang yopi
+108,2026-01-31 14:47:30,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,46000,bebek sinjay
+109,2026-01-31 14:47:30,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+110,2026-01-31 15:18:57,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,150000,
+117,2026-01-31 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,100000,angkringan lc
+118,2026-01-31 16:00:00,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",3000,
+112,2026-02-01 08:07:47,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+114,2026-02-01 09:43:05,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+115,2026-02-01 09:43:05,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,20000,gas portable
+116,2026-02-01 09:43:05,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,15000,ayam geprek midodari
+119,2026-02-02 10:14:54,Pemasukan,basedata.bonus,BRI,,basedata.myself,basedata.bonus,50000,piutang
+120,2026-02-02 10:14:54,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+121,2026-02-02 10:14:54,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,30000,kubiek coffee
+122,2026-02-02 10:14:54,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,air mineral
+123,2026-02-02 13:18:05,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",5000,
+124,2026-02-02 13:18:05,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,40000,bebek sinjay
+125,2026-02-02 16:00:00,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+126,2026-02-02 16:00:00,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+127,2026-02-02 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,kopi kenangan
+128,2026-02-02 16:00:00,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,27000,tissue
+129,2026-02-04 11:28:18,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,15000,rehat kopi
+130,2026-02-04 13:48:23,Pengeluaran,basedata.pet,UANG CASH,,basedata.myself,basedata.pet,16000,pasir
+131,2026-02-04 13:48:23,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,pentol pemko
+132,2026-02-04 13:48:45,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,2000,isi ulang galon
+133,2026-02-05 11:37:48,Transfer,UANG CASH,BRI,UANG CASH,,,200000,
+134,2026-02-05 11:37:48,Pengeluaran,TRINITY SCENT,BRI,,basedata.myself,TRINITY SCENT,50000,modal
+135,2026-02-05 11:39:00,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,100000,
+136,2026-02-05 11:39:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,30000,tengah hari coffee
+137,2026-02-05 11:39:00,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",1000,
+138,2026-02-05 13:44:57,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,75000,mcdonalds
+139,2026-02-05 13:44:57,Transfer,BRI,UANG CASH,BRI,,,100000,
+143,2026-02-05 16:00:00,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",3000,
+144,2026-02-05 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,es teh jumbo
+145,2026-02-05 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,13000,nasi goreng cah solo
+140,2026-02-06 10:03:25,Pengeluaran,Food,BRI,,basedata.myself,Food,24000,ayam geprek solo
+141,2026-02-06 10:03:25,Pengeluaran,TRINITY SCENT,BRI,,basedata.myself,TRINITY SCENT,26000,modal
+142,2026-02-06 10:04:07,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+146,2026-02-06 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,pentol
+147,2026-02-06 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,6000,angkringan pak lik
+148,2026-02-06 16:00:00,Pengeluaran,Food,BRI,,basedata.myself,Food,50000,angkringan pak lik
+149,2026-02-06 16:00:00,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",3000,
+180,2026-02-06 16:00:00,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+150,2026-02-07 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,22000,pentol pemko
+151,2026-02-09 12:45:35,Transfer,UANG CASH,BRI,UANG CASH,,,150000,
+152,2026-02-09 12:45:35,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,600000,
+153,2026-02-09 12:45:35,Pengeluaran,basedata.pet,UANG CASH,,basedata.myself,basedata.pet,80000,"pasir, dry food, vitamin"
+154,2026-02-09 12:45:35,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,37000,kopi kenangan
+155,2026-02-09 12:46:22,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,7000,pukis
+156,2026-02-09 12:46:22,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",3000,
+157,2026-02-10 11:29:35,Pengeluaran,TRINITY SCENT,BRI,,basedata.myself,TRINITY SCENT,100000,x banner
+158,2026-02-10 14:56:52,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+159,2026-02-10 14:57:08,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,50000,
+160,2026-02-10 14:57:08,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,102000,gultik metro
+161,2026-02-10 14:57:08,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",3000,
+162,2026-02-11 11:30:59,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,23000,"telur, beras"
+163,2026-02-11 11:30:59,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,es teh jumbo
+164,2026-02-11 11:30:59,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+165,2026-02-11 11:30:59,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,4000,air mineral
+166,2026-02-12 06:30:22,Pengeluaran,TRINITY SCENT,BRI,,basedata.myself,TRINITY SCENT,100000,meja
+167,2026-02-12 06:30:22,Pengeluaran,Nongkrongs,BRI,,basedata.myself,Nongkrongs ,50000,dua asa coffee
+168,2026-02-12 06:37:24,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,ayam geprek solo
+169,2026-02-12 15:01:10,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+170,2026-02-12 15:01:10,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,15000,mie
+171,2026-02-12 15:01:10,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,13000,gorengan
+172,2026-02-13 15:27:35,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,13000,angkringan pak lik
+173,2026-02-13 15:27:35,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",4000,
+174,2026-02-14 09:56:02,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,33000,ayam geprek solo
+175,2026-02-14 13:03:47,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,50000,
+176,2026-02-14 15:14:06,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,300000,
+177,2026-02-14 15:29:32,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+178,2026-02-14 15:29:32,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,55000,mie gacoan
+179,2026-02-15 05:27:03,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+181,2026-02-15 07:58:10,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,24000,ayam geprek midodari
+182,2026-02-15 07:58:10,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,4000,isi ulang galon
+183,2026-02-15 07:58:10,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+184,2026-02-15 09:53:16,Pengeluaran,basedata.pet,UANG CASH,,basedata.myself,basedata.pet,60000,"pasir, dry food, dry treats"
+185,2026-02-15 09:53:31,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+186,2026-02-15 12:27:02,Pengeluaran,House needs,BRI,,basedata.myself,House needs ,25000,btapas self service
+187,2026-02-16 07:37:04,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,30000,
+188,2026-02-16 07:37:04,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,15000,spidol
+189,2026-02-16 07:37:04,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+190,2026-02-16 07:37:04,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+191,2026-02-16 07:37:04,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,sprite
+192,2026-02-16 07:37:04,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,gorengan
+193,2026-02-16 07:38:05,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,klepon
+194,2026-02-16 10:58:40,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,66000,mie ayam pak jangkung surabaya
+195,2026-02-16 10:58:59,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+196,2026-02-17 11:49:09,Pengeluaran,Nongkrongs,BRI,,basedata.myself,Nongkrongs ,25000,tengah hari coffee
+197,2026-02-17 11:49:09,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+198,2026-02-17 11:49:09,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,pempek hksn
+199,2026-02-17 11:49:09,Pengeluaran,basedata.pet,UANG CASH,,basedata.myself,basedata.pet,38000,wet food
+200,2026-02-17 11:49:09,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+201,2026-02-17 12:15:24,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",5000,
+207,2026-02-17 16:00:00,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+208,2026-02-17 16:00:00,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+209,2026-02-17 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,pentol idm kayutangi
+210,2026-02-17 16:00:00,Pemasukan,basedata.parttime_job,Sea Bank,,basedata.myself,basedata.parttime_job,475000,
+202,2026-02-18 02:10:55,Pengeluaran,basedata.pet,UANG CASH,,basedata.myself,basedata.pet,32000,vitamin
+203,2026-02-18 12:02:20,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,38000,soto banjar mama sultan
+204,2026-02-18 12:02:20,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+205,2026-02-18 12:02:20,Pengeluaran,basedata.education,UANG CASH,,basedata.myself,basedata.education,46000,print
+206,2026-02-18 15:36:28,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,28000,nordu coffee
+211,2026-02-19 01:27:47,Pengeluaran,basedata.tax,Sea Bank,,basedata.myself,basedata.tax,175000,shopee
+212,2026-02-19 08:40:26,Pengeluaran,Food,Sea Bank,,basedata.myself,Food,100000,rabenshi
+213,2026-02-19 09:59:13,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,300000,
+214,2026-02-19 12:23:43,Transfer,Sea Bank,BRI,Sea Bank,,,100000,
+215,2026-02-19 12:23:43,Transfer,UANG CASH,BRI,UANG CASH,,,200000,
+216,2026-02-19 13:33:42,Pengeluaran,basedata.communication,Sea Bank,,basedata.myself,basedata.communication,50000,pulsa
+217,2026-02-19 13:49:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,14000,tepi kopi
+218,2026-02-20 10:28:27,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,15000,bfc fried chicken
+219,2026-02-21 05:32:40,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+220,2026-02-21 09:47:23,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,50000,
+221,2026-02-21 09:47:23,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,15000,bfc fried chicken
+222,2026-02-21 09:47:23,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,17000,ayam geprek solo
+223,2026-02-21 09:47:23,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,14000,saos sambel tomat
+224,2026-02-22 07:50:58,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,100000,
+225,2026-02-22 07:50:58,Transfer,BRI,Sea Bank,BRI,,,50000,
+226,2026-02-22 12:56:30,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,12000,kentuki
+227,2026-02-22 12:56:30,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,19000,gas portable
+228,2026-02-22 12:56:30,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,gorengan
+229,2026-02-23 13:20:49,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,es buah
+230,2026-02-23 13:20:49,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,7000,gorengan
+231,2026-02-23 13:20:49,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",4000,
+232,2026-02-23 13:20:49,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,25000,sog coffee
+233,2026-02-23 13:27:46,Pemasukan,basedata.bonus,BRI,,basedata.myself,basedata.bonus,100000,
+234,2026-02-23 15:54:28,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",5000,
+235,2026-02-23 20:48:35,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,bebek sinjay
+236,2026-02-24 11:36:19,Pengeluaran,TRINITY SCENT,Sea Bank,,basedata.myself,TRINITY SCENT,200000,
+237,2026-02-24 12:09:52,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,nordu coffee
+238,2026-02-24 12:10:11,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+239,2026-02-25 05:02:07,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+240,2026-02-25 05:02:07,Transfer,UANG CASH,BRI,UANG CASH,,,700000,
+241,2026-02-25 07:36:58,Transfer,UANG CASH,BRI,UANG CASH,,,200000,
+242,2026-02-25 07:36:58,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,750000,kost
+243,2026-02-25 09:44:11,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,100000,
+244,2026-02-25 10:25:18,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,15000,kentuki
+245,2026-02-25 10:25:18,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,15000,saos sambel
+248,2026-02-25 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,10000,house shine coffee
+246,2026-02-26 11:37:15,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,25000,lalapan si doel
+247,2026-02-26 11:37:15,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,25000,house shine coffee
+249,2026-02-28 13:00:09,Pengeluaran,basedata.tax,UANG CASH,,basedata.myself,basedata.tax,10000,
+250,2026-02-28 13:00:09,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,40000,angkringan kula kita
+251,2026-02-28 15:07:05,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",10000,
+252,2026-02-28 15:07:05,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,10000,mie goreng
+253,2026-02-28 15:07:05,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,13000,\"telur, mie\"
+254,2026-03-01 10:04:34,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,100000,
+255,2026-03-01 10:04:34,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+256,2026-03-01 10:04:34,Pengeluaran,TRINITY SCENT,UANG CASH,,basedata.myself,TRINITY SCENT,33000,\"print, laminate, label\"
+257,2026-03-01 10:04:34,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,20000,kursi lipat
+258,2026-03-01 11:03:54,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,es teh jumbo
+259,2026-03-01 15:01:02,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,24000,lalapan putri kartini
+260,2026-03-01 15:03:13,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,300000,
+264,2026-03-01 16:00:00,Pengeluaran,House needs,BRI,,basedata.myself,House needs ,50000,kursi lipat
+261,2026-03-02 12:17:31,Pengeluaran,TRINITY SCENT,UANG CASH,,basedata.myself,TRINITY SCENT,10000,
+262,2026-03-02 12:17:31,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,25000,point coffee
+263,2026-03-02 13:27:44,Pengeluaran,TRINITY SCENT,UANG CASH,,basedata.myself,TRINITY SCENT,10000,
+266,2026-03-03 11:12:53,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+267,2026-03-03 11:12:53,Pengeluaran,basedata.beautify,UANG CASH,,basedata.myself,basedata.beautify,26000,shampoo makarizo
+268,2026-03-03 11:12:53,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,4000,air mineral
+269,2026-03-03 11:12:53,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,milo es
+270,2026-03-04 13:10:49,Pengeluaran,basedata.tax,UANG CASH,,basedata.myself,basedata.tax,15000,
+271,2026-03-04 13:10:49,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,air mineral
+272,2026-03-04 14:05:35,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,tahu krispi
+273,2026-03-04 14:05:35,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,12000,pentol paman nduts
+274,2026-03-04 14:31:53,Pemasukan,basedata.parttime_job,BRI,,basedata.myself,basedata.parttime_job,250000,
+275,2026-03-04 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,pentol paman nduts
+276,2026-03-04 16:00:00,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+277,2026-03-04 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,50000,house shine coffee
+278,2026-03-06 06:38:13,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,50000,
+279,2026-03-08 10:37:14,Pemasukan,Mingguan Ortu,UANG CASH,,basedata.myself,Mingguan Ortu,100000,
+280,2026-03-08 10:37:14,Pengeluaran,Perawatan Motor,UANG CASH,,basedata.myself,Perawatan Motor,45000,kampas rem
+281,2026-03-08 10:37:14,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,15000,
+282,2026-03-08 10:37:14,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,21000,bobby fried chicken
+283,2026-03-08 15:39:03,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,3000,pentol goreng
+284,2026-03-08 16:00:00,Pengeluaran,basedata.communication,BRI,,basedata.myself,basedata.communication,50000,pulsa
+290,2026-03-09 16:00:00,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+285,2026-03-10 10:04:06,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,250000,
+286,2026-03-10 10:04:06,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+287,2026-03-10 10:04:06,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,16000,ayam geprek midodari
+288,2026-03-10 10:04:06,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,air mineral
+289,2026-03-10 13:44:57,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,mangkupi
+291,2026-03-11 08:01:17,Pengeluaran,basedata.recreation,UANG CASH,,basedata.myself,basedata.recreation,50000,timezone
+292,2026-03-11 08:01:17,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+293,2026-03-11 10:12:32,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",8000,
+294,2026-03-11 10:12:32,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,58000,arunika coffee
+295,2026-03-11 10:59:04,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+296,2026-03-11 13:42:24,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,50000,potong rambut
+297,2026-03-11 15:54:44,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,air mineral
+298,2026-03-12 12:08:02,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+299,2026-03-12 12:08:02,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,45000,
+300,2026-03-12 12:08:02,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,angkringan rth hasan basri
+301,2026-03-12 12:08:02,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,2000,air mineral
+302,2026-03-12 12:08:02,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,15000,bobby fried chicken
+303,2026-03-12 12:08:45,Pengeluaran,basedata.communication,BRI,,basedata.myself,basedata.communication,50000,icloud+
+304,2026-03-12 12:09:08,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,900000,
+305,2026-03-12 12:12:27,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,takoyaki
+306,2026-03-12 12:12:27,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,2000,air mineral
+307,2026-03-12 14:35:23,Transfer,UANG CASH,BRI,UANG CASH,,,200000,
+308,2026-03-12 14:40:31,Pengeluaran,basedata.tax,UANG CASH,,basedata.myself,basedata.tax,6000,minus
+309,2026-03-13 09:58:08,Pengeluaran,TRINITY SCENT,UANG CASH,,basedata.myself,TRINITY SCENT,45000,
+310,2026-03-13 15:29:32,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,milo es
+311,2026-03-14 11:45:04,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,17000,bobby fried chicken
+312,2026-03-14 11:45:04,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,pempek
+313,2026-03-14 11:45:04,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,7000,es
+314,2026-03-14 18:09:51,Pemasukan,basedata.parttime_job,BRI,,basedata.myself,basedata.parttime_job,250000,
+315,2026-03-15 09:20:31,Pengeluaran,TRINITY SCENT,UANG CASH,,basedata.myself,TRINITY SCENT,30000,
+316,2026-03-15 09:20:31,Pengeluaran,basedata.beautify,UANG CASH,,basedata.myself,basedata.beautify,28000,salsa
+317,2026-03-16 13:29:41,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,pempek
+318,2026-03-16 13:29:41,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,10000,bobby fried chicken
+322,2026-03-16 16:00:00,Pemasukan,basedata.parttime_job,BRI,,basedata.myself,basedata.parttime_job,650000,
+319,2026-03-17 03:43:51,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,150000,grooming
+320,2026-03-17 11:07:43,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,30000,bobby fried chicken
+321,2026-03-17 13:47:32,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,25000,tanjak coffee
+326,2026-03-19 16:00:00,Pemasukan,Trinity Scents,BRI,,basedata.myself,Trinity Scents ,500000,
+323,2026-03-20 03:54:54,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,200000,perfume
+324,2026-03-20 14:47:55,Pemasukan,Mingguan Ortu,UANG CASH,,basedata.myself,Mingguan Ortu,50000,
+325,2026-03-20 14:48:03,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,65000,house shine coffee
+327,2026-03-21 08:46:59,Pemasukan,basedata.bonus,UANG CASH,,basedata.myself,basedata.bonus,250000,
+328,2026-03-21 15:19:10,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,50000,house shine coffee
+332,2026-03-22 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,25000,indomaret
+329,2026-03-23 05:57:27,Pengeluaran,basedata.tax,BRI,,basedata.myself,basedata.tax,100000,shopee
+330,2026-03-23 15:33:31,Pemasukan,basedata.parttime_job,BRI,,basedata.myself,basedata.parttime_job,250000,
+331,2026-03-23 15:33:31,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,55000,house shine coffee
+333,2026-03-24 09:55:32,Pemasukan,Mingguan Ortu,UANG CASH,,basedata.myself,Mingguan Ortu,50000,
+334,2026-03-24 09:55:32,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,point coffee indomaret
+335,2026-03-24 15:43:45,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,32000,house shine coffee
+336,2026-03-25 08:27:41,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,100000,
+337,2026-03-25 09:30:46,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,30000,pentol paman nduts
+338,2026-03-26 08:08:29,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,pempek
+339,2026-03-26 08:08:29,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,pentol paman nduts
+340,2026-03-26 08:08:29,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,air mineral
+341,2026-03-26 13:00:09,Pengeluaran,basedata.communication,UANG CASH,,basedata.myself,basedata.communication,50000,pulsa
+342,2026-03-27 12:51:40,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,roti bakar
+343,2026-03-27 12:51:40,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,extrajoss susu
+347,2026-03-27 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,35000,house shine coffee
+348,2026-03-27 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,pentol charlie 0km Pelaihari
+344,2026-03-28 11:02:16,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+345,2026-03-28 11:02:16,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,33000,mie gacoan
+346,2026-03-28 11:02:16,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,air es
+349,2026-03-28 16:00:00,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+350,2026-03-28 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,30000,lalapan wm andalan
+351,2026-03-30 06:57:12,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,60000,
+352,2026-03-30 12:29:20,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+353,2026-03-30 12:29:20,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,29000,angkringan kala senja
+354,2026-03-31 13:00:24,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,bobby fried chicken
+355,2026-03-31 16:02:50,Pemasukan,Trinity Scents,BRI,,basedata.myself,Trinity Scents ,1200000,
+356,2026-04-01 09:42:43,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,sempol
+357,2026-04-01 09:42:43,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,12000,pempek
+358,2026-04-01 09:42:43,Pengeluaran,Perawatan Motor,UANG CASH,,basedata.myself,Perawatan Motor,10000,baterai
+359,2026-04-01 12:51:43,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,air mineral
+360,2026-04-01 12:51:43,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,26000,angkringan rth hasan basri
+361,2026-04-02 09:03:25,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+362,2026-04-02 13:05:26,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,pentol paman nduts
+365,2026-04-02 16:00:00,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,200000,perfume
+363,2026-04-03 12:40:58,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,30000,angkringan rth hasan basri
+364,2026-04-03 12:40:58,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,indomaret
+366,2026-04-04 12:49:33,Transfer,UANG CASH,BRI,UANG CASH,,,150000,
+367,2026-04-04 12:49:50,Pengeluaran,basedata.beautify,UANG CASH,,basedata.myself,basedata.beautify,150000,perfume
+368,2026-04-04 12:49:50,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,17000,pentol paman charlie
+369,2026-04-05 05:01:14,Pemasukan,Mingguan Ortu,UANG CASH,,basedata.myself,Mingguan Ortu,250000,
+370,2026-04-05 07:27:20,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,100000,
+371,2026-04-05 11:31:07,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,risoles jumbo
+372,2026-04-06 09:42:07,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,milo es
+373,2026-04-06 10:44:43,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,150000,
+374,2026-04-06 10:45:15,Pengeluaran,House needs,BRI,,basedata.myself,House needs ,800000,kost
+375,2026-04-06 13:19:56,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,pentol kuah rth
+376,2026-04-07 07:28:52,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,48000,pal 21 coffee
+377,2026-04-07 07:28:52,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,25000,alfamart
+378,2026-04-07 15:29:02,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,32000,angkringan rth hasan basri
+379,2026-04-08 10:51:21,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,indomaret
+380,2026-04-08 10:51:21,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,sempol
+381,2026-04-08 10:51:21,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,jeruk es
+382,2026-04-08 15:52:13,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,25000,bobby fried chicken
+383,2026-04-09 05:00:27,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,45000,
+384,2026-04-09 09:45:20,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,risoles jumbo
+385,2026-04-09 13:02:47,Pengeluaran,basedata.communication,BRI,,basedata.myself,basedata.communication,50000,icloud+
+386,2026-04-10 05:39:09,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,800000,
+387,2026-04-10 17:32:49,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,14000,ebot
+388,2026-04-11 02:46:31,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,200000,
+389,2026-04-11 15:22:06,Transfer,UANG CASH,BRI,UANG CASH,,,50000,
+390,2026-04-11 15:22:06,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,pempek
+391,2026-04-11 15:22:06,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,2000,air es
+392,2026-04-13 12:13:45,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,bobby fried chicken
+393,2026-04-13 12:13:45,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,pentol paman charlie
+394,2026-04-13 13:44:03,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+395,2026-04-13 13:44:03,Pengeluaran,basedata.beautify,UANG CASH,,basedata.myself,basedata.beautify,80000,perfume
+396,2026-04-16 15:18:48,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,23000,pentol paman charlie
+397,2026-04-18 06:10:32,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,300000,perfume
+398,2026-04-19 16:00:00,Transfer,UANG CASH,BRI,UANG CASH,,,150000,
+399,2026-04-19 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,tanjak coffee
+400,2026-04-21 09:40:08,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,50000,
+401,2026-04-21 09:40:08,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,
+402,2026-04-21 13:56:58,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,22000,ayam geprek solo
+403,2026-04-21 13:56:58,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+404,2026-04-21 13:56:58,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,4000,es teh jumbo
+405,2026-04-21 13:57:30,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,50000,potong rambut
+406,2026-04-22 10:57:29,Pengeluaran,basedata.beautify,UANG CASH,,basedata.myself,basedata.beautify,32000,decant parfum
+407,2026-04-22 13:24:43,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+408,2026-04-22 13:24:43,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+409,2026-04-22 13:24:43,Pengeluaran,basedata.education,UANG CASH,,basedata.myself,basedata.education,40000,print
+410,2026-04-22 13:24:43,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,paijo
+411,2026-04-22 13:24:43,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,10000,telur
+412,2026-04-23 13:48:14,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,1000000,
+413,2026-04-23 13:48:14,Pengeluaran,Food,BRI,,basedata.myself,Food,200000,royal k bbq
+414,2026-04-23 13:48:14,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,101 coffee
+420,2026-04-23 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,25000,nasi kuning handil bakti
+421,2026-04-23 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,alfamart
+415,2026-04-24 06:43:33,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+416,2026-04-24 06:43:33,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,25000,pal 21 coffee
+417,2026-04-24 06:59:15,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,400000,perfume
+418,2026-04-24 08:47:53,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,pentol 1991
+419,2026-04-24 12:15:19,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,300000,
+422,2026-04-24 16:00:00,Pengeluaran,House needs,BRI,,basedata.myself,House needs ,800000,kost
+424,2026-04-26 16:00:00,Pemasukan,Trinity Scents,BRI,,basedata.myself,Trinity Scents ,300000,
+425,2026-04-26 16:00:00,Pemasukan,Trinity Scents,UANG CASH,,basedata.myself,Trinity Scents ,200000,
+426,2026-04-26 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,tanjak coffee
+427,2026-04-26 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,15000,tanjak coffee
+423,2026-04-27 09:09:29,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,350000,
+428,2026-04-28 12:00:07,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,35000,angkringan rth hasan basri
+429,2026-04-28 12:01:22,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,extrajoss susu
+430,2026-04-29 15:09:07,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,pentol paman charlie
+431,2026-04-30 15:07:54,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,30000,mie gacoan
+432,2026-04-30 15:07:54,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,25000,makmoer bersama coffee
+433,2026-04-30 15:07:54,Pengeluaran,basedata.tax,UANG CASH,,basedata.myself,basedata.tax,5000,
+436,2026-04-30 16:00:00,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,55000,ayam
+434,2026-05-01 14:15:19,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,batagor
+435,2026-05-01 14:15:19,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,7000,jeruk es
+437,2026-05-02 11:11:57,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,dancow coklat es
+438,2026-05-03 13:16:57,Pemasukan,Mingguan Ortu,UANG CASH,,basedata.myself,Mingguan Ortu,200000,
+439,2026-05-03 13:16:57,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,25000,ayam geprek solo
+440,2026-05-04 11:33:04,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,650000,
+441,2026-05-04 11:33:04,Pengeluaran,Food,BRI,,basedata.myself,Food,400000,sushi tei
+442,2026-05-05 08:09:36,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,150000,
+443,2026-05-05 08:09:36,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,55000,soto ayam cak ipul
+444,2026-05-05 14:18:18,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,55000,mie gacoan
+445,2026-05-06 06:42:30,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,50000,ayam geprek solo
+446,2026-05-06 14:37:20,Transfer,UANG CASH,BRI,UANG CASH,,,300000,
+447,2026-05-06 14:37:20,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,138000,angkringan pak lik
+448,2026-05-06 14:37:20,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,75000,
+449,2026-05-07 15:03:51,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,10000,seblak nr sabila
+450,2026-05-07 15:03:51,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,es teh jumbo
+451,2026-05-07 15:03:51,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,12000,es doger
+452,2026-05-07 15:03:51,Transfer,UANG CASH,BRI,UANG CASH,,,400000,
+453,2026-05-07 15:03:51,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,46000,sate ayam
+454,2026-05-07 15:03:51,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,30000,indomaret
+455,2026-05-07 15:06:54,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",4000,
+456,2026-05-08 13:47:56,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,32000,pisang kipas bati-bati
+457,2026-05-08 13:47:56,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+458,2026-05-08 13:47:56,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,25000,alfamart
+459,2026-05-08 13:47:56,Pengeluaran,"Ojol, Parkir",UANG CASH,,basedata.myself,"Ojol, Parkir",2000,
+460,2026-05-08 13:47:56,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,basreng basah
+461,2026-05-08 13:47:56,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,58000,angkringan protoroyo
+462,2026-05-08 13:47:56,Pengeluaran,basedata.travel,UANG CASH,,basedata.myself,basedata.travel,15000,jas hujan
+463,2026-05-08 13:47:56,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,alfamart
+464,2026-05-08 13:50:12,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,35000,
+466,2026-05-09 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,30000,indomaret
+465,2026-05-10 13:30:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,13000,pentol pemko
+467,2026-05-10 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,40000,chikuro duta mall
+468,2026-05-10 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,70000,mae coffee
+469,2026-05-13 11:50:19,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,40000,
+470,2026-05-14 15:58:32,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+471,2026-05-14 15:58:32,Pemasukan,Mingguan Ortu,UANG CASH,,basedata.myself,Mingguan Ortu,50000,
+472,2026-05-14 15:58:32,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,50000,house shine coffee
+473,2026-05-14 15:58:32,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,12000,pentol paman charlie
+474,2026-05-17 11:07:40,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,26000,depot soloraya
+475,2026-05-17 11:07:40,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,450000,
+476,2026-05-17 15:46:01,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,neir coffee
+477,2026-05-18 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,pentol pasar parabola
+478,2026-05-18 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,air mineral
+479,2026-05-29 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,27000,
+481,2026-05-30 16:00:00,Pemasukan,Mingguan Ortu,UANG CASH,,basedata.myself,Mingguan Ortu,200000,
+480,2026-05-31 13:47:30,Pemasukan,Trinity Scents,BRI,,basedata.myself,Trinity Scents ,1550000,
+482,2026-06-01 11:13:33,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,risoles jumbo
+483,2026-06-01 11:13:33,Pengeluaran,basedata.communication,BRI,,basedata.myself,basedata.communication,100000,pulsa
+484,2026-06-01 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,tanjak coffee
+485,2026-06-01 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,50000,ayam geprek jawara
+487,2026-06-02 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,sate ayam
+488,2026-06-02 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,pisang keju h kadap
+486,2026-06-03 08:02:55,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,52000,house shine coffee
+489,2026-06-03 18:24:44,Pemasukan,basedata.bonus,BRI,,basedata.myself,basedata.bonus,650000,
+490,2026-06-04 10:49:05,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,50000,wet food
+491,2026-06-04 14:09:23,Pengeluaran,Food,BRI,,basedata.myself,Food,250000,royal k bbq
+492,2026-06-04 14:09:42,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,50000,potong rambut
+498,2026-06-04 16:00:00,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,150000,
+493,2026-06-05 06:39:02,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+494,2026-06-05 06:39:02,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,101 coffee
+495,2026-06-05 06:39:02,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,14000,cendana
+496,2026-06-05 13:31:39,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,26000,depot soloraya
+497,2026-06-05 13:31:39,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+503,2026-06-05 16:00:00,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,50000,
+499,2026-06-05 17:37:04,Pengeluaran,basedata.dress,BRI,,basedata.myself,basedata.dress,50000,
+500,2026-06-06 06:15:34,Transfer,UANG CASH,BRI,UANG CASH,,,850000,
+501,2026-06-06 06:15:34,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,800000,kost
+502,2026-06-06 06:16:35,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,sate ayam
+504,2026-06-07 15:05:17,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,17000,ayam geprek jawara
+505,2026-06-07 15:05:17,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,pentol bri adul
+506,2026-06-07 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,17000,pentol kuah rth
+507,2026-06-08 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,pentol paman nduts
+508,2026-06-08 16:00:00,Pengeluaran,basedata.dress,BRI,,basedata.myself,basedata.dress,250000,jersey timnas away
+513,2026-06-09 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,15000,pondok jus chua
+509,2026-06-10 13:15:52,Transfer,UANG CASH,BRI,UANG CASH,,,50000,
+510,2026-06-10 13:15:52,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,pentol paman nduts
+511,2026-06-10 13:15:52,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,air mineral
+512,2026-06-10 13:15:52,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,10000,mie ayam rth hasan basri
+514,2026-06-10 16:00:00,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,50000,dryfood
+515,2026-06-10 16:00:00,Pengeluaran,basedata.communication,BRI,,basedata.myself,basedata.communication,50000,icloud+
+516,2026-06-11 09:24:49,Pengeluaran,Nongkrongs,BRI,,basedata.myself,Nongkrongs ,50000,house shine coffee
+517,2026-06-12 10:01:15,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,250000,
+518,2026-06-12 10:01:15,Transfer,UANG CASH,BRI,UANG CASH,,,50000,
+519,2026-06-12 13:06:14,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,25000,angkringan rth hasan basri
+520,2026-06-13 14:46:10,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,angkringan rth hasan basri
+521,2026-06-15 12:51:02,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,pentol paman charlie
+523,2026-06-20 16:00:00,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+524,2026-06-20 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,23000,nasi goreng cah solo
+522,2026-06-21 04:58:43,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+525,2026-06-22 13:29:10,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,16000,cendana
+526,2026-06-22 13:29:10,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,bebek sinjay
+527,2026-06-22 13:29:10,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",5000,
+528,2026-06-22 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,33000,lalapan random
+529,2026-06-22 16:00:00,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+530,2026-06-24 12:52:40,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,250000,
+532,2026-06-24 16:00:00,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,200000,perfume
+531,2026-06-25 13:58:28,Pengeluaran,Nongkrongs,BRI,,basedata.myself,Nongkrongs ,50000,tusuk coffee
+533,2026-06-29 12:19:10,Pemasukan,basedata.parttime_job,BRI,,basedata.myself,basedata.parttime_job,750000,
+534,2026-06-30 10:53:42,Pemasukan,basedata.bonus,BRI,,basedata.myself,basedata.bonus,950000,
+535,2026-06-30 10:53:42,Pemasukan,basedata.bonus,UANG CASH,,basedata.myself,basedata.bonus,300000,
+536,2026-06-30 10:53:42,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,62000,lalapan sarang halang
+537,2026-06-30 10:53:42,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,26000,kelistrikan
+538,2026-06-30 10:53:42,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,60000,rak serbaguna
+539,2026-06-30 10:53:42,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,alfamart
+540,2026-06-30 10:53:42,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,sempol
+541,2026-06-30 13:40:48,Pengeluaran,House needs,BRI,,basedata.myself,House needs ,50000,rak parfum
+542,2026-06-30 14:06:28,Pemasukan,Trinity Scents,BRI,,basedata.myself,Trinity Scents ,1300000,
+544,2026-06-30 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,minum
+545,2026-06-30 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,29000,angkringan rth hasan basri
+543,2026-07-01 10:43:36,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,sempol
+546,2026-07-02 12:47:03,Pengeluaran,basedata.dress,BRI,,basedata.myself,basedata.dress,200000,jeans rockmaker
+547,2026-07-02 15:26:52,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,sempol
+548,2026-07-03 14:58:12,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,24000,bobby fried chicken
+549,2026-07-04 15:15:46,Pengeluaran,basedata.beautify,UANG CASH,,basedata.myself,basedata.beautify,29000,
+550,2026-07-05 10:02:45,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,400000,perfume
+551,2026-07-07 06:17:36,Transfer,UANG CASH,BRI,UANG CASH,,,200000,
+552,2026-07-07 06:17:36,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,28000,soto ayam cak ipul
+553,2026-07-07 06:17:36,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+554,2026-07-07 06:17:36,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,30000,pisang keju kai ikin
+555,2026-07-07 06:20:27,Pengeluaran,Perawatan Motor,UANG CASH,,basedata.myself,Perawatan Motor,5000,tambah angin
+556,2026-07-07 08:25:10,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",5000,
+557,2026-07-07 08:25:10,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,30000,
+558,2026-07-07 09:11:49,Pengeluaran,basedata.education,BRI,,basedata.myself,basedata.education,350000,claude AI
+559,2026-07-07 10:26:11,Pengeluaran,basedata.dress,BRI,,basedata.myself,basedata.dress,150000,handbag
+560,2026-07-07 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,27000,house shine coffee
+561,2026-07-07 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,pentol paman nduts
+562,2026-07-07 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,24000,risoles bunda mts
+566,2026-07-08 16:00:00,Pengeluaran,basedata.recreation,BRI,,basedata.myself,basedata.recreation,50000,game
+563,2026-07-09 05:50:51,Pemasukan,basedata.parttime_job,BRI,,basedata.myself,basedata.parttime_job,500000,
+564,2026-07-09 05:50:51,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,100000,
+565,2026-07-09 15:26:40,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,20000,air mineral
+569,2026-07-09 16:00:00,Pengeluaran,House needs,BRI,,basedata.myself,House needs ,150000,cermin standing
+567,2026-07-10 10:53:41,Pemasukan,basedata.parttime_job,BRI,,basedata.myself,basedata.parttime_job,200000,
+568,2026-07-10 14:09:05,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,250000,berobat leo
+570,2026-07-12 16:00:00,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+571,2026-07-18 16:00:00,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+572,2026-07-20 04:01:52,Pengeluaran,basedata.communication,BRI,,basedata.myself,basedata.communication,50000,wifi kost
+573,2026-07-20 08:35:18,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+574,2026-07-20 08:35:18,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,sate ayam
+575,2026-07-20 08:35:18,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,15000,telur
+576,2026-07-20 08:35:18,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,28000,kentuki
+577,2026-07-21 04:59:17,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,27000,nasi padang
+578,2026-07-21 06:16:14,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,100000,
+579,2026-07-21 08:00:57,Transfer,UANG CASH,BRI,UANG CASH,,,200000,
+580,2026-07-21 08:00:57,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,42000,nona merawa
+581,2026-07-22 09:42:48,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,21000,cendana
+582,2026-07-22 09:42:48,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,29000,kuroba coffee
+583,2026-07-22 11:42:02,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+584,2026-07-22 12:35:54,Pengeluaran,basedata.beautify,BRI,,basedata.myself,basedata.beautify,100000,\"shampoo makarizo, deodorant, salsa hair serum\"
+585,2026-07-22 12:35:54,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,11000,bobby fried chicken
+586,2026-07-22 12:35:54,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",4000,
+587,2026-07-22 12:35:54,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,air mineral
+588,2026-07-23 01:01:41,Pengeluaran,basedata.communication,BRI,,basedata.myself,basedata.communication,50000,kuota
+589,2026-07-23 01:01:41,Pengeluaran,basedata.recreation,BRI,,basedata.myself,basedata.recreation,50000,tiket film
+590,2026-07-23 06:41:59,Pengeluaran,Nongkrongs,BRI,,basedata.myself,Nongkrongs ,50000,la majesty coffee
+591,2026-07-23 11:34:47,Pengeluaran,basedata.dress,BRI,,basedata.myself,basedata.dress,1000000,sepatu
+592,2026-07-23 14:31:49,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",8000,
+593,2026-07-23 14:31:49,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,30000,mie ayam surya
+594,2026-07-24 11:01:41,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,24000,ags
+595,2026-07-24 11:01:41,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,30000,pisang keju kai ikin
+596,2026-07-27 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,pentol paman nduts
+597,2026-07-29 14:22:49,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+598,2026-07-29 14:22:49,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,27000,ags
+599,2026-07-29 14:22:49,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",5000,
+600,2026-07-30 10:32:00,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",5000,
+601,2026-07-30 10:32:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,25000,depot soloraya
+602,2026-07-30 11:45:13,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,35000,
+603,2026-07-30 13:24:51,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,300000,
+605,2026-07-30 16:00:00,Transfer,UANG CASH,BRI,UANG CASH,,,200000,
+606,2026-07-30 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,130000,laponda
+607,2026-07-30 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,60000,arunika coffee
+608,2026-07-30 16:00:00,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,18000,jinak coffee
+609,2026-07-30 16:00:00,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,100000,
+604,2026-07-31 17:29:16,Pemasukan,Trinity Scents,BRI,,basedata.myself,Trinity Scents ,1500000,
+610,2026-07-31 18:21:07,Pengeluaran,basedata.dress,BRI,,basedata.myself,basedata.dress,300000,running shoes
+611,2026-08-01 04:59:10,Pengeluaran,basedata.dress,BRI,,basedata.myself,basedata.dress,50000,running belt
+612,2026-08-01 04:59:10,Pengeluaran,basedata.gift,BRI,,basedata.myself,basedata.gift,100000,
+613,2026-08-01 15:59:19,Pengeluaran,basedata.gift,BRI,,basedata.myself,basedata.gift,150000,
+614,2026-08-02 12:53:51,Pengeluaran,basedata.dress,BRI,,basedata.myself,basedata.dress,100000,running clothes
+615,2026-08-04 05:02:10,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
+616,2026-08-04 11:38:50,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+617,2026-08-04 11:38:50,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,78000,glow
+618,2026-08-04 11:57:30,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,gorengan
+619,2026-08-05 07:20:11,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+620,2026-08-05 07:20:11,Pengeluaran,basedata.dress,UANG CASH,,basedata.myself,basedata.dress,25000,jahitan
+621,2026-08-05 07:20:11,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,13000,cendana
+622,2026-08-05 07:20:11,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,6000,es doger
+623,2026-08-06 11:45:23,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,bakaran
+624,2026-08-06 11:45:23,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,18000,ayam geprek midodari
+625,2026-08-07 08:20:47,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,30000,aygor
+626,2026-08-07 15:29:29,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+627,2026-08-07 15:29:29,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,14000,nasi goreng
+628,2026-08-08 10:35:09,Transfer,UANG CASH,BRI,UANG CASH,,,900000,
+629,2026-08-08 10:35:09,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,sate ayam
+630,2026-08-08 10:35:09,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,15000,telur
+631,2026-08-08 10:35:09,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,27000,indomaret
+632,2026-08-09 06:44:30,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,800000,kost
+633,2026-08-09 06:44:30,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,15000,cendana
+634,2026-08-09 10:05:44,Pengeluaran,Perawatan Motor,UANG CASH,,basedata.myself,Perawatan Motor,25000,cuci motor
+635,2026-08-09 10:05:44,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,11000,milo es
+636,2026-08-10 09:55:58,Pengeluaran,Food,BRI,,basedata.myself,Food,50000,rocket chicken
+637,2026-08-10 09:55:58,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,20000,gas portable
+638,2026-08-10 10:08:34,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,13000,
+639,2026-08-11 02:11:57,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,400000,
+640,2026-08-11 02:11:57,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,350000,
+641,2026-08-11 04:59:20,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+642,2026-08-11 04:59:20,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",5000,
+643,2026-08-11 04:59:20,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,26000,soto ayam cak ipul
+644,2026-08-11 04:59:20,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,15000,bfc fried chicken
+645,2026-08-12 04:15:56,Pengeluaran,basedata.communication,BRI,,basedata.myself,basedata.communication,50000,icloud+
+646,2026-08-12 06:36:32,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+647,2026-08-12 12:51:20,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+648,2026-08-12 12:51:20,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,24000,bebek sinjay
+649,2026-08-12 12:51:20,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,17000,laundry
+650,2026-08-12 12:51:20,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,2000,isi ulang galon
+654,2026-08-12 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,59000,ayam ganje
+655,2026-08-12 16:00:00,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,minum
+651,2026-08-13 13:23:16,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,40000,kedai bunda
+652,2026-08-13 13:23:16,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,46000,
+653,2026-08-13 13:23:16,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+656,2026-08-14 05:21:47,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,2000,
+657,2026-08-14 05:21:57,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+658,2026-08-14 14:20:06,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,28000,toko kopi jaya
+659,2026-08-14 14:20:06,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",4000,
+660,2026-08-14 14:20:06,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,21000,bpjs
+661,2026-08-14 14:20:06,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,15000,kayutangi
+662,2026-08-14 14:22:21,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",15000,gojek
+663,2026-08-15 12:44:44,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",3000,
+664,2026-08-15 12:44:44,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,15000,alfamart
+665,2026-08-15 12:44:44,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+666,2026-08-15 12:44:44,Pengeluaran,basedata.gift,BRI,,basedata.myself,basedata.gift,100000,
+667,2026-08-15 12:46:06,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,900000,
+668,2026-08-16 15:27:31,Pengeluaran,Nongkrongs,BRI,,basedata.myself,Nongkrongs ,50000,nordu coffee
+669,2026-08-16 15:27:31,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+670,2026-08-16 15:27:31,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,7000,pentol
+676,2026-08-16 16:00:00,Pengeluaran,basedata.gift,BRI,,basedata.myself,basedata.gift,600000,
+671,2026-08-17 14:30:26,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,27000,aiakawa coffee
+672,2026-08-17 14:30:26,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",10000,
+673,2026-08-17 14:30:26,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,15000,richesee chicken
+674,2026-08-17 14:31:01,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,16000,cendana
+675,2026-08-17 15:47:47,Pengeluaran,Food,BRI,,basedata.myself,Food,50000,richesee chicken
+681,2026-08-17 16:00:00,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,16000,ayam geprek midodari
+677,2026-08-18 05:29:28,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+678,2026-08-18 05:29:28,Pengeluaran,basedata.education,BRI,,basedata.myself,basedata.education,150000,print
+679,2026-08-18 05:29:28,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,sate ayam
+680,2026-08-18 05:29:28,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,pempek
+688,2026-08-18 16:00:00,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,250000,
+682,2026-08-19 05:49:18,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,100000,
+683,2026-08-19 06:48:39,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,sate ayam
+684,2026-08-19 06:48:39,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,12000,roti pisang
+685,2026-08-19 14:20:39,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,24000,indomaret
+687,2026-08-20 13:23:00,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+689,2026-08-20 13:23:22,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,25000,depot soloraya
+690,2026-08-20 13:23:22,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,morrow coffee
+691,2026-08-20 13:23:22,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+692,2026-08-20 13:23:22,Pengeluaran,Food,BRI,,basedata.myself,Food,200000,royal k bbq
+693,2026-08-20 13:28:51,Pengeluaran,Cemal Cemil,BRI,,basedata.myself,Cemal Cemil,50000,chikuro duta mall
+694,2026-08-21 09:52:55,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,14000,cendana
+695,2026-08-21 09:52:55,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,42000,tusuk coffee
+696,2026-08-21 14:41:34,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+697,2026-08-21 14:41:34,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+698,2026-08-21 14:41:34,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,pentol
+699,2026-08-21 14:41:34,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",20000,
+700,2026-08-22 05:54:46,Pengeluaran,basedata.pet,BRI,,basedata.myself,basedata.pet,100000,
+701,2026-08-22 12:39:21,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,45000,mie
+702,2026-08-22 12:39:21,Pengeluaran,Food,UANG CASH,,basedata.myself,Food,20000,depot soloraya
+703,2026-08-23 12:37:59,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+704,2026-08-23 12:37:59,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,20000,1815 coffee
+705,2026-08-23 12:37:59,Pengeluaran,Bensin,UANG CASH,,basedata.myself,Bensin,55000,
+706,2026-08-23 12:37:59,Pengeluaran,Foodstuffs,UANG CASH,,basedata.myself,Foodstuffs ,25000,\"telur, beras\"
+707,2026-08-23 12:40:12,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,pentol bakar
+708,2026-08-23 12:48:55,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+709,2026-08-23 12:48:55,Pengeluaran,basedata.tax,UANG CASH,,basedata.myself,basedata.tax,10000,
+710,2026-08-23 12:49:08,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,2800000,
+711,2026-08-24 07:30:17,Pengeluaran,basedata.education,BRI,,basedata.myself,basedata.education,2200000,yudisium wisuda
+712,2026-08-25 14:24:48,Transfer,UANG CASH,BRI,UANG CASH,,,100000,
+713,2026-08-25 14:24:48,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,8000,pempek hksn
+714,2026-08-25 14:24:48,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,indomaret
+715,2026-08-25 14:24:48,Pengeluaran,House needs,UANG CASH,,basedata.myself,House needs ,3000,isi ulang galon
+716,2026-08-26 11:55:27,Pengeluaran,Nongkrongs,UANG CASH,,basedata.myself,Nongkrongs ,22000,101 coffee
+717,2026-08-26 11:55:27,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+718,2026-08-26 11:55:27,Pengeluaran,\"Ojol, Parkir\",UANG CASH,,basedata.myself,\"Ojol, Parkir\",2000,
+719,2026-08-26 11:55:27,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,5000,air mineral
+720,2026-08-26 11:55:27,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,10000,pentol
+721,2026-08-26 11:55:27,Pengeluaran,Cemal Cemil,UANG CASH,,basedata.myself,Cemal Cemil,18000,tahu baso
+722,2026-08-26 11:55:27,Pengeluaran,Cemal Cemil,BRI,,basedata.myself,Cemal Cemil,30000,amelia bakery
+723,2026-08-26 13:11:28,Pengeluaran,Random Stuff,UANG CASH,,basedata.myself,Random Stuff,20000,
+724,2026-08-26 13:11:50,Pengeluaran,basedata.tax,UANG CASH,,basedata.myself,basedata.tax,5000,
+725,2026-08-26 13:11:59,Pemasukan,Mingguan Ortu,BRI,,basedata.myself,Mingguan Ortu,200000,
