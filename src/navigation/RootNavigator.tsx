@@ -14,6 +14,8 @@ import { RecurringFormModal } from '../screens/more/RecurringFormModal';
 import { DebtsScreen } from '../screens/more/DebtsScreen';
 import { DebtFormModal } from '../screens/more/DebtFormModal';
 import { ExportReportScreen } from '../screens/more/ExportReportScreen';
+import { AnalyticsScreen } from '../screens/more/AnalyticsScreen';
+import { SavingsGoalsScreen } from '../screens/more/SavingsGoalsScreen';
 import { SettingsScreen } from '../screens/more/SettingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -80,6 +82,8 @@ export const RootNavigator: React.FC = () => {
           animation: 'slide_from_bottom',
         }}
       />
+      <Stack.Screen name="Analytics" component={AnalyticsScreen} />
+      <Stack.Screen name="SavingsGoals" component={SavingsGoalsScreen} />
       <Stack.Screen name="ExportReport" component={ExportReportScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>

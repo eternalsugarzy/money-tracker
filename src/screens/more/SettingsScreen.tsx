@@ -204,7 +204,7 @@ export const SettingsScreen: React.FC = () => {
               Sugarzy Finance Tracker (SuFiKer+)
             </Text>
             <Text style={[styles.appVersion, { color: theme.colors.textMuted }]}>
-              Versi 1.3.0 (Build 2026.08)
+              Versi 1.4.0 (Build 2026.08)
             </Text>
 
             <View
@@ -217,12 +217,12 @@ export const SettingsScreen: React.FC = () => {
               ]}
             >
               <Text style={[styles.creatorText, { color: theme.colors.text }]}>
-                Dibuat dengan ❤️ oleh <Text style={{ fontWeight: '900' }}>Muhammad</Text> (@eternalsugarzy)
+                Dibuat dengan ❤️ oleh <Text style={{ fontWeight: '900' }}>Irwan Firmanto</Text> (@eternalsugarzy)
               </Text>
             </View>
 
             <Text style={[styles.copyrightText, { color: theme.colors.textMuted }]}>
-              © 2026 Muhammad. All rights reserved.
+              © 2026 Irwan Firmanto (@eternalsugarzy). All rights reserved.
             </Text>
           </View>
         </NeoCard>

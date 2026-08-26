@@ -22,5 +22,7 @@ export type RootStackParamList = {
   Debts: undefined;
   DebtFormModal?: { editDebt?: Debt; defaultType?: DebtType };
   ExportReport: undefined;
+  Analytics: undefined;
+  SavingsGoals: undefined;
   Settings: undefined;
 };

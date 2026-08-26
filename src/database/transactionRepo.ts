@@ -286,11 +286,12 @@ export async function getSummaryForPeriod(
 export async function getCategorySpendingBreakdown(
   period: 'day' | 'week' | 'month' | 'year' | 'all' | 'custom',
   customStart?: string,
-  customEnd?: string
+  customEnd?: string,
+  txType: 'expense' | 'income' = 'expense'
 ): Promise<CategorySpendingSummary[]> {
   const db = await getDatabase();
   const now = new Date();
-  let dateCondition = "WHERE t.type = 'expense'";
+  let dateCondition = `WHERE t.type = '${txType}'`;
   const params: any[] = [];
 
   if (period === 'day') {
@@ -322,7 +323,7 @@ export async function getCategorySpendingBreakdown(
       COALESCE(c.name, 'Lain-lain') as categoryName,
       COALESCE(c.icon, 'help-circle') as categoryIcon,
       COALESCE(c.icon_family, 'Ionicons') as categoryIconFamily,
-      COALESCE(c.color, '#FF5D8F') as categoryColor,
+      COALESCE(c.color, '${txType === 'income' ? '#54E346' : '#FF5D8F'}') as categoryColor,
       SUM(t.amount) as totalSpent,
       COUNT(t.id) as transactionCount
     FROM transactions t
@@ -345,4 +346,38 @@ export async function getCategorySpendingBreakdown(
     percentage: total > 0 ? (item.totalSpent / total) * 100 : 0,
     transactionCount: item.transactionCount,
   }));
+}
+
+export async function getMonthlyTrendData(): Promise<{ label: string; value: number }[]> {
+  const db = await getDatabase();
+  const months: { label: string; start: string; end: string }[] = [];
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const monthStr = `${year}-${month}`;
+    months.push({
+      label: monthNames[d.getMonth()],
+      start: `${monthStr}-01`,
+      end: `${monthStr}-31`,
+    });
+  }
+
+  const result: { label: string; value: number }[] = [];
+  for (const m of months) {
+    const res = await db.getFirstAsync<{ net: number }>(
+      `SELECT (COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) - 
+               COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0)) as net
+       FROM transactions WHERE date >= ? AND date <= ?`,
+      [m.start, m.end + 'T23:59:59']
+    );
+    result.push({
+      label: m.label,
+      value: res?.net || 0,
+    });
+  }
+  return result;
 }

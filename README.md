@@ -1,8 +1,8 @@
 # 💰 Sugarzy Finance Tracker (SuFiKer+) — iOS Edition
 
-> **Aplikasi Mobile iOS Pencatatan & Pengelolaan Keuangan Pribadi dengan Desain Neo-Brutalism, Built-in Calculator, & Local SQLite Database.**  
-> **Versi: 1.3.0 (Latest Release)**  
-> **Dibuat dengan ❤️ oleh Muhammad ([@eternalsugarzy](https://github.com/eternalsugarzy))**
+> **Aplikasi Mobile iOS Pencatatan & Pengelolaan Keuangan Pribadi dengan Desain Neo-Brutalism, Built-in Calculator, Multi-Account, & Local SQLite Database.**  
+> **Versi: 1.4.0 (Latest Release)**  
+> **Dibuat dengan ❤️ oleh Irwan Firmanto ([@eternalsugarzy](https://github.com/eternalsugarzy))**
 
 ---
 
@@ -11,57 +11,68 @@
 - **Hard Drop Shadows** tajam tanpa blur (`offset: 4, 4`).
 - **Palet Warna Pop Kontras Tinggi**: *Electric Yellow* (`#FFE600`), *Neon Pink* (`#FF5D8F`), *Lime Green* (`#54E346`), *Cyan/Blue* (`#00F0FF`), *Vivid Orange* (`#FF7A00`), dan *Purple* (`#A06CD5`).
 - **Animasi Taktil (Tactile Press-Down)** mekanis saat tombol ditekan.
-- **Dukungan Dark Mode** Neo-Brutalism kontras tinggi.
+- **Dukungan Penuh Dark Mode & Light Mode** kontras tinggi yang tajam dan nyaman dibaca.
 - **Dioptimalkan Khusus untuk iPhone 16** (Dynamic Island, Safe Area Insets, dan Tap Targets standar Apple).
 
 ---
 
-## ✨ Fitur-Fitur Utama
+## ✨ Fitur-Fitur Utama (Versi 1.4.0)
 
 1. **Dashboard Beranda (Home)**:
-   - Total Saldo Bersih (*Net Worth*) dari akumulasi seluruh akun/dompet.
-   - Tombol Pengaturan Akses Cepat via ikon Gear (`⚙️`) di kanan atas.
-   - Kartu ringkasan Pemasukan & Pengeluaran (Filter: Hari ini, Minggu ini, Bulan ini).
-   - Donut Pie Chart pengeluaran per kategori (`react-native-svg`) dengan legend dan persentase.
-   - Grafik garis tren saldo bulanan (*Net Worth Trend*).
-   - Daftar 5 transaksi terbaru yang reaktif secara real-time.
+   - **Sembunyikan Saldo (Hide/Show Balance)**: Tombol ikon mata (👁️) untuk menyembunyikan/menampilkan total saldo bersih dan nominal akun.
+   - **Skor Kesehatan Finansial (Financial Health Score)**: Perhitungan rasio tabungan otomatis (*Savings Rate*) dengan status 🟢 *Sehat*, 🟡 *Cukup Stabil*, atau 🔴 *Waspada*.
+   - **Peringatan Budget Pintar**: Peringatan otomatis jika kategori pengeluaran mencapai ≥80% dari anggaran bulanan.
+   - **⚡ Catat Cepat 1-Tap (Quick-Add Shortcuts)**: Tombol preset instan (☕ Kopi Rp 25rb, 🍽️ Makan Siang Rp 35rb, ⛽ Bensin Rp 50rb, 🛒 Belanja Rp 100rb) untuk mencatat dalam 1 detik.
+   - **Grafik Donut Interaktif**: Pilihan toggle dinamis antara **🔴 Pengeluaran** dan **🟢 Pemasukan** per kategori.
+   - **5 Transaksi Terbaru**: Sinkronisasi riwayat real-time dengan tombol "Lihat Semua >" ke tab Transaksi.
 
-2. **Konsistensi Built-in NeoCalculator di Seluruh Input Angka**:
-   - Seluruh input nominal uang (**Catat Transaksi**, **Budget**, **Tambah Dompet/Akun**, **Transaksi Berulang**, dan **Hutang-Piutang**) langsung terintegrasi dengan keypad kalkulator built-in tanpa membuka keyboard ponsel.
+2. **📊 Statistik & Trend Keuangan Lengkap (Menu Khusus)**:
+   - Layar khusus analitik di Menu Lainnya (`AnalyticsScreen`).
+   - Ringkasan Arus Kas Masuk vs Keluar per Hari, Minggu, Bulan, dan Tahun.
+   - **Grafik Garis Tren 6 Bulan (`NeoLineChart`)**: Visualisasi surplus/defisit bulanan secara historis.
+   - **Peringkat Kategori & Progress Bar**: Ranking kategori pengeluaran & pemasukan terbesar beserta persentase kontribusi.
+
+3. **🎯 Celengan & Target Impian (Savings Goals / Wishlist)**:
+   - Fitur penetapan target tabungan (Dana Darurat, Gadget Baru, Liburan).
+   - Indikator pencapaian visual (*Progress Bar*).
+   - Fitur "Isi Tabungan" terintegrasi langsung dengan kalkulator *built-in*.
+
+4. **Konsistensi Built-in NeoCalculator di Seluruh Input Angka**:
+   - Seluruh input nominal uang (**Catat Transaksi**, **Budget**, **Tambah Dompet/Akun**, **Transaksi Berulang**, **Hutang-Piutang**, dan **Celengan**) langsung terintegrasi dengan keypad kalkulator built-in tanpa membuka keyboard ponsel.
    - Mendukung operasi matematika langsung (`+`, `-`, `×`, `÷`) dan preset cepat (`+10rb`, `+50rb`, `+100rb`, `+500rb`).
 
-3. **Tab Transaksi Terpadu (1 Card Per Hari)**:
+5. **Tab Transaksi Terpadu (1 Card Per Hari)**:
    - Seluruh transaksi dalam 1 hari digabung ke dalam **1 Solid Neo-Brutalist Card** per tanggal.
-   - Header Card menampilkan: `Hari, Tanggal Lengkap` (misal: *Rabu, 26 Agustus 2026* / *Hari Ini • 26 Agu 2026*), Total Masuk, Total Keluar, dan Badge Selisih Net.
-   - Filter Bar minimalis dan sleek dengan pencarian cepat, filter periode instan, dan drawer filter lanjutan (Tipe, Dompet, Kategori).
+   - Header Card menampilkan: `Hari, Tanggal Lengkap` (misal: *Rabu, 26 Agustus 2026*), Total Masuk, Total Keluar, dan Badge Selisih Net.
+   - Filter Bar minimalis dan sleek dengan pencarian cepat, filter periode instan, dan drawer filter lanjutan.
 
-4. **➕ Catat Transaksi (Center Raised FAB)**:
+6. **➕ Catat Transaksi (Center Raised FAB)**:
    - 4 Pilihan Mode: **Pengeluaran**, **Pemasukan**, **Transfer Saldo**, **Hutang-Piutang**.
    - **Default Dompet Otomatis**: Memilih akun/dompet yang terakhir digunakan secara otomatis.
    - **Kategori Universal**: Kategori fleksibel dapat digunakan untuk pemasukan, pengeluaran, maupun budget.
    - **Lampiran Foto Struk**: Kamera dan galeri foto dengan thumbnail strip dan zoom preview (`expo-image-picker`).
 
-5. **Anggaran / Budgeting**:
+7. **Anggaran / Budgeting**:
    - Budget independen dengan nama kustom terhubung ke kategori.
    - Sinkronisasi pengeluaran riil otomatis.
    - Progress bar 3 warna (🟢 <80%, 🟡 80-100%, 🔴 >100% Over Budget).
 
-6. **Manajemen Akun & Dompet**:
+8. **Manajemen Akun & Dompet**:
    - Tambah dompet tanpa batas (Cash, Bank, E-Wallet, Kartu Kredit, Investasi).
    - Proteksi arsip (*soft-delete*) jika akun sudah memiliki riwayat transaksi.
 
-7. **Galeri 250+ Icon & Kategori**:
+9. **Galeri 250+ Icon & Kategori**:
    - 250+ icon (Ionicons & MaterialCommunityIcons) terbagi dalam 10 tema (Makanan, Transportasi, Belanja, Tagihan, Hiburan, Kesehatan, Pendidikan, Finansial, Keluarga, Gaya Hidup).
 
-8. **Hutang & Piutang**:
-   - Catatan Utang dan Piutang dengan pengingat jatuh tempo.
-   - Alur "Tandai Lunas" dengan opsi otomatis mencatat transaksi ke akun terpilih.
+10. **Hutang & Piutang**:
+    - Catatan Utang dan Piutang dengan pengingat jatuh tempo.
+    - Alur "Tandai Lunas" dengan opsi otomatis mencatat transaksi ke akun terpilih.
 
-9. **Transaksi Berulang (Recurring)**:
-   - Template pengeluaran/pemasukan rutin (Harian, Mingguan, Bulanan, Tahunan).
-   - Notifikasi pengingat jatuh tempo.
+11. **Transaksi Berulang (Recurring)**:
+    - Template pengeluaran/pemasukan rutin (Harian, Mingguan, Bulanan, Tahunan).
+    - Notifikasi pengingat jatuh tempo.
 
-10. **Ekspor & Backup**:
+12. **Ekspor & Backup**:
     - Ekspor riwayat transaksi ke **CSV (Excel)**.
     - Backup lengkap ke format **JSON** dengan native share sheet (`expo-sharing`).
 
@@ -99,7 +110,6 @@
 
 ---
 
-## 📄 Hak Cipta & Lisensi
+## 📄 Lisensi & Hak Cipta
 
-**© 2026 Muhammad ([@eternalsugarzy](https://github.com/eternalsugarzy))**. All rights reserved.  
-Dibuat untuk keperluan pencatatan dan pengelolaan keuangan pribadi modern dengan estetika Neo-Brutalism.
+© 2026 **Irwan Firmanto** ([@eternalsugarzy](https://github.com/eternalsugarzy)). All rights reserved.

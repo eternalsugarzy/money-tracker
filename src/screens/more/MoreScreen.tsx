@@ -26,11 +26,27 @@ export const MoreScreen: React.FC = () => {
 
   const MENU_ITEMS = [
     {
+      id: 'analytics',
+      title: 'Statistik & Trend Keuangan',
+      subtitle: 'Analisis visual pemasukan, pengeluaran, perbandingan & tren saldo',
+      icon: 'bar-chart',
+      iconColor: theme.colors.primary,
+      screen: 'Analytics',
+    },
+    {
+      id: 'savings',
+      title: 'Celengan & Target Impian',
+      subtitle: 'Simpan dan pantau progress tabungan tujuanmu',
+      icon: 'trophy',
+      iconColor: theme.colors.warning,
+      screen: 'SavingsGoals',
+    },
+    {
       id: 'accounts',
       title: 'Akun & Dompet',
       subtitle: `${activeAccountsCount} akun aktif • Total ${formatCurrency(totalNetWorth)}`,
       icon: 'wallet',
-      iconColor: theme.colors.primary,
+      iconColor: theme.colors.income,
       screen: 'Accounts',
     },
     {
@@ -38,7 +54,7 @@ export const MoreScreen: React.FC = () => {
       title: 'Kategori Keuangan',
       subtitle: `${activeCategoriesCount} kategori aktif (Universal)`,
       icon: 'grid',
-      iconColor: theme.colors.income,
+      iconColor: theme.colors.transfer,
       screen: 'Categories',
     },
     {
@@ -54,7 +70,7 @@ export const MoreScreen: React.FC = () => {
       title: 'Transaksi Berulang (Recurring)',
       subtitle: `${activeRecurringCount} template aktif`,
       icon: 'repeat',
-      iconColor: theme.colors.transfer,
+      iconColor: theme.colors.accent,
       screen: 'Recurring',
     },
     {
@@ -62,7 +78,7 @@ export const MoreScreen: React.FC = () => {
       title: 'Laporan & Ekspor Data',
       subtitle: 'Ekspor riwayat ke CSV, JSON, & Backup Data',
       icon: 'download',
-      iconColor: theme.colors.accent,
+      iconColor: theme.colors.expense,
       screen: 'ExportReport',
     },
   ];
@@ -138,14 +154,14 @@ export const MoreScreen: React.FC = () => {
             ]}
           >
             <Text style={styles.creatorChipText}>
-              Dibuat oleh Muhammad (@eternalsugarzy)
+              Dibuat oleh Irwan Firmanto (@eternalsugarzy)
             </Text>
           </View>
           <Text style={[styles.aboutDesc, { color: theme.colors.textMuted }]}>
             Aplikasi Pencatatan Keuangan iOS dengan Desain Neo-Brutalism, Built-in Calculator, Multi-Account & Offline SQLite.
           </Text>
           <Text style={[styles.versionText, { color: theme.colors.textMuted }]}>
-            Versi 1.3.0 (iOS Edition) • © 2026 Muhammad
+            Versi 1.4.0 (iOS Edition) • © 2026 Irwan Firmanto (@eternalsugarzy)
           </Text>
         </NeoCard>
 
@@ -161,10 +177,11 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 8,
+    paddingBottom: 10,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
     letterSpacing: 0.5,
   },
@@ -174,7 +191,7 @@ const styles = StyleSheet.create({
   },
   menuCard: {
     marginVertical: 5,
-    padding: 14,
+    padding: 12,
   },
   cardContent: {
     flexDirection: 'row',
@@ -185,56 +202,56 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 10,
     borderWidth: 2,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   textContainer: {
     flex: 1,
-    marginLeft: 14,
+    marginLeft: 12,
   },
   menuTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '900',
   },
   menuSubtitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     marginTop: 2,
   },
   arrowBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 6,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     borderWidth: 1.5,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     marginLeft: 8,
   },
   aboutCard: {
-    marginTop: 18,
+    marginTop: 20,
     padding: 18,
     alignItems: 'center',
   },
   brandIconBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#121212',
+    width: 54,
+    height: 54,
+    borderRadius: 14,
     backgroundColor: '#FFE600',
+    borderWidth: 2.5,
+    borderColor: '#121212',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 10,
   },
   aboutTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '900',
     textAlign: 'center',
   },
   creatorChip: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 8,
     borderWidth: 1.5,
     marginVertical: 8,
   },
@@ -247,12 +264,13 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     textAlign: 'center',
-    marginTop: 4,
     lineHeight: 16,
+    marginTop: 4,
   },
   versionText: {
     fontSize: 10,
     fontWeight: '800',
-    marginTop: 8,
+    textAlign: 'center',
+    marginTop: 10,
   },
 });

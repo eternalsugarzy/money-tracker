@@ -15,7 +15,6 @@ import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoBadge } from '../../components/common/NeoBadge';
 import { NeoPieChart } from '../../components/charts/NeoPieChart';
-import { NeoLineChart, TrendDataPoint } from '../../components/charts/NeoLineChart';
 import { TransactionItem } from '../../components/transactions/TransactionItem';
 import { formatCurrency, formatPercentage } from '../../utils/formatters';
 import { TimePeriodFilter, SummaryData, CategorySpendingSummary, Transaction } from '../../types';
@@ -27,6 +26,8 @@ export const HomeScreen: React.FC = () => {
   const {
     totalNetWorth,
     accounts,
+    categories,
+    budgets,
     transactions,
     refreshData,
     isLoading,
@@ -34,6 +35,9 @@ export const HomeScreen: React.FC = () => {
 
   const [period, setPeriod] = useState<'day' | 'week' | 'month'>('day');
   const [chartPeriod, setChartPeriod] = useState<TimePeriodFilter>('month');
+  const [chartType, setChartType] = useState<'expense' | 'income'>('expense');
+  const [showBalance, setShowBalance] = useState<boolean>(true);
+
   const [periodSummary, setPeriodSummary] = useState<SummaryData>({
     totalIncome: 0,
     totalExpense: 0,
@@ -48,7 +52,7 @@ export const HomeScreen: React.FC = () => {
     try {
       const [sum, breakdown, recent] = await Promise.all([
         getSummaryForPeriod(period),
-        getCategorySpendingBreakdown(chartPeriod),
+        getCategorySpendingBreakdown(chartPeriod, undefined, undefined, chartType),
         getRecentTransactions(5),
       ]);
       setPeriodSummary(sum);
@@ -57,7 +61,7 @@ export const HomeScreen: React.FC = () => {
     } catch (err) {
       console.warn('Error loading home data:', err);
     }
-  }, [period, chartPeriod]);
+  }, [period, chartPeriod, chartType]);
 
   useFocusEffect(
     useCallback(() => {
@@ -67,7 +71,7 @@ export const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     loadHomeData();
-  }, [loadHomeData, transactions, period, chartPeriod]);
+  }, [loadHomeData, transactions, period, chartPeriod, chartType]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -78,13 +82,58 @@ export const HomeScreen: React.FC = () => {
 
   const topSpendingCategory = chartData.length > 0 ? chartData[0] : null;
 
-  // Mock sample 5-point data for Net Worth Trend
-  const trendPoints: TrendDataPoint[] = [
-    { label: 'Mei', value: Math.max(0, totalNetWorth * 0.75) },
-    { label: 'Jun', value: Math.max(0, totalNetWorth * 0.82) },
-    { label: 'Jul', value: Math.max(0, totalNetWorth * 0.9) },
-    { label: 'Agu', value: totalNetWorth },
-  ];
+  // Financial Health Score Calculation
+  const savingsRate =
+    periodSummary.totalIncome > 0
+      ? Math.round(((periodSummary.totalIncome - periodSummary.totalExpense) / periodSummary.totalIncome) * 100)
+      : periodSummary.totalExpense === 0
+      ? 100
+      : -100;
+
+  const getHealthStatus = () => {
+    if (savingsRate >= 30) {
+      return {
+        label: 'SEHAT FINANSIAL',
+        desc: `Keren! Kamu menabung ${savingsRate}% dari pemasukanmu hari ini/bulan ini.`,
+        color: theme.colors.income,
+        textColor: '#0A3B0A',
+        icon: 'checkmark-circle',
+      };
+    }
+    if (savingsRate >= 10) {
+      return {
+        label: 'CUKUP STABIL',
+        desc: `Rasio tabungan ${savingsRate}%. Pertahankan pengeluaran agar tabungan bertambah.`,
+        color: theme.colors.warning,
+        textColor: '#3B2900',
+        icon: 'alert-circle',
+      };
+    }
+    return {
+      label: 'WASPADA / OVERSPENDING',
+      desc: 'Pengeluaran mendekati atau melampaui pemasukan. Evaluasi pengeluaranmu.',
+      color: theme.colors.expense,
+      textColor: '#3B0A18',
+      icon: 'warning',
+    };
+  };
+
+  const healthStatus = getHealthStatus();
+
+  // Smart Budget Alerts Check (>80% or >100%)
+  const overBudgets = budgets.filter((b) => (b.percentage || 0) >= 80);
+
+  // Quick 1-Tap Preset Shortcut Handler
+  const handleQuickAddShortcut = (catNameSearch: string, amount: number) => {
+    const matchedCat = categories.find((c) =>
+      c.name.toLowerCase().includes(catNameSearch.toLowerCase())
+    );
+    navigation.navigate('AddModal', {
+      initialCategoryId: matchedCat?.id,
+      initialAmount: amount,
+      initialType: 'expense',
+    });
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
@@ -135,78 +184,176 @@ export const HomeScreen: React.FC = () => {
           />
         }
       >
-        {/* 1. Total Net Worth Card */}
+        {/* 1. Total Net Worth Card with Eye Hide/Show Button */}
         <NeoCard
           backgroundColor={theme.colors.primary}
           style={styles.netWorthCard}
         >
           <View style={styles.cardHeaderRow}>
-            <Text style={styles.cardSuperLabel}>TOTAL SALDO SEMUA AKUN</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={styles.cardSuperLabel}>TOTAL SALDO BERSIH (NET WORTH)</Text>
+              <TouchableOpacity
+                onPress={() => setShowBalance(!showBalance)}
+                style={styles.eyeBtn}
+                activeOpacity={0.7}
+              >
+                <Ionicons
+                  name={showBalance ? 'eye-outline' : 'eye-off-outline'}
+                  size={16}
+                  color="#121212"
+                />
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity
-              onPress={() => navigation.navigate('MoreTab', { screen: 'Accounts' })}
+              onPress={() => navigation.navigate('Accounts')}
               style={styles.manageAccBtn}
             >
-              <Text style={styles.manageAccText}>{accounts.length} Akun &gt;</Text>
+              <Text style={styles.manageAccText}>Kelola Akun &gt;</Text>
             </TouchableOpacity>
           </View>
 
           <Text style={styles.netWorthAmount}>
-            {formatCurrency(totalNetWorth)}
+            {showBalance ? formatCurrency(totalNetWorth) : 'Rp ••••••••'}
           </Text>
 
-          {/* Accounts mini row */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.accountsMiniScroll}
-          >
-            {accounts.filter((a) => a.is_archived === 0).map((acc) => (
-              <View
-                key={acc.id}
-                style={[
-                  styles.accPill,
-                  {
-                    backgroundColor: theme.colors.surface,
-                    borderColor: theme.colors.border,
-                  },
-                ]}
-              >
-                <NeoBadge
-                  icon={acc.icon}
-                  iconFamily={acc.icon_family}
-                  color={acc.color}
-                  size="sm"
-                  noShadow
-                />
-                <View style={{ marginLeft: 6 }}>
-                  <Text style={[styles.accPillName, { color: theme.colors.text }]}>{acc.name}</Text>
-                  <Text style={[styles.accPillBal, { color: theme.colors.text }]}>
-                    {formatCurrency(acc.current_balance)}
-                  </Text>
+          {/* Mini Account Balance Strip */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.accountsMiniScroll}>
+            {accounts
+              .filter((a) => a.is_archived === 0)
+              .map((acc) => (
+                <View
+                  key={acc.id}
+                  style={[
+                    styles.accPill,
+                    {
+                      backgroundColor: 'rgba(255,255,255,0.7)',
+                      borderColor: '#121212',
+                    },
+                  ]}
+                >
+                  <NeoBadge
+                    icon={acc.icon}
+                    iconFamily={acc.icon_family}
+                    color={acc.color}
+                    size="sm"
+                  />
+                  <View style={{ marginLeft: 6 }}>
+                    <Text style={styles.accPillName}>{acc.name}</Text>
+                    <Text style={styles.accPillBal}>
+                      {showBalance ? formatCurrency(acc.current_balance) : '••••'}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))}
           </ScrollView>
         </NeoCard>
 
-        {/* 2. Today / Period Summary Card */}
-        <NeoCard style={styles.summaryCard}>
-          <View style={styles.periodSwitcherRow}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              RINGKASAN
-            </Text>
+        {/* 2. Financial Health Score Widget */}
+        <NeoCard style={styles.healthCard}>
+          <View style={styles.healthHeader}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
+              <Ionicons name={healthStatus.icon as any} size={18} color={healthStatus.color} />
+              <Text style={[styles.healthTitle, { color: theme.colors.text }]}>
+                SKOR KESEHATAN KEUANGAN
+              </Text>
+            </View>
             <View
               style={[
-                styles.periodTabGroup,
+                styles.healthBadge,
                 {
-                  backgroundColor: theme.colors.cardSecondary,
+                  backgroundColor: healthStatus.color,
                   borderColor: theme.colors.border,
                 },
               ]}
             >
+              <Text style={[styles.healthBadgeText, { color: healthStatus.textColor }]}>
+                {healthStatus.label}
+              </Text>
+            </View>
+          </View>
+          <Text style={[styles.healthDesc, { color: theme.colors.textMuted }]}>
+            {healthStatus.desc}
+          </Text>
+        </NeoCard>
+
+        {/* 3. Smart Budget Warning Alert (if any budget >80%) */}
+        {overBudgets.length > 0 && (
+          <NeoCard backgroundColor={theme.colors.expense} style={styles.budgetWarningCard}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Ionicons name="warning" size={20} color="#FFFFFF" />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.budgetWarningTitle}>PERINGATAN BUDGET BULANAN</Text>
+                <Text style={styles.budgetWarningSub}>
+                  {overBudgets[0]?.name} telah terpakai {formatPercentage(overBudgets[0]?.percentage || 0)} ({formatCurrency(overBudgets[0]?.spent_amount || 0)} dari {formatCurrency(overBudgets[0]?.limit_amount || 0)}).
+                </Text>
+              </View>
+            </View>
+          </NeoCard>
+        )}
+
+        {/* 4. Quick-Add 1-Tap Shortcuts */}
+        <View style={styles.quickAddSection}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text, marginHorizontal: 16 }]}>
+            ⚡ CATAT CEPAT (1-TAP)
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.quickAddScroll}
+          >
+            <TouchableOpacity
+              onPress={() => handleQuickAddShortcut('kopi', 25000)}
+              style={[styles.quickAddChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            >
+              <Text style={styles.quickAddEmoji}>☕</Text>
+              <Text style={[styles.quickAddLabel, { color: theme.colors.text }]}>Kopi / Cafe</Text>
+              <Text style={[styles.quickAddNominal, { color: theme.colors.expense }]}>Rp 25rb</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => handleQuickAddShortcut('makan', 35000)}
+              style={[styles.quickAddChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            >
+              <Text style={styles.quickAddEmoji}>🍽️</Text>
+              <Text style={[styles.quickAddLabel, { color: theme.colors.text }]}>Makan Siang</Text>
+              <Text style={[styles.quickAddNominal, { color: theme.colors.expense }]}>Rp 35rb</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => handleQuickAddShortcut('transport', 50000)}
+              style={[styles.quickAddChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            >
+              <Text style={styles.quickAddEmoji}>⛽</Text>
+              <Text style={[styles.quickAddLabel, { color: theme.colors.text }]}>Bensin BBM</Text>
+              <Text style={[styles.quickAddNominal, { color: theme.colors.expense }]}>Rp 50rb</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => handleQuickAddShortcut('belanja', 100000)}
+              style={[styles.quickAddChip, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+            >
+              <Text style={styles.quickAddEmoji}>🛒</Text>
+              <Text style={[styles.quickAddLabel, { color: theme.colors.text }]}>Supermarket</Text>
+              <Text style={[styles.quickAddNominal, { color: theme.colors.expense }]}>Rp 100rb</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+
+        {/* 5. Periodic Income & Expense Summary Card */}
+        <NeoCard style={styles.summaryCard}>
+          <View style={styles.summaryTopRow}>
+            <Text style={[styles.summaryTitle, { color: theme.colors.text }]}>RINGKASAN</Text>
+            {/* Period Switcher Tabs */}
+            <View
+              style={[
+                styles.periodTabContainer,
+                { backgroundColor: theme.colors.cardSecondary, borderColor: theme.colors.border },
+              ]}
+            >
               {(['day', 'week', 'month'] as const).map((pKey) => {
                 const isSelected = period === pKey;
-                const pLabel = pKey === 'day' ? 'Hari Ini' : pKey === 'week' ? 'Minggu' : 'Bulan';
+                const pLabel = pKey === 'day' ? 'Hari ini' : pKey === 'week' ? 'Minggu ini' : 'Bulan ini';
                 return (
                   <TouchableOpacity
                     key={pKey}
@@ -251,14 +398,12 @@ export const HomeScreen: React.FC = () => {
                 },
               ]}
             >
-              <View style={styles.summaryBoxHeader}>
-                <Ionicons name="arrow-down-circle" size={18} color={theme.colors.income} />
-                <Text style={[styles.summaryBoxLabel, { color: theme.colors.textMuted }]}>
-                  PEMASUKAN
-                </Text>
+              <View style={styles.boxHeader}>
+                <Ionicons name="arrow-down-circle" size={16} color={theme.colors.income} />
+                <Text style={[styles.boxLabel, { color: theme.colors.textMuted }]}>PEMASUKAN</Text>
               </View>
-              <Text style={[styles.summaryBoxAmount, { color: theme.colors.income }]}>
-                {formatCurrency(periodSummary.totalIncome)}
+              <Text style={[styles.boxAmount, { color: theme.colors.income }]}>
+                +{formatCurrency(periodSummary.totalIncome)}
               </Text>
             </View>
 
@@ -274,30 +419,20 @@ export const HomeScreen: React.FC = () => {
                 },
               ]}
             >
-              <View style={styles.summaryBoxHeader}>
-                <Ionicons name="arrow-up-circle" size={18} color={theme.colors.expense} />
-                <Text style={[styles.summaryBoxLabel, { color: theme.colors.textMuted }]}>
-                  PENGELUARAN
-                </Text>
+              <View style={styles.boxHeader}>
+                <Ionicons name="arrow-up-circle" size={16} color={theme.colors.expense} />
+                <Text style={[styles.boxLabel, { color: theme.colors.textMuted }]}>PENGELUARAN</Text>
               </View>
-              <Text style={[styles.summaryBoxAmount, { color: theme.colors.expense }]}>
-                {formatCurrency(periodSummary.totalExpense)}
+              <Text style={[styles.boxAmount, { color: theme.colors.expense }]}>
+                -{formatCurrency(periodSummary.totalExpense)}
               </Text>
             </View>
           </View>
 
-          {/* Net Flow / Savings */}
-          <View
-            style={[
-              styles.netFlowBox,
-              {
-                backgroundColor: theme.colors.cardSecondary,
-                borderColor: theme.colors.border,
-              },
-            ]}
-          >
-            <Text style={[styles.netFlowLabel, { color: theme.colors.text }]}>
-              Selisih Bersih (Net):
+          {/* Net Flow Footer */}
+          <View style={[styles.netFlowFooter, { borderColor: theme.colors.border }]}>
+            <Text style={[styles.netFlowLabel, { color: theme.colors.textMuted }]}>
+              SELISIH BERSIH ({period === 'day' ? 'HARI INI' : period === 'week' ? 'MINGGU INI' : 'BULAN INI'}):
             </Text>
             <Text
               style={[
@@ -312,41 +447,55 @@ export const HomeScreen: React.FC = () => {
           </View>
         </NeoCard>
 
-        {/* 3. Top Spending Insight Banner */}
-        {topSpendingCategory && (
-          <NeoCard
-            backgroundColor={theme.colors.transfer}
-            style={styles.insightCard}
-          >
-            <View style={styles.insightHeader}>
-              <Ionicons name="flash" size={18} color="#121212" />
-              <Text style={styles.insightTitle}>INSIGHT PENGELUARAN TERBESAR</Text>
-            </View>
-            <View style={styles.insightBody}>
-              <NeoBadge
-                icon={topSpendingCategory.categoryIcon}
-                iconFamily={topSpendingCategory.categoryIconFamily}
-                color={topSpendingCategory.categoryColor}
-                size="md"
-              />
-              <View style={{ marginLeft: 12, flex: 1 }}>
-                <Text style={styles.insightCatName}>
-                  {topSpendingCategory.categoryName}
-                </Text>
-                <Text style={styles.insightDesc}>
-                  Menyumbang {formatPercentage(topSpendingCategory.percentage)} dari total pengeluaranmu bulan ini ({formatCurrency(topSpendingCategory.totalSpent)}).
-                </Text>
-              </View>
-            </View>
-          </NeoCard>
-        )}
-
-        {/* 4. Category Spending Breakdown Chart */}
+        {/* 6. Category Breakdown Donut Chart with Pemasukan / Pengeluaran Toggle */}
         <NeoCard style={styles.chartCard}>
           <View style={styles.chartHeaderRow}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              PENGELUARAN PER KATEGORI
+              GRAFIK KATEGORI
             </Text>
+
+            {/* Expense / Income Type Toggle */}
+            <View style={styles.chartTypeToggle}>
+              <TouchableOpacity
+                onPress={() => setChartType('expense')}
+                style={[
+                  styles.chartTypeBtn,
+                  {
+                    backgroundColor: chartType === 'expense' ? theme.colors.expense : theme.colors.surface,
+                    borderColor: theme.colors.border,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.chartTypeBtnText,
+                    { color: chartType === 'expense' ? '#FFFFFF' : theme.colors.text },
+                  ]}
+                >
+                  Pengeluaran
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setChartType('income')}
+                style={[
+                  styles.chartTypeBtn,
+                  {
+                    backgroundColor: chartType === 'income' ? theme.colors.income : theme.colors.surface,
+                    borderColor: theme.colors.border,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.chartTypeBtnText,
+                    { color: chartType === 'income' ? '#0A3B0A' : theme.colors.text },
+                  ]}
+                >
+                  Pemasukan
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Period selector for chart */}
@@ -383,19 +532,11 @@ export const HomeScreen: React.FC = () => {
             })}
           </ScrollView>
 
-          {/* Pie Chart Component */}
+          {/* Donut Chart Component */}
           <NeoPieChart data={chartData} />
         </NeoCard>
 
-        {/* 5. Net Worth Trend Line Chart */}
-        <NeoCard style={styles.chartCard}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            TREND SALDO BULANAN
-          </Text>
-          <NeoLineChart data={trendPoints} lineColor={theme.colors.primary} />
-        </NeoCard>
-
-        {/* 6. Recent Transactions List */}
+        {/* 7. Recent Transactions List */}
         <View style={styles.recentSectionHeader}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             TRANSAKSI TERBARU
@@ -436,15 +577,16 @@ const styles = StyleSheet.create({
   },
   topHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 8,
+    paddingBottom: 10,
   },
   greetingText: {
     fontSize: 10,
     fontWeight: '900',
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   appTitleRow: {
     flexDirection: 'row',
@@ -488,10 +630,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardSuperLabel: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '900',
     letterSpacing: 0.5,
     color: '#121212',
+  },
+  eyeBtn: {
+    padding: 4,
   },
   manageAccBtn: {
     backgroundColor: 'rgba(0,0,0,0.08)',
@@ -523,38 +668,120 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1.5,
+    marginRight: 8,
   },
   accPillName: {
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: '800',
+    color: '#121212',
   },
   accPillBal: {
     fontSize: 11,
     fontWeight: '900',
+    color: '#121212',
+  },
+  healthCard: {
+    marginHorizontal: 16,
+    marginTop: 10,
+    padding: 12,
+  },
+  healthHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  healthTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  healthBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+    borderWidth: 1.5,
+  },
+  healthBadgeText: {
+    fontSize: 9,
+    fontWeight: '900',
+  },
+  healthDesc: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 4,
+    lineHeight: 16,
+  },
+  budgetWarningCard: {
+    marginHorizontal: 16,
+    marginTop: 10,
+    padding: 12,
+  },
+  budgetWarningTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+  budgetWarningSub: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginTop: 2,
+  },
+  quickAddSection: {
+    marginTop: 12,
+  },
+  quickAddScroll: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
+  },
+  quickAddChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    marginRight: 8,
+    minWidth: 88,
+  },
+  quickAddEmoji: {
+    fontSize: 18,
+    marginBottom: 2,
+  },
+  quickAddLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  quickAddNominal: {
+    fontSize: 11,
+    fontWeight: '900',
+    marginTop: 2,
   },
   summaryCard: {
     marginHorizontal: 16,
     marginTop: 10,
+    padding: 16,
   },
-  periodSwitcherRow: {
+  summaryTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
   },
-  sectionTitle: {
+  summaryTitle: {
     fontSize: 13,
     fontWeight: '900',
     letterSpacing: 0.5,
   },
-  periodTabGroup: {
+  periodTabContainer: {
     flexDirection: 'row',
     borderRadius: 8,
     borderWidth: 1.5,
     padding: 2,
   },
   periodTabItem: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
@@ -568,72 +795,40 @@ const styles = StyleSheet.create({
   summaryBox: {
     flex: 1,
     padding: 12,
-    borderWidth: 2,
     borderRadius: 8,
+    borderWidth: 2,
   },
-  summaryBoxHeader: {
+  boxHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    gap: 4,
   },
-  summaryBoxLabel: {
+  boxLabel: {
     fontSize: 10,
-    fontWeight: '800',
-    marginLeft: 4,
-  },
-  summaryBoxAmount: {
-    fontSize: 16,
     fontWeight: '900',
+    letterSpacing: 0.5,
   },
-  netFlowBox: {
+  boxAmount: {
+    fontSize: 15,
+    fontWeight: '900',
+    marginTop: 6,
+  },
+  netFlowFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    marginTop: 10,
+    marginTop: 12,
+    paddingTop: 10,
+    borderTopWidth: 1.5,
   },
   netFlowLabel: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.5,
   },
   netFlowAmount: {
     fontSize: 14,
     fontWeight: '900',
-  },
-  insightCard: {
-    marginHorizontal: 16,
-    marginTop: 10,
-    padding: 14,
-  },
-  insightHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  insightTitle: {
-    fontSize: 11,
-    fontWeight: '900',
-    color: '#121212',
-    marginLeft: 6,
-    letterSpacing: 0.5,
-  },
-  insightBody: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  insightCatName: {
-    fontSize: 14,
-    fontWeight: '900',
-    color: '#121212',
-  },
-  insightDesc: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#121212',
-    marginTop: 2,
-    lineHeight: 15,
   },
   chartCard: {
     marginHorizontal: 16,
@@ -646,10 +841,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  chartTypeToggle: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  chartTypeBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1.5,
+  },
+  chartTypeBtnText: {
+    fontSize: 10,
+    fontWeight: '900',
+  },
   chartPeriodChips: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 10,
+    gap: 6,
+    marginBottom: 12,
   },
   chartPeriodChip: {
     paddingHorizontal: 10,
@@ -664,18 +873,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginHorizontal: 16,
+    paddingHorizontal: 16,
     marginTop: 16,
     marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   viewAllText: {
     fontSize: 12,
     fontWeight: '900',
   },
   noTxText: {
-    fontSize: 13,
-    fontWeight: '700',
-    marginTop: 8,
+    fontSize: 12,
+    fontWeight: '600',
     textAlign: 'center',
+    marginTop: 8,
   },
 });
