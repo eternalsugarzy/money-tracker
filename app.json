@@ -21,10 +21,18 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFE600"
       },
-      "package": "com.moneytracker.ios",
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ]
+      "package": "com.moneytracker.ios"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bc488bc2-4c9c-4a24-bb60-2bbed9e54c00"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bc488bc2-4c9c-4a24-bb60-2bbed9e54c00"
+      }
     },
     "plugins": [
       [
@@ -41,12 +49,8 @@
           "color": "#FFE600"
         }
       ],
-      "expo-sqlite"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "bc488bc2-4c9c-4a24-bb60-2bbed9e54c00"
-      }
-    }
+      "expo-sqlite",
+      "expo-updates"
+    ]
   }
 }
