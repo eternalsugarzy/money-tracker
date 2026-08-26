@@ -128,6 +128,11 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
       WHERE (id LIKE 'cat_exp_%' OR id LIKE 'cat_inc_%')
       AND id NOT IN (SELECT DISTINCT category_id FROM transactions WHERE category_id IS NOT NULL)
       AND id NOT IN (SELECT DISTINCT category_id FROM budgets WHERE category_id IS NOT NULL);
+
+      DELETE FROM shortcuts 
+      WHERE id NOT IN (
+        SELECT MIN(id) FROM shortcuts GROUP BY LOWER(TRIM(title))
+      );
     `);
   } catch (e) {
     // Ignore if table was just created
