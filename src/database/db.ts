@@ -10,10 +10,16 @@ export async function getDatabase(): Promise<SQLiteDatabase> {
   }
   if (!initPromise) {
     initPromise = (async () => {
-      const db = await openDatabaseAsync('money_tracker.db');
-      await initDatabase(db);
-      dbInstance = db;
-      return db;
+      try {
+        const db = await openDatabaseAsync('money_tracker.db');
+        await initDatabase(db);
+        dbInstance = db;
+        return db;
+      } catch (err) {
+        initPromise = null;
+        console.error('Failed to initialize SQLite database:', err);
+        throw err;
+      }
     })();
   }
   return initPromise;
@@ -144,6 +150,6 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
     );
   `);
 
-  // Seed default categories, accounts, and shortcuts from authentic dataset (only on initial database creation)
+  // Seed default categories, accounts, and shortcuts from authentic dataset (if empty)
   await seedInitialData(db);
 }

@@ -208,7 +208,7 @@ export const HomeScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing || isLoading}
+            refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={theme.colors.primary}
           />
