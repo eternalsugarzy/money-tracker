@@ -52,7 +52,7 @@ export async function createAccount(
 
 export async function updateAccount(
   id: string,
-  updates: Partial<Omit<Account, 'id' | 'created_at'>>
+  updates: Partial<Omit<Account, 'id' | 'created_at'>> & { target_current_balance?: number }
 ): Promise<void> {
   const db = await getDatabase();
   const now = new Date().toISOString();
@@ -62,11 +62,39 @@ export async function updateAccount(
 
   const name = updates.name !== undefined ? updates.name : current.name;
   const type = updates.type !== undefined ? updates.type : current.type;
-  const initial_balance = updates.initial_balance !== undefined ? updates.initial_balance : current.initial_balance;
   const icon = updates.icon !== undefined ? updates.icon : current.icon;
   const icon_family = updates.icon_family !== undefined ? updates.icon_family : current.icon_family;
   const color = updates.color !== undefined ? updates.color : current.color;
   const is_archived = updates.is_archived !== undefined ? updates.is_archived : current.is_archived;
+
+  let initial_balance = updates.initial_balance !== undefined ? updates.initial_balance : current.initial_balance;
+
+  if (updates.target_current_balance !== undefined) {
+    const incRes = await db.getFirstAsync<{ sum: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as sum FROM transactions WHERE account_id = ? AND type = 'income'`,
+      [id]
+    );
+    const expRes = await db.getFirstAsync<{ sum: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as sum FROM transactions WHERE account_id = ? AND type = 'expense'`,
+      [id]
+    );
+    const trOutRes = await db.getFirstAsync<{ sum: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as sum FROM transactions WHERE account_id = ? AND type = 'transfer'`,
+      [id]
+    );
+    const trInRes = await db.getFirstAsync<{ sum: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as sum FROM transactions WHERE to_account_id = ? AND type = 'transfer'`,
+      [id]
+    );
+
+    const totalInc = incRes?.sum || 0;
+    const totalExp = expRes?.sum || 0;
+    const totalTrOut = trOutRes?.sum || 0;
+    const totalTrIn = trInRes?.sum || 0;
+    const txDelta = totalInc - totalExp - totalTrOut + totalTrIn;
+
+    initial_balance = updates.target_current_balance - txDelta;
+  }
 
   await db.runAsync(
     `UPDATE accounts 

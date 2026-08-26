@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../context/ThemeContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useAppData } from '../../context/AppDataContext';
 import { NeoCard } from '../../components/common/NeoCard';
 import { NeoButton } from '../../components/common/NeoButton';
@@ -24,6 +25,7 @@ import { createAccount, updateAccount } from '../../database/accountRepo';
 
 export const AccountFormModal: React.FC = () => {
   const { theme } = useTheme();
+  const { t, language } = useLanguage();
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
   const { refreshData } = useAppData();
@@ -35,8 +37,8 @@ export const AccountFormModal: React.FC = () => {
 
   const [name, setName] = useState<string>(isEditing ? editAccount.name : '');
   const [type, setType] = useState<AccountType>(isEditing ? editAccount.type : 'Bank');
-  const [initialBalanceExpr, setInitialBalanceExpr] = useState<string>(
-    isEditing ? String(editAccount.initial_balance) : '0'
+  const [balanceExpr, setBalanceExpr] = useState<string>(
+    isEditing ? String(editAccount.current_balance ?? editAccount.initial_balance ?? 0) : '0'
   );
   // Default to true: directly show built-in calculator, no phone keyboard
   const [showCalculator, setShowCalculator] = useState<boolean>(true);
@@ -48,11 +50,14 @@ export const AccountFormModal: React.FC = () => {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Nama Akun Kosong', 'Harap masukkan nama akun/dompet (misal: Rekening BCA).');
+      Alert.alert(
+        language === 'id' ? 'Nama Akun Kosong' : 'Empty Account Name',
+        language === 'id' ? 'Harap masukkan nama akun/dompet (misal: Rekening BRI).' : 'Please enter account/wallet name.'
+      );
       return;
     }
 
-    const evalRes = evaluateMathExpression(initialBalanceExpr);
+    const evalRes = evaluateMathExpression(balanceExpr);
     const balanceNum = evalRes.isValid ? evalRes.value : 0;
 
     try {
@@ -60,7 +65,7 @@ export const AccountFormModal: React.FC = () => {
         await updateAccount(editAccount.id, {
           name: name.trim(),
           type,
-          initial_balance: balanceNum,
+          target_current_balance: balanceNum,
           icon,
           icon_family: iconFamily,
           color,
@@ -81,12 +86,12 @@ export const AccountFormModal: React.FC = () => {
       await refreshData();
       navigation.goBack();
     } catch (err: any) {
-      Alert.alert('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem.');
+      Alert.alert(language === 'id' ? 'Gagal Menyimpan' : 'Failed to Save', err.message || 'Error');
     }
   };
 
   const getComputedDisplayAmount = () => {
-    const res = evaluateMathExpression(initialBalanceExpr);
+    const res = evaluateMathExpression(balanceExpr);
     return res.isValid ? formatCurrency(res.value) : 'Rp 0';
   };
 
@@ -107,7 +112,9 @@ export const AccountFormModal: React.FC = () => {
           <Ionicons name="close" size={22} color={theme.colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          {isEditing ? 'EDIT DOMPET / AKUN' : 'TAMBAH DOMPET / AKUN'}
+          {isEditing
+            ? (language === 'id' ? 'EDIT DOMPET / AKUN' : 'EDIT WALLET / ACCOUNT')
+            : (language === 'id' ? 'TAMBAH DOMPET / AKUN' : 'ADD WALLET / ACCOUNT')}
         </Text>
         <View style={{ width: 40 }} />
       </View>
@@ -120,18 +127,20 @@ export const AccountFormModal: React.FC = () => {
         {/* Account Name */}
         <NeoCard style={styles.card}>
           <NeoInput
-            label="NAMA DOMPET / AKUN"
-            placeholder="Misal: Dompet Utama, Rekening BCA, GoPay..."
+            label={language === 'id' ? 'NAMA DOMPET / AKUN' : 'WALLET / ACCOUNT NAME'}
+            placeholder={language === 'id' ? 'Misal: Dompet Tunai, Rekening BRI...' : 'e.g. Cash Wallet, Bank Account...'}
             value={name}
             onChangeText={setName}
           />
         </NeoCard>
 
-        {/* Initial Balance with Direct Calculator */}
+        {/* Balance with Direct Calculator */}
         <NeoCard style={styles.card}>
           <View style={styles.limitHeader}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              SALDO AWAL
+              {isEditing
+                ? (language === 'id' ? 'SALDO DOMPET / AKUN SAAT INI' : 'CURRENT WALLET / ACCOUNT BALANCE')
+                : (language === 'id' ? 'SALDO AWAL' : 'INITIAL BALANCE')}
             </Text>
             <TouchableOpacity
               onPress={() => setShowCalculator(!showCalculator)}
@@ -145,7 +154,9 @@ export const AccountFormModal: React.FC = () => {
             >
               <Ionicons name="calculator" size={14} color={theme.colors.text} />
               <Text style={[styles.calcBtnText, { color: theme.colors.text }]}>
-                {showCalculator ? 'Sembunyikan Keypad' : 'Buka Keypad'}
+                {showCalculator
+                  ? (language === 'id' ? 'Sembunyikan Keypad' : 'Hide Keypad')
+                  : (language === 'id' ? 'Buka Keypad' : 'Show Keypad')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -163,11 +174,11 @@ export const AccountFormModal: React.FC = () => {
             ]}
           >
             <Text style={[styles.displayAmount, { color: theme.colors.text }]}>
-              {initialBalanceExpr ? getComputedDisplayAmount() : 'Rp 0'}
+              {balanceExpr ? getComputedDisplayAmount() : 'Rp 0'}
             </Text>
-            {initialBalanceExpr.length > 0 && (
+            {balanceExpr.length > 0 && (
               <Text style={[styles.displayExpression, { color: theme.colors.textMuted }]}>
-                = {initialBalanceExpr}
+                = {balanceExpr}
               </Text>
             )}
           </TouchableOpacity>
@@ -176,8 +187,8 @@ export const AccountFormModal: React.FC = () => {
           {showCalculator && (
             <View style={styles.calcWrapper}>
               <NeoCalculator
-                value={initialBalanceExpr}
-                onChange={setInitialBalanceExpr}
+                value={balanceExpr}
+                onChange={setBalanceExpr}
                 onDone={() => setShowCalculator(false)}
               />
             </View>
@@ -186,7 +197,9 @@ export const AccountFormModal: React.FC = () => {
 
         {/* Account Type Selector */}
         <NeoCard style={styles.card}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>TIPE AKUN</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            {language === 'id' ? 'TIPE AKUN' : 'ACCOUNT TYPE'}
+          </Text>
           <View style={styles.typeGrid}>
             {ACCOUNT_TYPES.map((t) => {
               const isSelected = type === t;
@@ -233,7 +246,11 @@ export const AccountFormModal: React.FC = () => {
 
         {/* Save Button */}
         <NeoButton
-          title={isEditing ? 'SIMPAN PERUBAHAN' : 'SIMPAN AKUN BARU'}
+          title={
+            isEditing
+              ? (language === 'id' ? 'SIMPAN PERUBAHAN' : 'SAVE CHANGES')
+              : (language === 'id' ? 'SIMPAN AKUN BARU' : 'SAVE NEW ACCOUNT')
+          }
           variant="primary"
           size="lg"
           onPress={handleSave}
