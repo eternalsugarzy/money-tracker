@@ -114,10 +114,10 @@ export const MoreScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.textContainer}>
-                  <Text style={[styles.menuTitle, { color: theme.colors.text }]}>
+                  <Text style={[styles.menuTitle, { color: theme.colors.text }]} numberOfLines={1}>
                     {item.title}
                   </Text>
-                  <Text style={[styles.menuSubtitle, { color: theme.colors.textMuted }]}>
+                  <Text style={[styles.menuSubtitle, { color: theme.colors.textMuted }]} numberOfLines={1}>
                     {item.subtitle}
                   </Text>
                 </View>
@@ -253,16 +253,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   creatorChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 8,
     borderWidth: 1.5,
-    marginVertical: 8,
+    marginVertical: 10,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   creatorChipText: {
     fontSize: 11,
     fontWeight: '800',
     color: '#121212',
+    textAlign: 'center',
   },
   aboutDesc: {
     fontSize: 11,

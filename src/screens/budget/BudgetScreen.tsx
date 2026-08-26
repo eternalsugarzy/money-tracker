@@ -170,6 +170,7 @@ export const BudgetScreen: React.FC = () => {
                   fontWeight: activeTab === 'active' ? '900' : '700',
                 },
               ]}
+              numberOfLines={1}
             >
               {t.activeBudgets} ({budgets.length})
             </Text>
@@ -194,6 +195,7 @@ export const BudgetScreen: React.FC = () => {
                   fontWeight: activeTab === 'history' ? '900' : '700',
                 },
               ]}
+              numberOfLines={1}
             >
               {t.historyBudgets}
             </Text>

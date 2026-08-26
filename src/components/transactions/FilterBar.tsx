@@ -145,7 +145,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 {
                   backgroundColor: isActive ? theme.colors.primary : theme.colors.surface,
                   borderColor: theme.colors.border,
-                  borderWidth: isActive ? 2 : 1.5,
+                  borderWidth: 1.5,
                 },
               ]}
             >
@@ -157,6 +157,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                     fontWeight: isActive ? '900' : '700',
                   },
                 ]}
+                numberOfLines={1}
               >
                 {p.label}
               </Text>
@@ -193,7 +194,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                       {
                         backgroundColor: isSelected ? t.color : theme.colors.surface,
                         borderColor: theme.colors.border,
-                        borderWidth: isSelected ? 2 : 1,
+                        borderWidth: 1.5,
                       },
                     ]}
                   >
@@ -211,6 +212,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                           fontWeight: isSelected ? '900' : '600',
                         },
                       ]}
+                      numberOfLines={1}
                     >
                       {t.label}
                     </Text>

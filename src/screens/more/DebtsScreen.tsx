@@ -135,6 +135,7 @@ export const DebtsScreen: React.FC = () => {
                   fontWeight: activeTab === 'receivable' ? '900' : '700',
                 },
               ]}
+              numberOfLines={1}
             >
               {t.receivableTab}
             </Text>
@@ -159,6 +160,7 @@ export const DebtsScreen: React.FC = () => {
                   fontWeight: activeTab === 'debt' ? '900' : '700',
                 },
               ]}
+              numberOfLines={1}
             >
               {t.payableTab}
             </Text>

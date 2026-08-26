@@ -406,10 +406,9 @@ export const HomeScreen: React.FC = () => {
                     onPress={() => setPeriod(pKey)}
                     style={[
                       styles.periodTabItem,
-                      isSelected && {
-                        backgroundColor: theme.colors.primary,
-                        borderColor: theme.colors.border,
-                        borderWidth: 1.5,
+                      {
+                        backgroundColor: isSelected ? theme.colors.primary : 'transparent',
+                        borderColor: isSelected ? theme.colors.border : 'transparent',
                       },
                     ]}
                   >
@@ -421,6 +420,7 @@ export const HomeScreen: React.FC = () => {
                           fontWeight: isSelected ? '900' : '600',
                         },
                       ]}
+                      numberOfLines={1}
                     >
                       {pLabel}
                     </Text>
@@ -517,6 +517,7 @@ export const HomeScreen: React.FC = () => {
                     styles.chartTypeBtnText,
                     { color: chartType === 'expense' ? '#FFFFFF' : theme.colors.text },
                   ]}
+                  numberOfLines={1}
                 >
                   {t.expense}
                 </Text>
@@ -537,6 +538,7 @@ export const HomeScreen: React.FC = () => {
                     styles.chartTypeBtnText,
                     { color: chartType === 'income' ? '#0A3B0A' : theme.colors.text },
                   ]}
+                  numberOfLines={1}
                 >
                   {t.income}
                 </Text>
@@ -570,6 +572,7 @@ export const HomeScreen: React.FC = () => {
                       styles.chartPeriodChipText,
                       { color: isActive ? '#121212' : theme.colors.text, fontWeight: isActive ? '900' : '600' },
                     ]}
+                    numberOfLines={1}
                   >
                     {lbl}
                   </Text>
@@ -878,9 +881,12 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   periodTabItem: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 6,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   periodTabLabel: {
     fontSize: 11,
@@ -943,10 +949,12 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   chartTypeBtn: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   chartTypeBtnText: {
     fontSize: 10,
@@ -958,10 +966,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   chartPeriodChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
     borderRadius: 6,
     borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   chartPeriodChipText: {
     fontSize: 11,

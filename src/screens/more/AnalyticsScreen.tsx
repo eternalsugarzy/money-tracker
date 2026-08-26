@@ -134,7 +134,7 @@ export const AnalyticsScreen: React.FC = () => {
                   {
                     backgroundColor: isActive ? theme.colors.primary : theme.colors.surface,
                     borderColor: theme.colors.border,
-                    borderWidth: isActive ? 2 : 1.5,
+                    borderWidth: 1.5,
                   },
                 ]}
               >
@@ -146,6 +146,7 @@ export const AnalyticsScreen: React.FC = () => {
                       fontWeight: isActive ? '900' : '700',
                     },
                   ]}
+                  numberOfLines={1}
                 >
                   {p.label}
                 </Text>
@@ -210,6 +211,7 @@ export const AnalyticsScreen: React.FC = () => {
                     styles.typeBtnText,
                     { color: chartType === 'expense' ? '#FFFFFF' : theme.colors.text },
                   ]}
+                  numberOfLines={1}
                 >
                   {t.expense}
                 </Text>
@@ -230,6 +232,7 @@ export const AnalyticsScreen: React.FC = () => {
                     styles.typeBtnText,
                     { color: chartType === 'income' ? '#0A3B0A' : theme.colors.text },
                   ]}
+                  numberOfLines={1}
                 >
                   {t.income}
                 </Text>
