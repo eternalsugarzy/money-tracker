@@ -13,7 +13,7 @@ import { getDatabase } from '../database/db';
 import { getAllAccounts, getTotalNetWorth } from '../database/accountRepo';
 import { getAllCategories } from '../database/categoryRepo';
 import {
-  getTransactions,
+  getRecentTransactions,
   getSummaryForPeriod,
   getCategorySpendingBreakdown,
 } from '../database/transactionRepo';
@@ -82,7 +82,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const [
         accs,
         cats,
-        txs,
+        recentTxs,
         bdgs,
         recs,
         dbts,
@@ -93,7 +93,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       ] = await Promise.all([
         getAllAccounts(true),
         getAllCategories(undefined, true),
-        getTransactions({ period: 'all' }),
+        getRecentTransactions(20),
         getActiveBudgets(),
         getAllRecurring(),
         getAllDebts(),
@@ -105,7 +105,7 @@ export const AppDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       setAccounts(accs);
       setCategories(cats);
-      setTransactions(txs);
+      setTransactions(recentTxs);
       setBudgets(bdgs);
       setRecurring(recs);
       setDebts(dbts);

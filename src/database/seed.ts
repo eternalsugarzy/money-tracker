@@ -8,44 +8,63 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
     `SELECT value FROM app_settings WHERE key = 'app_seeded_v1'`
   );
   if (alreadySeeded) {
-    return; // Already initialized in the past; respect ALL user edits, additions, and custom wallets!
+    return; // Already initialized in the past; fast return!
   }
 
   const now = new Date().toISOString();
 
-  // 2. Insert initial accounts only if accounts table is empty
+  // 2. Insert initial accounts in a single batch
   const countAcc = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM accounts`);
   if (!countAcc || countAcc.count === 0) {
-    for (const acc of SEED_ACCOUNTS) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO accounts (id, name, type, initial_balance, current_balance, icon, icon_family, color, is_archived, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
-        [acc.id, acc.name, acc.type, acc.initial_balance, acc.current_balance, acc.icon, acc.icon_family, acc.color, now, now]
-      );
-    }
+    const accPlaceholders = SEED_ACCOUNTS.map(() => `(?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`).join(', ');
+    const accValues = SEED_ACCOUNTS.flatMap((acc) => [
+      acc.id,
+      acc.name,
+      acc.type,
+      acc.initial_balance,
+      acc.current_balance,
+      acc.icon,
+      acc.icon_family,
+      acc.color,
+      now,
+      now,
+    ]);
+    await db.runAsync(
+      `INSERT OR IGNORE INTO accounts (id, name, type, initial_balance, current_balance, icon, icon_family, color, is_archived, created_at, updated_at) VALUES ${accPlaceholders}`,
+      accValues
+    );
   }
 
-  // 3. Insert Categories from Money+ dataset if categories table is empty
+  // 3. Insert Categories in a single batch
   const countCat = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM categories`);
   if (!countCat || countCat.count === 0) {
-    for (const cat of SEED_CATEGORIES) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO categories (id, name, type, icon, icon_family, color, is_archived, created_at, updated_at)
-         VALUES (?, ?, ?, ?, 'Ionicons', ?, 0, ?, ?)`,
-        [cat.id, cat.name, cat.type, cat.icon, cat.color, now, now]
-      );
-    }
+    const catPlaceholders = SEED_CATEGORIES.map(() => `(?, ?, ?, ?, 'Ionicons', ?, 0, ?, ?)`).join(', ');
+    const catValues = SEED_CATEGORIES.flatMap((cat) => [
+      cat.id,
+      cat.name,
+      cat.type,
+      cat.icon,
+      cat.color,
+      now,
+      now,
+    ]);
+    await db.runAsync(
+      `INSERT OR IGNORE INTO categories (id, name, type, icon, icon_family, color, is_archived, created_at, updated_at) VALUES ${catPlaceholders}`,
+      catValues
+    );
   }
 
-  // 4. Insert All 722 Historical Transactions from Money+ if transactions table is empty
+  // 4. Insert All 722 Historical Transactions in high-speed 50-row chunks
   const countTx = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM transactions`);
   if (!countTx || countTx.count === 0) {
+    const chunkSize = 50;
     await db.withTransactionAsync(async () => {
-      for (const tx of SEED_TRANSACTIONS) {
-        await db.runAsync(
-          `INSERT OR IGNORE INTO transactions (id, type, amount, date, account_id, to_account_id, category_id, note, receipt_images, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, '[]', ?, ?)`,
-          [
+      for (let i = 0; i < SEED_TRANSACTIONS.length; i += chunkSize) {
+        const chunk = SEED_TRANSACTIONS.slice(i, i + chunkSize);
+        const placeholders = chunk.map(() => `(?, ?, ?, ?, ?, ?, ?, ?, '[]', ?, ?)`).join(', ');
+        const values: any[] = [];
+        for (const tx of chunk) {
+          values.push(
             tx.id,
             tx.type,
             tx.amount,
@@ -55,43 +74,27 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
             tx.category_id,
             tx.note || '',
             now,
-            now,
-          ]
+            now
+          );
+        }
+        await db.runAsync(
+          `INSERT OR IGNORE INTO transactions (id, type, amount, date, account_id, to_account_id, category_id, note, receipt_images, created_at, updated_at) VALUES ${placeholders}`,
+          values
         );
       }
     });
 
-    // Calculate initial accurate real-world balance from transaction flow
-    for (const acc of SEED_ACCOUNTS) {
-      const incRes = await db.getFirstAsync<{ sum: number | null }>(
-        `SELECT SUM(amount) as sum FROM transactions WHERE type = 'income' AND account_id = ?`,
-        [acc.id]
-      );
-      const expRes = await db.getFirstAsync<{ sum: number | null }>(
-        `SELECT SUM(amount) as sum FROM transactions WHERE type = 'expense' AND account_id = ?`,
-        [acc.id]
-      );
-      const trInRes = await db.getFirstAsync<{ sum: number | null }>(
-        `SELECT SUM(amount) as sum FROM transactions WHERE type = 'transfer' AND to_account_id = ?`,
-        [acc.id]
-      );
-      const trOutRes = await db.getFirstAsync<{ sum: number | null }>(
-        `SELECT SUM(amount) as sum FROM transactions WHERE type = 'transfer' AND account_id = ?`,
-        [acc.id]
-      );
-
-      const totalInc = incRes?.sum || 0;
-      const totalExp = expRes?.sum || 0;
-      const totalTrIn = trInRes?.sum || 0;
-      const totalTrOut = trOutRes?.sum || 0;
-
-      const accurateBalance = acc.initial_balance + totalInc - totalExp + totalTrIn - totalTrOut;
-
-      await db.runAsync(
-        `UPDATE accounts SET current_balance = ?, updated_at = ? WHERE id = ?`,
-        [accurateBalance, now, acc.id]
-      );
-    }
+    // Recalculate account balances with a single fast SQL query
+    await db.runAsync(`
+      UPDATE accounts
+      SET current_balance = initial_balance + (
+        COALESCE((SELECT SUM(amount) FROM transactions WHERE type = 'income' AND account_id = accounts.id), 0)
+        - COALESCE((SELECT SUM(amount) FROM transactions WHERE type = 'expense' AND account_id = accounts.id), 0)
+        + COALESCE((SELECT SUM(amount) FROM transactions WHERE type = 'transfer' AND to_account_id = accounts.id), 0)
+        - COALESCE((SELECT SUM(amount) FROM transactions WHERE type = 'transfer' AND account_id = accounts.id), 0)
+      ),
+      updated_at = ?
+    `, [now]);
   }
 
   // 5. Authentic Quick-Add Shortcuts
@@ -112,7 +115,7 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
     );
   }
 
-  // 6. Default Savings Goals (only on first app install)
+  // 6. Default Savings Goals
   await seedDefaultGoalsIfEmpty();
 
   // 7. Mark app as permanently seeded
