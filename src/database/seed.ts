@@ -4,7 +4,33 @@ import { SEED_ACCOUNTS, SEED_CATEGORIES, SEED_TRANSACTIONS } from './initialMone
 export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
   const now = new Date().toISOString();
 
-  // 1. Insert Categories from Money+ and Defaults
+  // 1. Remove any unneeded/dummy accounts from previous runs, keeping ONLY authentic Money+ accounts
+  await db.runAsync(`
+    DELETE FROM accounts WHERE id NOT IN ('acc_bri', 'acc_cash', 'acc_seabank');
+  `);
+
+  // 2. Insert or update the 3 authentic accounts: BRI, UANG CASH, Sea Bank
+  for (const acc of SEED_ACCOUNTS) {
+    const existing = await db.getFirstAsync<{ id: string }>(
+      `SELECT id FROM accounts WHERE id = ?`,
+      [acc.id]
+    );
+
+    if (existing) {
+      await db.runAsync(
+        `UPDATE accounts SET name = ?, type = ?, icon = ?, icon_family = ?, color = ?, updated_at = ? WHERE id = ?`,
+        [acc.name, acc.type, acc.icon, acc.icon_family, acc.color, now, acc.id]
+      );
+    } else {
+      await db.runAsync(
+        `INSERT INTO accounts (id, name, type, initial_balance, current_balance, icon, icon_family, color, is_archived, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
+        [acc.id, acc.name, acc.type, acc.initial_balance, acc.current_balance, acc.icon, acc.icon_family, acc.color, now, now]
+      );
+    }
+  }
+
+  // 3. Insert Categories from Money+ dataset
   for (const cat of SEED_CATEGORIES) {
     await db.runAsync(
       `INSERT OR IGNORE INTO categories (id, name, type, icon, icon_family, color, is_archived, created_at, updated_at)
@@ -13,17 +39,7 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
     );
   }
 
-  // 2. Insert Accounts from Money+
-  for (const acc of SEED_ACCOUNTS) {
-    await db.runAsync(
-      `INSERT OR IGNORE INTO accounts (id, name, type, initial_balance, current_balance, icon, icon_family, color, is_archived, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
-      [acc.id, acc.name, acc.type, acc.initial_balance, acc.current_balance, acc.icon, acc.icon_family, acc.color, now, now]
-    );
-  }
-
-  // 3. Insert Historical Transactions (722 Transactions from Money+ Backup)
-  // Execute in transactions chunk
+  // 4. Insert All 722 Historical Transactions from Money+
   await db.withTransactionAsync(async () => {
     for (const tx of SEED_TRANSACTIONS) {
       await db.runAsync(
@@ -45,7 +61,7 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
     }
   });
 
-  // 4. Recalculate each account's accurate current balance based on transactions
+  // 5. Recalculate each account's exact real-world balance from transaction flow
   for (const acc of SEED_ACCOUNTS) {
     const incRes = await db.getFirstAsync<{ sum: number | null }>(
       `SELECT SUM(amount) as sum FROM transactions WHERE type = 'income' AND account_id = ?`,
@@ -77,14 +93,14 @@ export async function seedInitialData(db: SQLiteDatabase): Promise<void> {
     );
   }
 
-  // 5. Default Quick-Add Shortcuts tailored to user habits
+  // 6. Authentic Quick-Add Shortcuts
   const defaultShortcuts = [
-    { id: 'sc_def_nongkrong', title: 'Nongkrong & Kopi', emoji: '☕', amount: 20000, category_id: 'cat_nongkrong', type: 'expense' },
-    { id: 'sc_def_makan', title: 'Makan (Food)', emoji: '🍽️', amount: 25000, category_id: 'cat_makan', type: 'expense' },
+    { id: 'sc_def_nongkrong', title: 'Nongkrongs', emoji: '☕', amount: 20000, category_id: 'cat_nongkrong', type: 'expense' },
+    { id: 'sc_def_makan', title: 'Food (Makanan)', emoji: '🍽️', amount: 25000, category_id: 'cat_makan', type: 'expense' },
     { id: 'sc_def_cemilan', title: 'Cemal Cemil', emoji: '🥐', amount: 10000, category_id: 'cat_cemilan', type: 'expense' },
-    { id: 'sc_def_bensin', title: 'Bensin BBM', emoji: '⛽', amount: 50000, category_id: 'cat_bensin', type: 'expense' },
-    { id: 'sc_def_parkir', title: 'Parkir / Ojol', emoji: '🛵', amount: 2000, category_id: 'cat_parkir', type: 'expense' },
-    { id: 'sc_def_pet', title: 'Makanan Kucing', emoji: '🐱', amount: 15000, category_id: 'cat_pet', type: 'expense' },
+    { id: 'sc_def_bensin', title: 'Bensin', emoji: '⛽', amount: 50000, category_id: 'cat_bensin', type: 'expense' },
+    { id: 'sc_def_parkir', title: 'Ojol, Parkir', emoji: '🛵', amount: 2000, category_id: 'cat_parkir', type: 'expense' },
+    { id: 'sc_def_pet', title: 'Pet (Kucing)', emoji: '🐱', amount: 15000, category_id: 'cat_pet', type: 'expense' },
   ];
 
   for (const sc of defaultShortcuts) {

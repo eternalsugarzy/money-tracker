@@ -1,4 +1,4 @@
-// Seed data generated from user Money+ historical backup
+// Seed data generated directly from user Money+ authentic backup
 export interface SeedTransaction {
   id: string;
   date: string;
@@ -13,30 +13,30 @@ export interface SeedTransaction {
 export const SEED_ACCOUNTS = [
   {
     "id": "acc_bri",
-    "name": "Bank BRI",
+    "name": "BRI",
     "type": "Bank",
-    "initial_balance": 500000,
-    "current_balance": 2420000,
+    "initial_balance": 0,
+    "current_balance": 1920000,
     "icon": "card",
     "icon_family": "Ionicons",
-    "color": "#3A86FF"
+    "color": "#00529C"
   },
   {
     "id": "acc_cash",
-    "name": "Dompet Tunai",
+    "name": "UANG CASH",
     "type": "Cash",
-    "initial_balance": 500000,
-    "current_balance": 524000,
+    "initial_balance": 0,
+    "current_balance": 24000,
     "icon": "cash",
     "icon_family": "Ionicons",
     "color": "#54E346"
   },
   {
     "id": "acc_seabank",
-    "name": "SeaBank",
+    "name": "Sea Bank",
     "type": "Bank",
-    "initial_balance": 500000,
-    "current_balance": 500000,
+    "initial_balance": 0,
+    "current_balance": 0,
     "icon": "wallet",
     "icon_family": "Ionicons",
     "color": "#FF5722"
@@ -46,7 +46,7 @@ export const SEED_ACCOUNTS = [
 export const SEED_CATEGORIES = [
   {
     "id": "cat_makan",
-    "name": "Makanan (Food)",
+    "name": "Food (Makanan)",
     "type": "expense",
     "icon": "restaurant",
     "color": "#FF5D8F"
@@ -67,7 +67,7 @@ export const SEED_CATEGORIES = [
   },
   {
     "id": "cat_parkir",
-    "name": "Ojol & Parkir",
+    "name": "Ojol, Parkir",
     "type": "expense",
     "icon": "car",
     "color": "#00F0FF"
@@ -81,7 +81,7 @@ export const SEED_CATEGORIES = [
   },
   {
     "id": "cat_rumah",
-    "name": "House needs (Kos & Rumah)",
+    "name": "House needs (Kost & Rumah)",
     "type": "expense",
     "icon": "home",
     "color": "#3A86FF"
@@ -116,7 +116,7 @@ export const SEED_CATEGORIES = [
   },
   {
     "id": "cat_trinity_inc",
-    "name": "TRINITY SCENT (Penjualan)",
+    "name": "Trinity Scents (Penjualan)",
     "type": "income",
     "icon": "sparkles",
     "color": "#D90429"
@@ -137,7 +137,7 @@ export const SEED_CATEGORIES = [
   },
   {
     "id": "cat_pet",
-    "name": "Hewan Peliharaan",
+    "name": "Hewan Peliharaan (Pet)",
     "type": "expense",
     "icon": "paw",
     "color": "#FF9E00"
@@ -151,7 +151,7 @@ export const SEED_CATEGORIES = [
   },
   {
     "id": "cat_pendidikan",
-    "name": "Pendidikan & Kuliah",
+    "name": "Pendidikan (Kuliah & Wisuda)",
     "type": "expense",
     "icon": "school",
     "color": "#3A86FF"
@@ -200,14 +200,14 @@ export const SEED_CATEGORIES = [
   },
   {
     "id": "cat_bonus",
-    "name": "Bonus & Hadiah",
+    "name": "Bonus",
     "type": "income",
     "icon": "trophy",
     "color": "#FFE600"
   },
   {
     "id": "cat_freelance",
-    "name": "Kerja Sampingan",
+    "name": "Part-time Job",
     "type": "income",
     "icon": "briefcase",
     "color": "#00F0FF"

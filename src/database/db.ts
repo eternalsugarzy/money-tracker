@@ -121,9 +121,12 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
     );
   `);
 
-  // Clean up unused legacy categories from previous builds
+  // Clean up unused legacy categories, shortcuts, and accounts from previous builds
   try {
     await db.execAsync(`
+      DELETE FROM accounts 
+      WHERE id NOT IN ('acc_bri', 'acc_cash', 'acc_seabank');
+
       DELETE FROM categories 
       WHERE (id LIKE 'cat_exp_%' OR id LIKE 'cat_inc_%')
       AND id NOT IN (SELECT DISTINCT category_id FROM transactions WHERE category_id IS NOT NULL)
@@ -138,6 +141,6 @@ export async function initDatabase(db: SQLiteDatabase): Promise<void> {
     // Ignore if table was just created
   }
 
-  // Seed default categories, accounts, and shortcuts if empty
+  // Seed default categories, accounts, and shortcuts from authentic dataset
   await seedInitialData(db);
 }

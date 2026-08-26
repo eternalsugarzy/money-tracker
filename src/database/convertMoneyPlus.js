@@ -25,35 +25,32 @@ function splitCsvLine(line) {
 }
 
 const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-const headers = splitCsvLine(lines[0]);
-
-console.log('Headers:', headers);
 
 const categoryDefinition = [
-  { id: 'cat_makan', name: 'Makanan (Food)', type: 'expense', icon: 'restaurant', color: '#FF5D8F' },
+  { id: 'cat_makan', name: 'Food (Makanan)', type: 'expense', icon: 'restaurant', color: '#FF5D8F' },
   { id: 'cat_cemilan', name: 'Cemal Cemil', type: 'expense', icon: 'pizza', color: '#FF9E00' },
   { id: 'cat_nongkrong', name: 'Nongkrongs', type: 'expense', icon: 'cafe', color: '#FF7A00' },
-  { id: 'cat_parkir', name: 'Ojol & Parkir', type: 'expense', icon: 'car', color: '#00F0FF' },
+  { id: 'cat_parkir', name: 'Ojol, Parkir', type: 'expense', icon: 'car', color: '#00F0FF' },
   { id: 'cat_bahan_makan', name: 'Foodstuffs (Bahan Makanan)', type: 'expense', icon: 'basket', color: '#52B788' },
-  { id: 'cat_rumah', name: 'House needs (Kos & Rumah)', type: 'expense', icon: 'home', color: '#3A86FF' },
+  { id: 'cat_rumah', name: 'House needs (Kost & Rumah)', type: 'expense', icon: 'home', color: '#3A86FF' },
   { id: 'cat_bensin', name: 'Bensin', type: 'expense', icon: 'speedometer', color: '#FFE600' },
   { id: 'cat_olahraga', name: 'Olahraga', type: 'expense', icon: 'football', color: '#54E346' },
   { id: 'cat_motor', name: 'Perawatan Motor', type: 'expense', icon: 'construct', color: '#8338EC' },
   { id: 'cat_trinity_exp', name: 'TRINITY SCENT (Modal)', type: 'expense', icon: 'sparkles', color: '#D90429' },
-  { id: 'cat_trinity_inc', name: 'TRINITY SCENT (Penjualan)', type: 'income', icon: 'sparkles', color: '#D90429' },
+  { id: 'cat_trinity_inc', name: 'Trinity Scents (Penjualan)', type: 'income', icon: 'sparkles', color: '#D90429' },
   { id: 'cat_random', name: 'Random Stuff', type: 'expense', icon: 'cube', color: '#A06CD5' },
   { id: 'cat_hiburan', name: 'Hiburan & Rekreasi', type: 'expense', icon: 'game-controller', color: '#A06CD5' },
-  { id: 'cat_pet', name: 'Hewan Peliharaan', type: 'expense', icon: 'paw', color: '#FF9E00' },
+  { id: 'cat_pet', name: 'Hewan Peliharaan (Pet)', type: 'expense', icon: 'paw', color: '#FF9E00' },
   { id: 'cat_komunikasi', name: 'Komunikasi & Pulsa', type: 'expense', icon: 'phone-portrait', color: '#00F0FF' },
-  { id: 'cat_pendidikan', name: 'Pendidikan & Kuliah', type: 'expense', icon: 'school', color: '#3A86FF' },
+  { id: 'cat_pendidikan', name: 'Pendidikan (Kuliah & Wisuda)', type: 'expense', icon: 'school', color: '#3A86FF' },
   { id: 'cat_perawatan', name: 'Perawatan Diri & Parfum', type: 'expense', icon: 'flower', color: '#FF3366' },
   { id: 'cat_tagihan', name: 'Pajak & Tagihan', type: 'expense', icon: 'receipt', color: '#6C757D' },
   { id: 'cat_pakaian', name: 'Pakaian & Fashion', type: 'expense', icon: 'shirt', color: '#FF5D8F' },
   { id: 'cat_hadiah', name: 'Hadiah & Donasi', type: 'expense', icon: 'gift', color: '#FF7A00' },
   { id: 'cat_travel', name: 'Perjalanan & Travel', type: 'expense', icon: 'airplane', color: '#00B4D8' },
   { id: 'cat_ortu', name: 'Mingguan Ortu', type: 'income', icon: 'cash', color: '#54E346' },
-  { id: 'cat_bonus', name: 'Bonus & Hadiah', type: 'income', icon: 'trophy', color: '#FFE600' },
-  { id: 'cat_freelance', name: 'Kerja Sampingan', type: 'income', icon: 'briefcase', color: '#00F0FF' },
+  { id: 'cat_bonus', name: 'Bonus', type: 'income', icon: 'trophy', color: '#FFE600' },
+  { id: 'cat_freelance', name: 'Part-time Job', type: 'income', icon: 'briefcase', color: '#00F0FF' },
   { id: 'cat_lainnya', name: 'Lain-lain', type: 'all', icon: 'ellipsis-horizontal-circle', color: '#8338EC' },
 ];
 
@@ -129,7 +126,6 @@ for (let i = 1; i < lines.length; i++) {
     type = 'transfer';
     account_id = resolveAccountId(rawAcc);
     to_account_id = resolveAccountId(rawToAcc || rawName);
-    // If account_id and to_account_id are identical due to raw data (e.g. BRI -> UANG CASH)
     if (account_id === to_account_id) {
       if (rawAcc.toUpperCase().includes('BRI')) account_id = 'acc_bri';
       if ((rawToAcc || rawName).toUpperCase().includes('CASH')) to_account_id = 'acc_cash';
@@ -156,49 +152,14 @@ for (let i = 1; i < lines.length; i++) {
   });
 }
 
-console.log('Total Parsed Transactions:', transactions.length);
-console.log('Total Income:', totalIncome, 'Total Expense:', totalExpense);
-
+// Exactly 3 authentic accounts from user's data:
 const accounts = [
-  { id: 'acc_bri', name: 'Bank BRI', type: 'Bank', initial_balance: 0, current_balance: 0, icon: 'card', icon_family: 'Ionicons', color: '#3A86FF' },
-  { id: 'acc_cash', name: 'Dompet Tunai', type: 'Cash', initial_balance: 0, current_balance: 0, icon: 'cash', icon_family: 'Ionicons', color: '#54E346' },
-  { id: 'acc_seabank', name: 'SeaBank', type: 'Bank', initial_balance: 0, current_balance: 0, icon: 'wallet', icon_family: 'Ionicons', color: '#FF5722' },
+  { id: 'acc_bri', name: 'BRI', type: 'Bank', initial_balance: 0, current_balance: 1920000, icon: 'card', icon_family: 'Ionicons', color: '#00529C' },
+  { id: 'acc_cash', name: 'UANG CASH', type: 'Cash', initial_balance: 0, current_balance: 24000, icon: 'cash', icon_family: 'Ionicons', color: '#54E346' },
+  { id: 'acc_seabank', name: 'Sea Bank', type: 'Bank', initial_balance: 0, current_balance: 0, icon: 'wallet', icon_family: 'Ionicons', color: '#FF5722' },
 ];
 
-// Calculate final balances from transaction flow
-const balances = { acc_bri: 0, acc_cash: 0, acc_seabank: 0 };
-for (const tx of transactions) {
-  if (tx.type === 'income') {
-    balances[tx.account_id] = (balances[tx.account_id] || 0) + tx.amount;
-  } else if (tx.type === 'expense') {
-    balances[tx.account_id] = (balances[tx.account_id] || 0) - tx.amount;
-  } else if (tx.type === 'transfer') {
-    balances[tx.account_id] = (balances[tx.account_id] || 0) - tx.amount;
-    if (tx.to_account_id) {
-      balances[tx.to_account_id] = (balances[tx.to_account_id] || 0) + tx.amount;
-    }
-  }
-}
-
-console.log('Calculated Balances from History:', balances);
-
-// If cash or bank has negative net from historical records without initial balance, let's adjust initial balances gracefully
-// e.g. set initial balance so that calculated current_balance matches real positive balance
-for (const acc of accounts) {
-  const netFlow = balances[acc.id] || 0;
-  // If net flow is negative, offset with realistic initial balance
-  if (netFlow < 0) {
-    acc.initial_balance = Math.abs(netFlow) + 250000;
-    acc.current_balance = 250000;
-  } else {
-    acc.initial_balance = 500000;
-    acc.current_balance = 500000 + netFlow;
-  }
-}
-
-console.log('Adjusted Accounts:', accounts);
-
-const outputTs = `// Seed data generated from user Money+ historical backup
+const outputTs = `// Seed data generated directly from user Money+ authentic backup
 export interface SeedTransaction {
   id: string;
   date: string;
@@ -218,4 +179,4 @@ export const SEED_TRANSACTIONS: SeedTransaction[] = ${JSON.stringify(transaction
 `;
 
 fs.writeFileSync(path.join(__dirname, 'initialMoneyPlusData.ts'), outputTs, 'utf8');
-console.log('Successfully written initialMoneyPlusData.ts!');
+console.log('Successfully generated initialMoneyPlusData.ts!');
