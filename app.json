@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Money+",
+    "slug": "money-tracker-ios",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFE600"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.moneytracker.ios"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFE600"
+      },
+      "package": "com.moneytracker.ios"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Izinkan aplikasi mengakses foto untuk melampirkan struk transaksi.",
+          "cameraPermission": "Izinkan aplikasi mengakses kamera untuk memotret struk transaksi."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#FFE600"
+        }
+      ],
+      "expo-sqlite"
+    ]
+  }
+}
