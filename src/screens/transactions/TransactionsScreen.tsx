@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -54,53 +54,85 @@ export const TransactionsScreen: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Sync filters whenever route params change (e.g. repeatedly clicked from Home or Analytics chart)
-  useEffect(() => {
-    if (route.params?.categoryId !== undefined) {
-      setSelectedCategoryIds(route.params.categoryId ? [route.params.categoryId] : []);
-    }
-    if (route.params?.type !== undefined) {
-      setTypeFilter(route.params.type);
-    }
-    if (route.params?.period !== undefined) {
-      setPeriod(route.params.period);
-    }
-    if (route.params?.startDate !== undefined) {
-      setStartDate(route.params.startDate);
-    }
-    if (route.params?.endDate !== undefined) {
-      setEndDate(route.params.endDate);
-    }
-  }, [route.params]);
+  const lastProcessedTsRef = useRef<number>(0);
 
-  const fetchTransactions = useCallback(async () => {
+  const fetchTransactionsWith = useCallback(async (
+    p: TimePeriodFilter,
+    sDate: string | undefined,
+    eDate: string | undefined,
+    tFilter: TransactionType | 'all',
+    accId: string | undefined,
+    catIds: string[],
+    query: string
+  ) => {
     try {
       const filters: TransactionFilterOptions = {
-        period,
-        startDate: period === 'custom' ? startDate : undefined,
-        endDate: period === 'custom' ? endDate : undefined,
-        type: typeFilter,
-        accountId: selectedAccountId,
-        categoryIds: selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined,
-        searchQuery: searchQuery.trim() || undefined,
+        period: p,
+        startDate: p === 'custom' ? sDate : undefined,
+        endDate: p === 'custom' ? eDate : undefined,
+        type: tFilter,
+        accountId: accId,
+        categoryIds: catIds.length > 0 ? catIds : undefined,
+        searchQuery: query.trim() || undefined,
       };
       const list = await getTransactions(filters);
       setTransactions(list);
     } catch (err) {
       console.warn('Error fetching transactions:', err);
     }
-  }, [period, startDate, endDate, typeFilter, selectedAccountId, selectedCategoryIds, searchQuery]);
+  }, []);
 
-  // Run fetch whenever filter criteria changes
+  const fetchTransactions = useCallback(() => {
+    return fetchTransactionsWith(
+      period,
+      startDate,
+      endDate,
+      typeFilter,
+      selectedAccountId,
+      selectedCategoryIds,
+      searchQuery
+    );
+  }, [fetchTransactionsWith, period, startDate, endDate, typeFilter, selectedAccountId, selectedCategoryIds, searchQuery]);
+
+  // Sync immediately on focus when incoming navigation has a fresh timestamp (_ts)
+  useFocusEffect(
+    useCallback(() => {
+      const paramTs = route.params?._ts;
+      if (paramTs && paramTs !== lastProcessedTsRef.current) {
+        lastProcessedTsRef.current = paramTs;
+
+        const newCatIds = route.params?.categoryId ? [route.params.categoryId] : [];
+        const newType = route.params?.type || 'all';
+        const newPeriod = route.params?.period || 'month';
+        const newStartDate = route.params?.startDate;
+        const newEndDate = route.params?.endDate;
+
+        setSelectedCategoryIds(newCatIds);
+        setTypeFilter(newType);
+        setPeriod(newPeriod);
+        setStartDate(newStartDate);
+        setEndDate(newEndDate);
+
+        // Fetch IMMEDIATELY with the fresh params without waiting for next state cycle!
+        fetchTransactionsWith(
+          newPeriod,
+          newStartDate,
+          newEndDate,
+          newType,
+          selectedAccountId,
+          newCatIds,
+          searchQuery
+        );
+      } else {
+        fetchTransactions();
+      }
+    }, [route.params, fetchTransactions, fetchTransactionsWith, selectedAccountId, searchQuery])
+  );
+
+  // Run fetch whenever manual filter state on screen changes
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchTransactions();
-    }, [fetchTransactions])
-  );
 
   const onRefresh = async () => {
     try {
