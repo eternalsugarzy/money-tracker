@@ -20,7 +20,7 @@ import { NeoDatePicker } from '../../components/common/NeoDatePicker';
 import { formatCurrency, formatDateLabel, getTodayDateString } from '../../utils/formatters';
 import { evaluateMathExpression } from '../../utils/mathEvaluator';
 import { DebtType } from '../../types';
-import { createDebt, updateDebt } from '../../database/debtRepo';
+import { createDebt, updateDebt, deleteDebt } from '../../database/debtRepo';
 
 export const DebtFormModal: React.FC = () => {
   const { theme } = useTheme();
@@ -35,7 +35,8 @@ export const DebtFormModal: React.FC = () => {
   const [type, setType] = useState<DebtType>(isEditing ? editDebt.type : defaultType);
   const [personName, setPersonName] = useState<string>(isEditing ? editDebt.person_name : '');
   const [amountExpr, setAmountExpr] = useState<string>(isEditing ? String(editDebt.amount) : '');
-  const [showCalculator, setShowCalculator] = useState<boolean>(false);
+  // Default to true: directly show built-in calculator, no phone keyboard
+  const [showCalculator, setShowCalculator] = useState<boolean>(true);
   const [date, setDate] = useState<string>(isEditing ? editDebt.date : getTodayDateString());
   const [dueDate, setDueDate] = useState<string>(isEditing && editDebt.due_date ? editDebt.due_date : '');
   const [note, setNote] = useState<string>(isEditing ? editDebt.note : '');
@@ -50,7 +51,7 @@ export const DebtFormModal: React.FC = () => {
 
     const evalRes = evaluateMathExpression(amountExpr);
     if (!evalRes.isValid || evalRes.value <= 0) {
-      Alert.alert('Nominal Tidak Valid', 'Silakan masukkan nominal hutang/piutang yang valid.');
+      Alert.alert('Nominal Tidak Valid', 'Silakan masukkan nominal hutang/piutang via kalkulator.');
       return;
     }
 
@@ -85,6 +86,27 @@ export const DebtFormModal: React.FC = () => {
     }
   };
 
+  const handleDelete = () => {
+    if (!editDebt) return;
+    Alert.alert('Hapus Catatan', `Hapus catatan hutang/piutang ini?`, [
+      { text: 'Batal', style: 'cancel' },
+      {
+        text: 'Hapus',
+        style: 'destructive',
+        onPress: async () => {
+          await deleteDebt(editDebt.id);
+          await refreshData();
+          navigation.goBack();
+        },
+      },
+    ]);
+  };
+
+  const getComputedDisplayAmount = () => {
+    const res = evaluateMathExpression(amountExpr);
+    return res.isValid ? formatCurrency(res.value) : 'Rp 0';
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       {/* Header */}
@@ -102,7 +124,7 @@ export const DebtFormModal: React.FC = () => {
           <Ionicons name="close" size={22} color={theme.colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          {isEditing ? 'EDIT CATATAN' : 'CATAT HUTANG - PIUTANG'}
+          {isEditing ? 'EDIT HUTANG / PIUTANG' : 'CATAT HUTANG / PIUTANG'}
         </Text>
         <View style={{ width: 40 }} />
       </View>
@@ -112,7 +134,7 @@ export const DebtFormModal: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Type Choice */}
+        {/* Type Toggle */}
         <View style={styles.typeRow}>
           <TouchableOpacity
             onPress={() => setType('receivable')}
@@ -160,14 +182,14 @@ export const DebtFormModal: React.FC = () => {
         {/* Person Name */}
         <NeoCard style={styles.card}>
           <NeoInput
-            label="NAMA ORANG"
-            placeholder="Misal: Budi Santoso, Rina..."
+            label="NAMA ORANG / PIHAK TERKAIT"
+            placeholder="Misal: Budi Santoso, Rina, Mas Kevin..."
             value={personName}
             onChangeText={setPersonName}
           />
         </NeoCard>
 
-        {/* Nominal Amount Box with Calculator */}
+        {/* Nominal Amount Box with Direct Calculator */}
         <NeoCard style={styles.card}>
           <View style={styles.limitHeader}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>NOMINAL</Text>
@@ -183,34 +205,44 @@ export const DebtFormModal: React.FC = () => {
             >
               <Ionicons name="calculator" size={14} color={theme.colors.text} />
               <Text style={[styles.calcBtnText, { color: theme.colors.text }]}>
-                {showCalculator ? 'Tutup' : 'Kalkulator'}
+                {showCalculator ? 'Sembunyikan Keypad' : 'Buka Keypad'}
               </Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.amountInputRow}>
-            <Text style={[styles.rpPrefix, { color: theme.colors.text }]}>Rp</Text>
-            <NeoInput
-              placeholder="0 (misal: 250000)"
-              value={amountExpr}
-              onChangeText={setAmountExpr}
-              keyboardType="numeric"
-              style={{ fontSize: 20, fontWeight: '900' }}
-              containerStyle={{ flex: 1, marginVertical: 0 }}
-            />
-          </View>
-        </NeoCard>
+          {/* Large Touchable Display */}
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => setShowCalculator(true)}
+            style={[
+              styles.displayBox,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <Text style={[styles.displayAmount, { color: theme.colors.text }]}>
+              {amountExpr ? getComputedDisplayAmount() : 'Rp 0'}
+            </Text>
+            {amountExpr.length > 0 && (
+              <Text style={[styles.displayExpression, { color: theme.colors.textMuted }]}>
+                = {amountExpr}
+              </Text>
+            )}
+          </TouchableOpacity>
 
-        {/* Calculator Keypad */}
-        {showCalculator && (
-          <NeoCalculator
-            initialValue={amountExpr}
-            onConfirm={(val) => {
-              setAmountExpr(String(val));
-              setShowCalculator(false);
-            }}
-          />
-        )}
+          {/* Keypad */}
+          {showCalculator && (
+            <View style={styles.calcWrapper}>
+              <NeoCalculator
+                value={amountExpr}
+                onChange={setAmountExpr}
+                onDone={() => setShowCalculator(false)}
+              />
+            </View>
+          )}
+        </NeoCard>
 
         {/* Dates & Notes */}
         <NeoCard style={styles.card}>
@@ -219,86 +251,82 @@ export const DebtFormModal: React.FC = () => {
             onPress={() => setShowDatePicker(true)}
             style={styles.fieldSelector}
           >
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>TANGGAL TRANSAKSI</Text>
-            <View
-              style={[
-                styles.selectorBox,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-            >
-              <Ionicons name="calendar" size={18} color={theme.colors.text} />
-              <Text style={[styles.selectorBoxText, { color: theme.colors.text }]}>
-                {formatDateLabel(date)} ({date})
-              </Text>
+            <View style={styles.fieldLeft}>
+              <Ionicons name="calendar" size={18} color={theme.colors.primary} />
+              <Text style={[styles.fieldLabel, { color: theme.colors.text }]}>Tanggal Pinjam</Text>
             </View>
+            <Text style={[styles.fieldValue, { color: theme.colors.text }]}>
+              {formatDateLabel(date)} ({date})
+            </Text>
           </TouchableOpacity>
 
-          {/* Jatuh Tempo */}
+          {/* Tanggal Jatuh Tempo */}
           <TouchableOpacity
             onPress={() => setShowDueDatePicker(true)}
-            style={[styles.fieldSelector, { marginTop: 12 }]}
+            style={[styles.fieldSelector, { marginTop: 10 }]}
           >
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              TANGGAL JATUH TEMPO (OPSIONAL)
-            </Text>
-            <View
-              style={[
-                styles.selectorBox,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-            >
-              <Ionicons name="alarm-outline" size={18} color={theme.colors.text} />
-              <Text style={[styles.selectorBoxText, { color: theme.colors.text }]}>
-                {dueDate ? `${formatDateLabel(dueDate)} (${dueDate})` : 'Tidak ada batas waktu'}
-              </Text>
-              {dueDate ? (
-                <TouchableOpacity onPress={() => setDueDate('')}>
-                  <Ionicons name="close-circle" size={18} color={theme.colors.textMuted} />
-                </TouchableOpacity>
-              ) : null}
+            <View style={styles.fieldLeft}>
+              <Ionicons name="alarm" size={18} color={theme.colors.debt} />
+              <Text style={[styles.fieldLabel, { color: theme.colors.text }]}>Jatuh Tempo (Opsional)</Text>
             </View>
+            <Text style={[styles.fieldValue, { color: dueDate ? theme.colors.text : theme.colors.textMuted }]}>
+              {dueDate ? `${formatDateLabel(dueDate)} (${dueDate})` : 'Belum Ditentukan'}
+            </Text>
           </TouchableOpacity>
 
-          {/* Catatan */}
+          {dueDate ? (
+            <TouchableOpacity onPress={() => setDueDate('')} style={{ marginTop: 4, alignSelf: 'flex-end' }}>
+              <Text style={{ fontSize: 10, color: theme.colors.expense, fontWeight: '800' }}>Hapus Jatuh Tempo</Text>
+            </TouchableOpacity>
+          ) : null}
+        </NeoCard>
+
+        {/* Note */}
+        <NeoCard style={styles.card}>
           <NeoInput
             label="CATATAN / KEPERLUAN"
-            placeholder="Misal: Pinjam untuk servis motor, talangan tiket bioskop..."
+            placeholder="Misal: Pinjaman beli motor, talangan makan siang..."
             value={note}
             onChangeText={setNote}
-            multiline
-            numberOfLines={2}
-            containerStyle={{ marginTop: 12 }}
           />
         </NeoCard>
 
-        {/* Submit Button */}
+        {/* Save Button */}
         <NeoButton
-          title={isEditing ? 'SIMPAN PERUBAHAN' : 'SIMPAN CATATAN'}
+          title={isEditing ? 'SIMPAN PERUBAHAN' : 'CATAT SEKARANG'}
           variant="primary"
           size="lg"
           onPress={handleSave}
-          style={{ marginTop: 14 }}
+          style={{ marginTop: 10 }}
         />
+
+        {/* Delete Button (when editing) */}
+        {isEditing && (
+          <NeoButton
+            title="HAPUS CATATAN INI"
+            variant="expense"
+            size="md"
+            onPress={handleDelete}
+            style={{ marginTop: 8 }}
+          />
+        )}
+
+        <View style={{ height: 60 }} />
       </ScrollView>
 
+      {/* Date Pickers */}
       <NeoDatePicker
         visible={showDatePicker}
-        onClose={() => setShowDatePicker(false)}
         selectedDate={date}
         onSelectDate={setDate}
+        onClose={() => setShowDatePicker(false)}
       />
 
       <NeoDatePicker
         visible={showDueDatePicker}
-        onClose={() => setShowDueDatePicker(false)}
-        selectedDate={dueDate || date}
+        selectedDate={dueDate || getTodayDateString()}
         onSelectDate={setDueDate}
+        onClose={() => setShowDueDatePicker(false)}
       />
     </SafeAreaView>
   );
@@ -330,29 +358,31 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 50,
+    paddingBottom: 40,
   },
   typeRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 6,
+    marginBottom: 8,
   },
   typeBtn: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   typeBtnText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '900',
+    textAlign: 'center',
   },
   card: {
     padding: 14,
-    marginVertical: 6,
+    marginVertical: 5,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 0.5,
     marginBottom: 8,
@@ -362,6 +392,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 8,
   },
   calcBtn: {
     flexDirection: 'row',
@@ -373,33 +404,47 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   calcBtnText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '800',
   },
-  amountInputRow: {
-    flexDirection: 'row',
+  displayBox: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
     alignItems: 'center',
-    marginTop: 6,
+    justifyContent: 'center',
+    marginBottom: 10,
   },
-  rpPrefix: {
-    fontSize: 22,
+  displayAmount: {
+    fontSize: 26,
     fontWeight: '900',
-    marginRight: 8,
+    letterSpacing: 0.5,
   },
-  fieldSelector: {
+  displayExpression: {
+    fontSize: 12,
+    fontWeight: '700',
     marginTop: 2,
   },
-  selectorBox: {
+  calcWrapper: {
+    marginTop: 4,
+  },
+  fieldSelector: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 2,
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+  },
+  fieldLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
-  selectorBoxText: {
-    fontSize: 13,
+  fieldLabel: {
+    fontSize: 12,
     fontWeight: '800',
-    flex: 1,
+  },
+  fieldValue: {
+    fontSize: 12,
+    fontWeight: '700',
   },
 });

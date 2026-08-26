@@ -21,7 +21,7 @@ import { NeoDatePicker } from '../../components/common/NeoDatePicker';
 import { formatCurrency, formatDateLabel, getTodayDateString } from '../../utils/formatters';
 import { evaluateMathExpression } from '../../utils/mathEvaluator';
 import { RecurringInterval, TransactionType } from '../../types';
-import { createRecurring, updateRecurring } from '../../database/recurringRepo';
+import { createRecurring, updateRecurring, deleteRecurring } from '../../database/recurringRepo';
 
 export const RecurringFormModal: React.FC = () => {
   const { theme } = useTheme();
@@ -38,14 +38,15 @@ export const RecurringFormModal: React.FC = () => {
   const [amountExpr, setAmountExpr] = useState<string>(
     isEditing ? String(editRecurring.amount) : ''
   );
-  const [showCalculator, setShowCalculator] = useState<boolean>(false);
+  // Default to true: directly show built-in calculator, no phone keyboard
+  const [showCalculator, setShowCalculator] = useState<boolean>(true);
   const [selectedAccountId, setSelectedAccountId] = useState<string>(
     isEditing && editRecurring.account_id ? editRecurring.account_id : accounts[0]?.id || ''
   );
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
     isEditing && editRecurring.category_id
       ? editRecurring.category_id
-      : categories.find((c) => c.type === (type === 'income' ? 'income' : 'expense'))?.id || ''
+      : categories[0]?.id || ''
   );
   const [interval, setInterval] = useState<RecurringInterval>(
     isEditing ? editRecurring.interval : 'monthly'
@@ -56,14 +57,12 @@ export const RecurringFormModal: React.FC = () => {
   );
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
-  const filteredCategories = categories.filter(
-    (c) => c.is_archived === 0 && (type === 'income' ? c.type === 'income' : c.type === 'expense')
-  );
+  const activeCategories = categories.filter((c) => c.is_archived === 0);
 
   const handleSave = async () => {
     const evalRes = evaluateMathExpression(amountExpr);
     if (!evalRes.isValid || evalRes.value <= 0) {
-      Alert.alert('Nominal Tidak Valid', 'Silakan masukkan nominal transaksi yang valid.');
+      Alert.alert('Nominal Tidak Valid', 'Silakan masukkan nominal transaksi yang valid via kalkulator.');
       return;
     }
 
@@ -99,6 +98,27 @@ export const RecurringFormModal: React.FC = () => {
     } catch (err: any) {
       Alert.alert('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem.');
     }
+  };
+
+  const handleDelete = () => {
+    if (!editRecurring) return;
+    Alert.alert('Hapus Recurring', 'Hapus pengingat transaksi berulang ini?', [
+      { text: 'Batal', style: 'cancel' },
+      {
+        text: 'Hapus',
+        style: 'destructive',
+        onPress: async () => {
+          await deleteRecurring(editRecurring.id);
+          await refreshData();
+          navigation.goBack();
+        },
+      },
+    ]);
+  };
+
+  const getComputedDisplayAmount = () => {
+    const res = evaluateMathExpression(amountExpr);
+    return res.isValid ? formatCurrency(res.value) : 'Rp 0';
   };
 
   const INTERVALS: { key: RecurringInterval; label: string }[] = [
@@ -180,7 +200,7 @@ export const RecurringFormModal: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Nominal Amount Box */}
+        {/* Nominal Amount Box with Direct Calculator */}
         <NeoCard style={styles.card}>
           <View style={styles.limitHeader}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>NOMINAL</Text>
@@ -196,57 +216,57 @@ export const RecurringFormModal: React.FC = () => {
             >
               <Ionicons name="calculator" size={14} color={theme.colors.text} />
               <Text style={[styles.calcBtnText, { color: theme.colors.text }]}>
-                {showCalculator ? 'Tutup' : 'Kalkulator'}
+                {showCalculator ? 'Sembunyikan Keypad' : 'Buka Keypad'}
               </Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.amountInputRow}>
-            <Text style={[styles.rpPrefix, { color: theme.colors.text }]}>Rp</Text>
-            <NeoInput
-              placeholder="0 (misal: 150000)"
-              value={amountExpr}
-              onChangeText={setAmountExpr}
-              keyboardType="numeric"
-              style={{ fontSize: 20, fontWeight: '900' }}
-              containerStyle={{ flex: 1, marginVertical: 0 }}
-            />
-          </View>
-        </NeoCard>
+          {/* Large Touchable Display */}
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => setShowCalculator(true)}
+            style={[
+              styles.displayBox,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <Text style={[styles.displayAmount, { color: theme.colors.text }]}>
+              {amountExpr ? getComputedDisplayAmount() : 'Rp 0'}
+            </Text>
+            {amountExpr.length > 0 && (
+              <Text style={[styles.displayExpression, { color: theme.colors.textMuted }]}>
+                = {amountExpr}
+              </Text>
+            )}
+          </TouchableOpacity>
 
-        {/* Calculator */}
-        {showCalculator && (
-          <NeoCalculator
-            initialValue={amountExpr}
-            onConfirm={(val) => {
-              setAmountExpr(String(val));
-              setShowCalculator(false);
-            }}
-          />
-        )}
-
-        {/* Note / Label */}
-        <NeoCard style={styles.card}>
-          <NeoInput
-            label="NAMA / DESKRIPSI TEMPLATE"
-            placeholder="Misal: Tagihan WiFi Indihome, Bayar Kost, Gaji Bulanan..."
-            value={note}
-            onChangeText={setNote}
-          />
+          {/* Keypad */}
+          {showCalculator && (
+            <View style={styles.calcWrapper}>
+              <NeoCalculator
+                value={amountExpr}
+                onChange={setAmountExpr}
+                onDone={() => setShowCalculator(false)}
+              />
+            </View>
+          )}
         </NeoCard>
 
         {/* Interval Selector */}
         <NeoCard style={styles.card}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>INTERVAL PENGULANGAN</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>FREKUENSI RUTIN</Text>
           <View style={styles.intervalGrid}>
-            {INTERVALS.map((inv) => {
-              const isSelected = interval === inv.key;
+            {INTERVALS.map((item) => {
+              const isSelected = interval === item.key;
               return (
                 <TouchableOpacity
-                  key={inv.key}
-                  onPress={() => setInterval(inv.key)}
+                  key={item.key}
+                  onPress={() => setInterval(item.key)}
                   style={[
-                    styles.intervalBtn,
+                    styles.intervalChip,
                     {
                       backgroundColor: isSelected ? theme.colors.primary : theme.colors.surface,
                       borderColor: theme.colors.border,
@@ -256,11 +276,11 @@ export const RecurringFormModal: React.FC = () => {
                 >
                   <Text
                     style={[
-                      styles.intervalBtnText,
-                      { color: '#121212', fontWeight: isSelected ? '900' : '700' },
+                      styles.intervalChipText,
+                      { color: '#121212', fontWeight: isSelected ? '900' : '600' },
                     ]}
                   >
-                    {inv.label}
+                    {item.label}
                   </Text>
                 </TouchableOpacity>
               );
@@ -268,10 +288,30 @@ export const RecurringFormModal: React.FC = () => {
           </View>
         </NeoCard>
 
-        {/* Account & Category */}
+        {/* Start Date */}
         <NeoCard style={styles.card}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>AKUN DEFAULT</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>TANGGAL MULAI</Text>
+          <TouchableOpacity
+            onPress={() => setShowDatePicker(true)}
+            style={[
+              styles.dateBtn,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <Ionicons name="calendar-outline" size={18} color={theme.colors.text} />
+            <Text style={[styles.dateBtnText, { color: theme.colors.text }]}>
+              {formatDateLabel(startDate)} ({startDate})
+            </Text>
+          </TouchableOpacity>
+        </NeoCard>
+
+        {/* Wallet Account */}
+        <NeoCard style={styles.card}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>DOMPET / AKUN</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
             {accounts.filter((a) => a.is_archived === 0).map((acc) => {
               const isSelected = selectedAccountId === acc.id;
               return (
@@ -281,29 +321,44 @@ export const RecurringFormModal: React.FC = () => {
                   style={[
                     styles.accountChip,
                     {
-                      backgroundColor: isSelected ? theme.colors.primary : theme.colors.surface,
+                      backgroundColor: isSelected ? acc.color : theme.colors.surface,
                       borderColor: theme.colors.border,
-                      borderWidth: 2,
+                      borderWidth: isSelected ? 2.5 : 1.5,
                     },
                   ]}
                 >
-                  <NeoBadge icon={acc.icon} color={acc.color} size="sm" noShadow />
-                  <Text style={[styles.chipTitle, { color: theme.colors.text }]}>{acc.name}</Text>
+                  <NeoBadge
+                    icon={acc.icon}
+                    iconFamily={acc.icon_family}
+                    color={isSelected ? '#FFFFFF' : acc.color}
+                    size="sm"
+                  />
+                  <Text
+                    style={[
+                      styles.accountChipText,
+                      { color: isSelected ? '#121212' : theme.colors.text, fontWeight: isSelected ? '900' : '600' },
+                    ]}
+                  >
+                    {acc.name}
+                  </Text>
                 </TouchableOpacity>
               );
             })}
           </ScrollView>
+        </NeoCard>
 
+        {/* Category Picker */}
+        <NeoCard style={styles.card}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>KATEGORI</Text>
-          <View style={styles.catGrid}>
-            {filteredCategories.map((cat) => {
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
+            {activeCategories.map((cat) => {
               const isSelected = selectedCategoryId === cat.id;
               return (
                 <TouchableOpacity
                   key={cat.id}
                   onPress={() => setSelectedCategoryId(cat.id)}
                   style={[
-                    styles.catCard,
+                    styles.accountChip,
                     {
                       backgroundColor: isSelected ? cat.color : theme.colors.surface,
                       borderColor: theme.colors.border,
@@ -319,57 +374,57 @@ export const RecurringFormModal: React.FC = () => {
                   />
                   <Text
                     style={[
-                      styles.catName,
-                      { color: theme.colors.text, fontWeight: isSelected ? '900' : '600' },
+                      styles.accountChipText,
+                      { color: isSelected ? '#121212' : theme.colors.text, fontWeight: isSelected ? '900' : '600' },
                     ]}
-                    numberOfLines={1}
                   >
                     {cat.name}
                   </Text>
                 </TouchableOpacity>
               );
             })}
-          </View>
+          </ScrollView>
         </NeoCard>
 
-        {/* Start Date */}
+        {/* Note Input */}
         <NeoCard style={styles.card}>
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={styles.fieldSelector}
-          >
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>TANGGAL MULAI</Text>
-            <View
-              style={[
-                styles.selectorBox,
-                {
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-            >
-              <Ionicons name="calendar" size={18} color={theme.colors.text} />
-              <Text style={[styles.selectorBoxText, { color: theme.colors.text }]}>
-                {formatDateLabel(startDate)} ({startDate})
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <NeoInput
+            label="CATATAN / KETERANGAN"
+            placeholder="Misal: Tagihan Wifi Indihome, Spotify..."
+            value={note}
+            onChangeText={setNote}
+          />
         </NeoCard>
 
+        {/* Save Button */}
         <NeoButton
-          title={isEditing ? 'SIMPAN PERUBAHAN' : 'SIMPAN TEMPLATE'}
+          title={isEditing ? 'SIMPAN PERUBAHAN' : 'BUAT TRANSAKSI BERULANG'}
           variant="primary"
           size="lg"
           onPress={handleSave}
-          style={{ marginTop: 14 }}
+          style={{ marginTop: 10 }}
         />
+
+        {/* Delete Button (when editing) */}
+        {isEditing && (
+          <NeoButton
+            title="HAPUS RECURRING INI"
+            variant="expense"
+            size="md"
+            onPress={handleDelete}
+            style={{ marginTop: 8 }}
+          />
+        )}
+
+        <View style={{ height: 60 }} />
       </ScrollView>
 
+      {/* Date Picker */}
       <NeoDatePicker
         visible={showDatePicker}
-        onClose={() => setShowDatePicker(false)}
         selectedDate={startDate}
         onSelectDate={setStartDate}
+        onClose={() => setShowDatePicker(false)}
       />
     </SafeAreaView>
   );
@@ -401,29 +456,30 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 50,
+    paddingBottom: 40,
   },
   typeRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 6,
+    marginBottom: 8,
   },
   typeBtn: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingVertical: 12,
+    borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   typeBtnText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '900',
   },
   card: {
     padding: 14,
-    marginVertical: 6,
+    marginVertical: 5,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 0.5,
     marginBottom: 8,
@@ -433,6 +489,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 8,
   },
   calcBtn: {
     flexDirection: 'row',
@@ -444,75 +501,71 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   calcBtnText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '800',
   },
-  amountInputRow: {
-    flexDirection: 'row',
+  displayBox: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
     alignItems: 'center',
-    marginTop: 6,
+    justifyContent: 'center',
+    marginBottom: 10,
   },
-  rpPrefix: {
-    fontSize: 22,
+  displayAmount: {
+    fontSize: 26,
     fontWeight: '900',
-    marginRight: 8,
+    letterSpacing: 0.5,
+  },
+  displayExpression: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  calcWrapper: {
+    marginTop: 4,
   },
   intervalGrid: {
     flexDirection: 'row',
     gap: 8,
   },
-  intervalBtn: {
+  intervalChip: {
     flex: 1,
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  intervalBtnText: {
+  intervalChipText: {
     fontSize: 11,
   },
-  accountChip: {
+  dateBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginRight: 8,
-  },
-  chipTitle: {
-    fontSize: 12,
-    fontWeight: '800',
-    marginLeft: 6,
-  },
-  catGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  catCard: {
-    width: '48%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    borderRadius: 8,
-  },
-  catName: {
-    fontSize: 12,
-    marginLeft: 8,
-    flex: 1,
-  },
-  fieldSelector: {
-    marginTop: 2,
-  },
-  selectorBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 2,
     gap: 8,
   },
-  selectorBoxText: {
+  dateBtnText: {
     fontSize: 13,
     fontWeight: '800',
+  },
+  chipsScroll: {
+    flexDirection: 'row',
+    marginTop: 4,
+  },
+  accountChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    marginRight: 8,
+  },
+  accountChipText: {
+    fontSize: 12,
+    marginLeft: 6,
   },
 });

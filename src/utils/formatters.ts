@@ -92,6 +92,33 @@ export function formatPercentage(percentage: number): string {
   return `${Math.round(percentage)}%`;
 }
 
+export function formatDetailedDateHeader(dateInput: string | Date): { relative: string; fullDate: string } {
+  const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const targetDate = new Date(date);
+  targetDate.setHours(0, 0, 0, 0);
+
+  const dayName = DAY_NAMES_ID[targetDate.getDay()];
+  const day = targetDate.getDate();
+  const monthName = MONTH_NAMES_ID[targetDate.getMonth()];
+  const year = targetDate.getFullYear();
+  const fullDate = `${dayName}, ${day} ${monthName} ${year}`;
+
+  let relative = '';
+  if (targetDate.getTime() === today.getTime()) {
+    relative = 'HARI INI';
+  } else if (targetDate.getTime() === yesterday.getTime()) {
+    relative = 'KEMARIN';
+  }
+
+  return { relative, fullDate };
+}
+
 export function getTodayDateString(): string {
   const d = new Date();
   const year = d.getFullYear();

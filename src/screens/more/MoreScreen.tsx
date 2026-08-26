@@ -36,7 +36,7 @@ export const MoreScreen: React.FC = () => {
     {
       id: 'categories',
       title: 'Kategori Keuangan',
-      subtitle: `${activeCategoriesCount} kategori aktif (Income & Expense)`,
+      subtitle: `${activeCategoriesCount} kategori aktif (Universal)`,
       icon: 'grid',
       iconColor: theme.colors.income,
       screen: 'Categories',
@@ -65,21 +65,13 @@ export const MoreScreen: React.FC = () => {
       iconColor: theme.colors.accent,
       screen: 'ExportReport',
     },
-    {
-      id: 'settings',
-      title: 'Pengaturan & Dark Mode',
-      subtitle: 'Notifikasi harian, tema tampilan, data sampel',
-      icon: 'settings',
-      iconColor: theme.colors.cardSecondary,
-      screen: 'Settings',
-    },
   ];
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>MENU LAINNYA</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>MENU UTAMA</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -128,14 +120,32 @@ export const MoreScreen: React.FC = () => {
           </TouchableOpacity>
         ))}
 
-        {/* App Version Info Card */}
+        {/* App Branding & Creator Info Card */}
         <NeoCard backgroundColor={theme.colors.cardSecondary} style={styles.aboutCard}>
-          <Text style={[styles.aboutTitle, { color: theme.colors.text }]}>Money+ iOS Edition</Text>
+          <View style={styles.brandIconBadge}>
+            <Ionicons name="wallet" size={26} color="#121212" />
+          </View>
+          <Text style={[styles.aboutTitle, { color: theme.colors.text }]}>
+            Sugarzy Finance Tracker (SuFiKer+)
+          </Text>
+          <View
+            style={[
+              styles.creatorChip,
+              {
+                backgroundColor: theme.colors.primary,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <Text style={styles.creatorChipText}>
+              Dibuat oleh Muhammad (@eternalsugarzy)
+            </Text>
+          </View>
           <Text style={[styles.aboutDesc, { color: theme.colors.textMuted }]}>
-            Desain Neo-Brutalism dengan SQLite Offline Storage, Built-in Calculator, & Multi-Account Management.
+            Aplikasi Pencatatan Keuangan iOS dengan Desain Neo-Brutalism, Built-in Calculator, Multi-Account & Offline SQLite.
           </Text>
           <Text style={[styles.versionText, { color: theme.colors.textMuted }]}>
-            Versi 1.0.0 (Expo React Native)
+            Versi 1.3.0 (iOS Edition) • © 2026 Muhammad
           </Text>
         </NeoCard>
 
@@ -163,7 +173,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   menuCard: {
-    marginVertical: 6,
+    marginVertical: 5,
     padding: 14,
   },
   cardContent: {
@@ -201,13 +211,37 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   aboutCard: {
-    marginTop: 20,
-    padding: 16,
+    marginTop: 18,
+    padding: 18,
     alignItems: 'center',
   },
+  brandIconBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#121212',
+    backgroundColor: '#FFE600',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
   aboutTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '900',
+    textAlign: 'center',
+  },
+  creatorChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    marginVertical: 8,
+  },
+  creatorChipText: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#121212',
   },
   aboutDesc: {
     fontSize: 11,

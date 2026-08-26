@@ -3,7 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  SectionList,
+  FlatList,
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
@@ -15,7 +15,7 @@ import { useAppData } from '../../context/AppDataContext';
 import { FilterBar } from '../../components/transactions/FilterBar';
 import { TransactionItem } from '../../components/transactions/TransactionItem';
 import { NeoCard } from '../../components/common/NeoCard';
-import { formatCurrency, formatDateLabel } from '../../utils/formatters';
+import { formatCurrency, formatDetailedDateHeader, formatDateLabel } from '../../utils/formatters';
 import {
   Transaction,
   TimePeriodFilter,
@@ -24,16 +24,14 @@ import {
 } from '../../types';
 import { getTransactions } from '../../database/transactionRepo';
 
-export type GroupByMode = 'date' | 'week' | 'month';
-
-interface TransactionSection {
-  title: string;
-  subtitle?: string;
-  groupKey: string;
+interface DayGroup {
+  dateKey: string;
+  relative: string;
+  fullDate: string;
   totalIncome: number;
   totalExpense: number;
   netDiff: number;
-  data: Transaction[];
+  items: Transaction[];
 }
 
 export const TransactionsScreen: React.FC = () => {
@@ -42,7 +40,6 @@ export const TransactionsScreen: React.FC = () => {
   const { categories, accounts, refreshData, isLoading, transactions: globalTx } = useAppData();
 
   const [period, setPeriod] = useState<TimePeriodFilter>('month');
-  const [groupBy, setGroupBy] = useState<GroupByMode>('date');
   const [typeFilter, setTypeFilter] = useState<TransactionType | 'all'>('all');
   const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>();
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
@@ -110,80 +107,52 @@ export const TransactionsScreen: React.FC = () => {
     };
   }, [transactions]);
 
-  // Group transactions by Date / Week / Month
-  const sections: TransactionSection[] = useMemo(() => {
-    const map = new Map<string, { title: string; subtitle?: string; items: Transaction[] }>();
+  // Group transactions per 1 Day into Consolidated Day Cards
+  const dayGroups: DayGroup[] = useMemo(() => {
+    const map = new Map<string, Transaction[]>();
 
     transactions.forEach((tx) => {
-      const d = new Date(tx.date);
-      let key = '';
-      let title = '';
-      let subtitle = '';
-
-      if (groupBy === 'month') {
-        const monthNames = [
-          'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-          'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-        ];
-        key = tx.date.slice(0, 7); // YYYY-MM
-        title = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-      } else if (groupBy === 'week') {
-        // Calculate start of week (Monday)
-        const day = d.getDay();
-        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-        const monday = new Date(d.setDate(diff));
-        const sunday = new Date(monday);
-        sunday.setDate(monday.getDate() + 6);
-
-        const mStr = monday.toISOString().slice(0, 10);
-        const sStr = sunday.toISOString().slice(0, 10);
-        key = `week_${mStr}`;
-        title = `Minggu: ${monday.getDate()} - ${sunday.getDate()} ${monday.toLocaleString('id-ID', { month: 'short' })} ${monday.getFullYear()}`;
-      } else {
-        // Default: By Date
-        key = tx.date.slice(0, 10);
-        title = formatDateLabel(key);
-        subtitle = key;
+      const dateKey = tx.date.slice(0, 10);
+      if (!map.has(dateKey)) {
+        map.set(dateKey, []);
       }
-
-      if (!map.has(key)) {
-        map.set(key, { title, subtitle, items: [] });
-      }
-      map.get(key)!.items.push(tx);
+      map.get(dateKey)!.push(tx);
     });
 
-    const result: TransactionSection[] = [];
-    map.forEach((val, groupKey) => {
-      let totalInc = 0;
-      let totalExp = 0;
+    const result: DayGroup[] = [];
+    map.forEach((items, dateKey) => {
+      let dayInc = 0;
+      let dayExp = 0;
 
-      val.items.forEach((item) => {
-        if (item.type === 'income') totalInc += item.amount;
-        if (item.type === 'expense') totalExp += item.amount;
+      items.forEach((item) => {
+        if (item.type === 'income') dayInc += item.amount;
+        if (item.type === 'expense') dayExp += item.amount;
       });
 
+      const { relative, fullDate } = formatDetailedDateHeader(dateKey);
+
       result.push({
-        title: val.title,
-        subtitle: val.subtitle,
-        groupKey,
-        totalIncome: totalInc,
-        totalExpense: totalExp,
-        netDiff: totalInc - totalExp,
-        data: val.items,
+        dateKey,
+        relative,
+        fullDate,
+        totalIncome: dayInc,
+        totalExpense: dayExp,
+        netDiff: dayInc - dayExp,
+        items,
       });
     });
 
     return result;
-  }, [transactions, groupBy]);
+  }, [transactions]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
-      {/* Screen Header */}
+      {/* Screen Title Header */}
       <View style={styles.header}>
         <Text style={[styles.headerTitle, { color: theme.colors.text }]}>RIWAYAT TRANSAKSI</Text>
       </View>
 
-      {/* Filter Bar (Period, Types, Wallets, Categories, Search) */}
+      {/* Filter Bar */}
       <FilterBar
         selectedPeriod={period}
         onSelectPeriod={setPeriod}
@@ -200,78 +169,7 @@ export const TransactionsScreen: React.FC = () => {
         accounts={accounts}
       />
 
-      {/* Grouping Mode Switcher (Tanggal | Minggu | Bulan) */}
-      <View style={styles.groupModeRow}>
-        <Text style={[styles.groupModeLabel, { color: theme.colors.textMuted }]}>
-          KELOMPOKKAN BERDASARKAN:
-        </Text>
-        <View style={styles.groupChips}>
-          <TouchableOpacity
-            onPress={() => setGroupBy('date')}
-            style={[
-              styles.groupChip,
-              {
-                backgroundColor: groupBy === 'date' ? theme.colors.primary : theme.colors.surface,
-                borderColor: theme.colors.border,
-                borderWidth: groupBy === 'date' ? 2 : 1.5,
-              },
-            ]}
-          >
-            <Text
-              style={[
-                styles.groupChipText,
-                { color: groupBy === 'date' ? '#121212' : theme.colors.text },
-              ]}
-            >
-              📅 Per Tanggal
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setGroupBy('week')}
-            style={[
-              styles.groupChip,
-              {
-                backgroundColor: groupBy === 'week' ? theme.colors.primary : theme.colors.surface,
-                borderColor: theme.colors.border,
-                borderWidth: groupBy === 'week' ? 2 : 1.5,
-              },
-            ]}
-          >
-            <Text
-              style={[
-                styles.groupChipText,
-                { color: groupBy === 'week' ? '#121212' : theme.colors.text },
-              ]}
-            >
-              🗓️ Per Minggu
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setGroupBy('month')}
-            style={[
-              styles.groupChip,
-              {
-                backgroundColor: groupBy === 'month' ? theme.colors.primary : theme.colors.surface,
-                borderColor: theme.colors.border,
-                borderWidth: groupBy === 'month' ? 2 : 1.5,
-              },
-            ]}
-          >
-            <Text
-              style={[
-                styles.groupChipText,
-                { color: groupBy === 'month' ? '#121212' : theme.colors.text },
-              ]}
-            >
-              📊 Per Bulan
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Grand Summary Card (Pemasukan, Pengeluaran, Selisih) */}
+      {/* Grand Summary Card (Pemasukan, Pengeluaran, Selisih Bersih) */}
       <NeoCard style={styles.summaryCard}>
         <View style={styles.summaryRow}>
           <View style={styles.summaryCol}>
@@ -306,10 +204,10 @@ export const TransactionsScreen: React.FC = () => {
         </View>
       </NeoCard>
 
-      {/* Grouped SectionList with Header Totals & Difference */}
-      <SectionList
-        sections={sections}
-        keyExtractor={(item) => item.id}
+      {/* Grouped Day Cards List */}
+      <FlatList
+        data={dayGroups}
+        keyExtractor={(item) => item.dateKey}
         refreshControl={
           <RefreshControl
             refreshing={refreshing || isLoading}
@@ -318,78 +216,86 @@ export const TransactionsScreen: React.FC = () => {
           />
         }
         contentContainerStyle={styles.listContent}
-        renderSectionHeader={({ section }) => (
-          <View
-            style={[
-              styles.sectionHeaderCard,
-              {
-                backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.border,
-              },
-            ]}
-          >
-            {/* Top Row: Section Title & Net Difference Pill */}
-            <View style={styles.sectionTopRow}>
-              <View
-                style={[
-                  styles.sectionDateBadge,
-                  {
-                    backgroundColor: theme.colors.primary,
-                    borderColor: theme.colors.border,
-                  },
-                ]}
-              >
-                <Text style={styles.sectionDateText}>{section.title}</Text>
+        renderItem={({ item: day }) => (
+          <NeoCard style={styles.dayConsolidatedCard}>
+            {/* Day Card Header: Full Date, Relative Tag & Net Totals */}
+            <View style={styles.dayCardHeader}>
+              <View style={styles.dayTitleGroup}>
+                {day.relative ? (
+                  <View
+                    style={[
+                      styles.relativeBadge,
+                      {
+                        backgroundColor: theme.colors.primary,
+                        borderColor: theme.colors.border,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.relativeBadgeText}>{day.relative}</Text>
+                  </View>
+                ) : null}
+                <Text style={[styles.fullDateText, { color: theme.colors.text }]}>
+                  {day.fullDate}
+                </Text>
               </View>
 
+              {/* Day Net Difference Pill */}
               <View
                 style={[
-                  styles.netDiffPill,
+                  styles.dayNetPill,
                   {
-                    backgroundColor: section.netDiff >= 0 ? '#E8F5E9' : '#FFEBEE',
-                    borderColor: section.netDiff >= 0 ? theme.colors.income : theme.colors.expense,
+                    backgroundColor: day.netDiff >= 0 ? '#E8F5E9' : '#FFEBEE',
+                    borderColor: day.netDiff >= 0 ? theme.colors.income : theme.colors.expense,
                   },
                 ]}
               >
-                <Text style={[styles.netDiffLabel, { color: theme.colors.textMuted }]}>Selisih: </Text>
                 <Text
                   style={[
-                    styles.netDiffAmount,
-                    { color: section.netDiff >= 0 ? '#1B5E20' : '#B71C1C' },
+                    styles.dayNetPillText,
+                    { color: day.netDiff >= 0 ? '#1B5E20' : '#B71C1C' },
                   ]}
                 >
-                  {formatCurrency(section.netDiff, { showSign: true })}
+                  {formatCurrency(day.netDiff, { showSign: true })}
                 </Text>
               </View>
             </View>
 
-            {/* Bottom Row: Detail Pemasukan & Pengeluaran Subtotals */}
-            <View style={styles.sectionBottomRow}>
-              <View style={styles.subtotalItem}>
-                <Ionicons name="arrow-down-circle" size={14} color={theme.colors.income} />
-                <Text style={[styles.subtotalLabel, { color: theme.colors.textMuted }]}> Masuk: </Text>
-                <Text style={[styles.subtotalValue, { color: theme.colors.income }]}>
-                  {formatCurrency(section.totalIncome)}
+            {/* Subtotal Mini Stats Bar */}
+            <View style={[styles.daySubtotalRow, { backgroundColor: theme.colors.cardSecondary }]}>
+              <View style={styles.daySubCol}>
+                <Ionicons name="arrow-down-circle" size={13} color={theme.colors.income} />
+                <Text style={[styles.daySubLabel, { color: theme.colors.textMuted }]}> Masuk: </Text>
+                <Text style={[styles.daySubVal, { color: theme.colors.income }]}>
+                  {formatCurrency(day.totalIncome)}
                 </Text>
               </View>
 
-              <View style={styles.subtotalItem}>
-                <Ionicons name="arrow-up-circle" size={14} color={theme.colors.expense} />
-                <Text style={[styles.subtotalLabel, { color: theme.colors.textMuted }]}> Keluar: </Text>
-                <Text style={[styles.subtotalValue, { color: theme.colors.expense }]}>
-                  {formatCurrency(section.totalExpense)}
+              <View style={styles.daySubCol}>
+                <Ionicons name="arrow-up-circle" size={13} color={theme.colors.expense} />
+                <Text style={[styles.daySubLabel, { color: theme.colors.textMuted }]}> Keluar: </Text>
+                <Text style={[styles.daySubVal, { color: theme.colors.expense }]}>
+                  {formatCurrency(day.totalExpense)}
                 </Text>
               </View>
             </View>
-          </View>
-        )}
-        renderItem={({ item }) => (
-          <TransactionItem
-            transaction={item}
-            onPress={(tx) =>
-              navigation.navigate('TransactionDetail', { transactionId: tx.id })
-            }
-          />
+
+            {/* Transactions Inside This Day Card */}
+            <View style={styles.dayItemsContainer}>
+              {day.items.map((tx, idx) => (
+                <View key={tx.id}>
+                  <TransactionItem
+                    transaction={tx}
+                    onPress={(item) =>
+                      navigation.navigate('TransactionDetail', { transactionId: item.id })
+                    }
+                  />
+                  {idx < day.items.length - 1 && (
+                    <View style={[styles.itemDivider, { backgroundColor: theme.colors.border }]} />
+                  )}
+                </View>
+              ))}
+            </View>
+          </NeoCard>
         )}
         ListEmptyComponent={
           <NeoCard style={styles.emptyCard}>
@@ -414,37 +320,12 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     paddingTop: 8,
-    paddingBottom: 4,
+    paddingBottom: 2,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: '900',
     letterSpacing: 0.5,
-  },
-  groupModeRow: {
-    paddingHorizontal: 16,
-    marginVertical: 4,
-  },
-  groupModeLabel: {
-    fontSize: 10,
-    fontWeight: '900',
-    letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  groupChips: {
-    flexDirection: 'row',
-    gap: 6,
-  },
-  groupChip: {
-    flex: 1,
-    paddingVertical: 6,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  groupChipText: {
-    fontSize: 11,
-    fontWeight: '800',
   },
   summaryCard: {
     marginHorizontal: 16,
@@ -475,67 +356,80 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 16,
+    paddingTop: 6,
     paddingBottom: 110,
   },
-  sectionHeaderCard: {
-    borderRadius: 10,
-    borderWidth: 2,
-    padding: 8,
-    marginTop: 14,
-    marginBottom: 6,
+  dayConsolidatedCard: {
+    padding: 12,
+    marginBottom: 14,
   },
-  sectionTopRow: {
+  dayCardHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 8,
   },
-  sectionDateBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+  dayTitleGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
+    flex: 1,
+    marginRight: 6,
+  },
+  relativeBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
     borderWidth: 1.5,
   },
-  sectionDateText: {
-    fontSize: 11,
+  relativeBadgeText: {
+    fontSize: 9,
     fontWeight: '900',
     color: '#121212',
   },
-  netDiffPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  fullDateText: {
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  dayNetPill: {
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
     borderWidth: 1.5,
   },
-  netDiffLabel: {
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  netDiffAmount: {
+  dayNetPillText: {
     fontSize: 11,
     fontWeight: '900',
   },
-  sectionBottomRow: {
+  daySubtotalRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    marginTop: 6,
-    paddingTop: 6,
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginVertical: 4,
   },
-  subtotalItem: {
+  daySubCol: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  subtotalLabel: {
+  daySubLabel: {
     fontSize: 10,
     fontWeight: '700',
   },
-  subtotalValue: {
+  daySubVal: {
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '900',
+  },
+  dayItemsContainer: {
+    marginTop: 6,
+  },
+  itemDivider: {
+    height: 1,
+    opacity: 0.15,
+    marginVertical: 4,
   },
   emptyCard: {
     padding: 30,

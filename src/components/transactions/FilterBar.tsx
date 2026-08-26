@@ -48,57 +48,89 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   const { theme } = useTheme();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
+  const [showAdvanceFilters, setShowAdvanceFilters] = useState(false);
 
   const PERIODS: { key: TimePeriodFilter; label: string }[] = [
-    { key: 'day', label: 'Hari ini' },
-    { key: 'week', label: 'Minggu ini' },
-    { key: 'month', label: 'Bulan ini' },
-    { key: 'year', label: 'Tahun ini' },
+    { key: 'day', label: 'Hari Ini' },
+    { key: 'week', label: 'Minggu Ini' },
+    { key: 'month', label: 'Bulan Ini' },
+    { key: 'year', label: 'Tahun Ini' },
     { key: 'all', label: 'Semua' },
   ];
 
-  const TYPES: { key: TransactionType | 'all'; label: string }[] = [
-    { key: 'all', label: 'Semua Tipe' },
-    { key: 'income', label: 'Pemasukan' },
-    { key: 'expense', label: 'Pengeluaran' },
-    { key: 'transfer', label: 'Transfer' },
+  const TYPES: { key: TransactionType | 'all'; label: string; icon: string; color: string }[] = [
+    { key: 'all', label: 'Semua', icon: 'apps', color: theme.colors.cardSecondary },
+    { key: 'income', label: 'Masuk', icon: 'arrow-down', color: theme.colors.income },
+    { key: 'expense', label: 'Keluar', icon: 'arrow-up', color: theme.colors.expense },
+    { key: 'transfer', label: 'Transfer', icon: 'swap-horizontal', color: theme.colors.transfer },
   ];
 
   const selectedAccountObj = accounts.find((a) => a.id === selectedAccountId);
+  const hasActiveExtraFilters =
+    selectedType !== 'all' || !!selectedAccountId || selectedCategoryIds.length > 0;
+
+  const handleResetFilters = () => {
+    onSelectType('all');
+    onSelectAccount(undefined);
+    onClearCategories();
+    onChangeSearchQuery('');
+  };
 
   return (
     <View style={styles.container}>
-      {/* Search Input */}
-      <View
-        style={[
-          styles.searchBox,
-          {
-            backgroundColor: theme.colors.inputBg,
-            borderColor: theme.colors.border,
-            borderWidth: 2,
-          },
-        ]}
-      >
-        <Ionicons name="search" size={18} color={theme.colors.textMuted} style={{ marginRight: 8 }} />
-        <TextInput
-          placeholder="Cari transaksi / nominal..."
-          placeholderTextColor={theme.colors.textMuted}
-          value={searchQuery}
-          onChangeText={onChangeSearchQuery}
-          style={[styles.searchInput, { color: theme.colors.text }]}
-        />
-        {searchQuery ? (
-          <TouchableOpacity onPress={() => onChangeSearchQuery('')}>
-            <Ionicons name="close-circle" size={18} color={theme.colors.textMuted} />
-          </TouchableOpacity>
-        ) : null}
+      {/* Search Input Row */}
+      <View style={styles.topSearchRow}>
+        <View
+          style={[
+            styles.searchBox,
+            {
+              backgroundColor: theme.colors.surface,
+              borderColor: theme.colors.border,
+            },
+          ]}
+        >
+          <Ionicons name="search" size={16} color={theme.colors.textMuted} style={{ marginRight: 6 }} />
+          <TextInput
+            placeholder="Cari transaksi atau nominal..."
+            placeholderTextColor={theme.colors.textMuted}
+            value={searchQuery}
+            onChangeText={onChangeSearchQuery}
+            style={[styles.searchInput, { color: theme.colors.text }]}
+          />
+          {searchQuery ? (
+            <TouchableOpacity onPress={() => onChangeSearchQuery('')}>
+              <Ionicons name="close-circle" size={18} color={theme.colors.textMuted} />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
+        {/* Filter Toggle Button */}
+        <TouchableOpacity
+          onPress={() => setShowAdvanceFilters(!showAdvanceFilters)}
+          style={[
+            styles.filterToggleBtn,
+            {
+              backgroundColor: hasActiveExtraFilters ? theme.colors.primary : theme.colors.surface,
+              borderColor: theme.colors.border,
+            },
+          ]}
+        >
+          <Ionicons
+            name={showAdvanceFilters ? 'options' : 'options-outline'}
+            size={18}
+            color={hasActiveExtraFilters ? '#121212' : theme.colors.text}
+          />
+          {hasActiveExtraFilters && (
+            <View style={styles.activeFilterDot} />
+          )}
+        </TouchableOpacity>
       </View>
 
-      {/* Period Chips Scroll */}
+      {/* Period Chips (Row 1) */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipsRow}
+        contentContainerStyle={styles.periodRow}
       >
         {PERIODS.map((p) => {
           const isActive = selectedPeriod === p.key;
@@ -107,17 +139,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               key={p.key}
               onPress={() => onSelectPeriod(p.key)}
               style={[
-                styles.chip,
+                styles.periodChip,
                 {
                   backgroundColor: isActive ? theme.colors.primary : theme.colors.surface,
                   borderColor: theme.colors.border,
-                  borderWidth: 2,
+                  borderWidth: isActive ? 2 : 1.5,
                 },
               ]}
             >
               <Text
                 style={[
-                  styles.chipText,
+                  styles.periodChipText,
                   {
                     color: isActive ? '#121212' : theme.colors.text,
                     fontWeight: isActive ? '900' : '700',
@@ -131,148 +163,198 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         })}
       </ScrollView>
 
-      {/* Secondary Filter Buttons: Type, Account, Category */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[styles.chipsRow, { marginTop: 6 }]}
-      >
-        {/* Type Filter Selector */}
-        {TYPES.map((t) => {
-          const isTypeActive = selectedType === t.key;
-          return (
+      {/* Extra Filters Drawer / Bar (Collapsible or Shown when toggled/active) */}
+      {showAdvanceFilters && (
+        <View
+          style={[
+            styles.extraFilterBox,
+            {
+              backgroundColor: theme.colors.cardSecondary,
+              borderColor: theme.colors.border,
+            },
+          ]}
+        >
+          {/* Transaction Type Row */}
+          <View style={styles.filterSection}>
+            <Text style={[styles.filterMiniTitle, { color: theme.colors.textMuted }]}>
+              TIPE TRANSAKSI:
+            </Text>
+            <View style={styles.typeButtonsRow}>
+              {TYPES.map((t) => {
+                const isSelected = selectedType === t.key;
+                return (
+                  <TouchableOpacity
+                    key={t.key}
+                    onPress={() => onSelectType(t.key)}
+                    style={[
+                      styles.typeChipBtn,
+                      {
+                        backgroundColor: isSelected ? t.color : theme.colors.surface,
+                        borderColor: theme.colors.border,
+                        borderWidth: isSelected ? 2 : 1,
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name={t.icon as any}
+                      size={12}
+                      color={isSelected ? '#121212' : theme.colors.text}
+                      style={{ marginRight: 4 }}
+                    />
+                    <Text
+                      style={[
+                        styles.typeChipText,
+                        {
+                          color: isSelected ? '#121212' : theme.colors.text,
+                          fontWeight: isSelected ? '900' : '600',
+                        },
+                      ]}
+                    >
+                      {t.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Account & Category Picker Buttons */}
+          <View style={styles.pickerButtonsRow}>
+            {/* Account Trigger */}
             <TouchableOpacity
-              key={t.key}
-              onPress={() => onSelectType(t.key)}
+              onPress={() => setShowAccountModal(true)}
               style={[
-                styles.subChip,
+                styles.selectTriggerBtn,
                 {
-                  backgroundColor: isTypeActive
-                    ? t.key === 'income'
-                      ? theme.colors.income
-                      : t.key === 'expense'
-                      ? theme.colors.expense
-                      : t.key === 'transfer'
-                      ? theme.colors.transfer
-                      : theme.colors.text
-                    : theme.colors.cardSecondary,
+                  backgroundColor: selectedAccountId ? theme.colors.primary : theme.colors.surface,
                   borderColor: theme.colors.border,
-                  borderWidth: 1.5,
                 },
               ]}
             >
+              <Ionicons name="wallet-outline" size={14} color={theme.colors.text} />
               <Text
                 style={[
-                  styles.subChipText,
+                  styles.selectTriggerText,
+                  { color: theme.colors.text },
+                ]}
+                numberOfLines={1}
+              >
+                {selectedAccountObj ? selectedAccountObj.name : 'Semua Dompet'}
+              </Text>
+              <Ionicons name="chevron-down" size={12} color={theme.colors.text} />
+            </TouchableOpacity>
+
+            {/* Category Trigger */}
+            <TouchableOpacity
+              onPress={() => setShowCategoryModal(true)}
+              style={[
+                styles.selectTriggerBtn,
+                {
+                  backgroundColor: selectedCategoryIds.length > 0 ? theme.colors.primary : theme.colors.surface,
+                  borderColor: theme.colors.border,
+                },
+              ]}
+            >
+              <Ionicons name="grid-outline" size={14} color={theme.colors.text} />
+              <Text
+                style={[
+                  styles.selectTriggerText,
+                  { color: theme.colors.text },
+                ]}
+                numberOfLines={1}
+              >
+                {selectedCategoryIds.length > 0
+                  ? `${selectedCategoryIds.length} Kategori`
+                  : 'Semua Kategori'}
+              </Text>
+              <Ionicons name="chevron-down" size={12} color={theme.colors.text} />
+            </TouchableOpacity>
+
+            {/* Reset Button */}
+            {hasActiveExtraFilters && (
+              <TouchableOpacity
+                onPress={handleResetFilters}
+                style={[
+                  styles.resetBtn,
                   {
-                    color: isTypeActive ? (t.key === 'all' ? '#FFFFFF' : '#121212') : theme.colors.text,
-                    fontWeight: isTypeActive ? '900' : '700',
+                    backgroundColor: theme.colors.expense,
+                    borderColor: theme.colors.border,
                   },
                 ]}
               >
-                {t.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-
-        {/* Account Filter Trigger */}
-        <TouchableOpacity
-          onPress={() => setShowAccountModal(true)}
-          style={[
-            styles.filterTriggerBtn,
-            {
-              backgroundColor: selectedAccountId ? theme.colors.primary : theme.colors.surface,
-              borderColor: theme.colors.border,
-            },
-          ]}
-        >
-          <Ionicons name="wallet-outline" size={14} color={theme.colors.text} style={{ marginRight: 4 }} />
-          <Text style={[styles.filterTriggerText, { color: theme.colors.text }]}>
-            {selectedAccountObj ? selectedAccountObj.name : 'Semua Akun'}
-          </Text>
-          <Ionicons name="chevron-down" size={12} color={theme.colors.text} style={{ marginLeft: 4 }} />
-        </TouchableOpacity>
-
-        {/* Category Multi-select Filter Trigger */}
-        <TouchableOpacity
-          onPress={() => setShowCategoryModal(true)}
-          style={[
-            styles.filterTriggerBtn,
-            {
-              backgroundColor: selectedCategoryIds.length > 0 ? theme.colors.primary : theme.colors.surface,
-              borderColor: theme.colors.border,
-            },
-          ]}
-        >
-          <Ionicons name="grid-outline" size={14} color={theme.colors.text} style={{ marginRight: 4 }} />
-          <Text style={[styles.filterTriggerText, { color: theme.colors.text }]}>
-            {selectedCategoryIds.length > 0
-              ? `${selectedCategoryIds.length} Kategori`
-              : 'Semua Kategori'}
-          </Text>
-          <Ionicons name="chevron-down" size={12} color={theme.colors.text} style={{ marginLeft: 4 }} />
-        </TouchableOpacity>
-      </ScrollView>
+                <Ionicons name="refresh" size={14} color="#FFFFFF" />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      )}
 
       {/* Category Multi-Select Modal */}
       <NeoModal
         visible={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
         title="FILTER KATEGORI"
-        subtitle="Pilih satu atau beberapa kategori"
       >
         <View style={styles.modalContent}>
-          <View style={styles.modalActionHeader}>
-            <TouchableOpacity onPress={onClearCategories} style={styles.clearBtn}>
-              <Text style={[styles.clearBtnText, { color: theme.colors.expense }]}>
-                Reset (Pilih Semua)
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
+            <View style={styles.catGridModal}>
+              {categories
+                .filter((c) => c.is_archived === 0)
+                .map((cat) => {
+                  const isSelected = selectedCategoryIds.includes(cat.id);
+                  return (
+                    <TouchableOpacity
+                      key={cat.id}
+                      onPress={() => onToggleCategory(cat.id)}
+                      style={[
+                        styles.catModalCard,
+                        {
+                          backgroundColor: isSelected ? cat.color : theme.colors.surface,
+                          borderColor: theme.colors.border,
+                          borderWidth: isSelected ? 2.5 : 1.5,
+                        },
+                      ]}
+                    >
+                      <NeoBadge
+                        icon={cat.icon}
+                        iconFamily={cat.icon_family}
+                        color={isSelected ? '#FFFFFF' : cat.color}
+                        size="sm"
+                      />
+                      <Text
+                        style={[
+                          styles.catModalName,
+                          {
+                            color: isSelected ? '#121212' : theme.colors.text,
+                            fontWeight: isSelected ? '900' : '600',
+                          },
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {cat.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+            </View>
+          </ScrollView>
 
-          <View style={styles.categoriesGrid}>
-            {categories.map((cat) => {
-              const isSelected = selectedCategoryIds.includes(cat.id);
-              return (
-                <TouchableOpacity
-                  key={cat.id}
-                  onPress={() => onToggleCategory(cat.id)}
-                  style={[
-                    styles.catSelectItem,
-                    {
-                      backgroundColor: isSelected ? cat.color : theme.colors.surface,
-                      borderColor: theme.colors.border,
-                      borderWidth: isSelected ? 2.5 : 1.5,
-                    },
-                  ]}
-                >
-                  <NeoBadge
-                    icon={cat.icon}
-                    iconFamily={cat.icon_family}
-                    color={isSelected ? '#FFFFFF' : cat.color}
-                    size="sm"
-                  />
-                  <Text
-                    style={[
-                      styles.catSelectName,
-                      { color: theme.colors.text, fontWeight: isSelected ? '900' : '600' },
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {cat.name}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+          <View style={styles.modalActionRow}>
+            <NeoButton
+              title="RESET"
+              variant="outline"
+              size="sm"
+              onPress={onClearCategories}
+              style={{ flex: 1, marginRight: 8 }}
+            />
+            <NeoButton
+              title="TERAPKAN"
+              variant="primary"
+              size="sm"
+              onPress={() => setShowCategoryModal(false)}
+              style={{ flex: 2 }}
+            />
           </View>
-
-          <NeoButton
-            title="TERAPKAN FILTER"
-            variant="primary"
-            onPress={() => setShowCategoryModal(false)}
-            style={{ marginTop: 16 }}
-          />
         </View>
       </NeoModal>
 
@@ -280,63 +362,87 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       <NeoModal
         visible={showAccountModal}
         onClose={() => setShowAccountModal(false)}
-        title="FILTER AKUN / DOMPET"
-        subtitle="Pilih dompet yang ingin dilihat"
+        title="FILTER DOMPET / AKUN"
       >
         <View style={styles.modalContent}>
-          <TouchableOpacity
-            onPress={() => {
-              onSelectAccount(undefined);
-              setShowAccountModal(false);
-            }}
-            style={[
-              styles.accSelectItem,
-              {
-                backgroundColor: !selectedAccountId ? theme.colors.primary : theme.colors.surface,
-                borderColor: theme.colors.border,
-                borderWidth: 2,
-              },
-            ]}
-          >
-            <Ionicons name="apps-outline" size={20} color="#121212" style={{ marginRight: 10 }} />
-            <Text style={[styles.accSelectName, { color: theme.colors.text }]}>Semua Akun</Text>
-          </TouchableOpacity>
-
-          {accounts.map((acc) => {
-            const isSelected = selectedAccountId === acc.id;
-            return (
-              <TouchableOpacity
-                key={acc.id}
-                onPress={() => {
-                  onSelectAccount(acc.id);
-                  setShowAccountModal(false);
-                }}
+          <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
+            <TouchableOpacity
+              onPress={() => {
+                onSelectAccount(undefined);
+                setShowAccountModal(false);
+              }}
+              style={[
+                styles.accountModalItem,
+                {
+                  backgroundColor: !selectedAccountId ? theme.colors.primary : theme.colors.surface,
+                  borderColor: theme.colors.border,
+                },
+              ]}
+            >
+              <Text
                 style={[
-                  styles.accSelectItem,
-                  {
-                    backgroundColor: isSelected ? theme.colors.primary : theme.colors.surface,
-                    borderColor: theme.colors.border,
-                    borderWidth: 2,
-                  },
+                  styles.accountModalText,
+                  { color: '#121212', fontWeight: !selectedAccountId ? '900' : '600' },
                 ]}
               >
-                <NeoBadge
-                  icon={acc.icon}
-                  iconFamily={acc.icon_family}
-                  color={acc.color}
-                  size="sm"
-                />
-                <Text
-                  style={[
-                    styles.accSelectName,
-                    { color: theme.colors.text, fontWeight: isSelected ? '900' : '600', marginLeft: 10 },
-                  ]}
-                >
-                  {acc.name} ({acc.type})
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+                Semua Dompet / Akun
+              </Text>
+              {!selectedAccountId && <Ionicons name="checkmark-circle" size={18} color="#121212" />}
+            </TouchableOpacity>
+
+            {accounts
+              .filter((a) => a.is_archived === 0)
+              .map((acc) => {
+                const isSelected = selectedAccountId === acc.id;
+                return (
+                  <TouchableOpacity
+                    key={acc.id}
+                    onPress={() => {
+                      onSelectAccount(acc.id);
+                      setShowAccountModal(false);
+                    }}
+                    style={[
+                      styles.accountModalItem,
+                      {
+                        backgroundColor: isSelected ? acc.color : theme.colors.surface,
+                        borderColor: theme.colors.border,
+                        borderWidth: isSelected ? 2.5 : 1.5,
+                      },
+                    ]}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <NeoBadge
+                        icon={acc.icon}
+                        iconFamily={acc.icon_family}
+                        color={isSelected ? '#FFFFFF' : acc.color}
+                        size="sm"
+                      />
+                      <Text
+                        style={[
+                          styles.accountModalText,
+                          {
+                            color: isSelected ? '#121212' : theme.colors.text,
+                            fontWeight: isSelected ? '900' : '600',
+                            marginLeft: 10,
+                          },
+                        ]}
+                      >
+                        {acc.name}
+                      </Text>
+                    </View>
+                    {isSelected && <Ionicons name="checkmark-circle" size={18} color="#121212" />}
+                  </TouchableOpacity>
+                );
+              })}
+          </ScrollView>
+
+          <NeoButton
+            title="TUTUP"
+            variant="outline"
+            size="sm"
+            onPress={() => setShowAccountModal(false)}
+            style={{ marginTop: 10 }}
+          />
         </View>
       </NeoModal>
     </View>
@@ -346,95 +452,159 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingTop: 4,
+    paddingBottom: 4,
   },
-  searchBox: {
+  topSearchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    height: 42,
+    gap: 8,
+  },
+  searchBox: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     borderRadius: 8,
-    marginBottom: 8,
+    borderWidth: 2,
   },
   searchInput: {
     flex: 1,
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 12,
+    fontWeight: '700',
+    padding: 0,
   },
-  chipsRow: {
+  filterToggleBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 8,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  activeFilterDot: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: '#FF3366',
+  },
+  periodRow: {
     flexDirection: 'row',
-    gap: 8,
-    paddingVertical: 2,
+    gap: 6,
+    paddingVertical: 8,
   },
-  chip: {
+  periodChip: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
   },
-  chipText: {
-    fontSize: 12,
-  },
-  subChip: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  subChipText: {
+  periodChipText: {
     fontSize: 11,
   },
-  filterTriggerBtn: {
+  extraFilterBox: {
+    borderRadius: 10,
+    borderWidth: 2,
+    padding: 10,
+    marginBottom: 6,
+  },
+  filterSection: {
+    marginBottom: 8,
+  },
+  filterMiniTitle: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  typeButtonsRow: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  typeChipBtn: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  typeChipText: {
+    fontSize: 10,
+  },
+  pickerButtonsRow: {
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+  },
+  selectTriggerBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 7,
     borderRadius: 6,
     borderWidth: 1.5,
   },
-  filterTriggerText: {
+  selectTriggerText: {
     fontSize: 11,
     fontWeight: '800',
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  resetBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modalContent: {
-    paddingVertical: 6,
+    paddingTop: 8,
   },
-  modalActionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginBottom: 10,
+  modalScroll: {
+    maxHeight: 340,
   },
-  clearBtn: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
-  clearBtnText: {
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  categoriesGrid: {
+  catGridModal: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    paddingBottom: 10,
   },
-  catSelectItem: {
-    width: '48%',
+  catModalCard: {
+    width: '30.5%',
+    paddingVertical: 10,
+    paddingHorizontal: 4,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  catModalName: {
+    fontSize: 10,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  modalActionRow: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  accountModalItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     borderRadius: 8,
-  },
-  catSelectName: {
-    fontSize: 12,
-    marginLeft: 8,
-    flex: 1,
-  },
-  accSelectItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
+    borderWidth: 1.5,
     marginVertical: 4,
   },
-  accSelectName: {
-    fontSize: 14,
+  accountModalText: {
+    fontSize: 13,
   },
 });

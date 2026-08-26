@@ -17,6 +17,7 @@ import { NeoButton } from '../../components/common/NeoButton';
 import { NeoInput } from '../../components/common/NeoInput';
 import { NeoIconPicker } from '../../components/common/NeoIconPicker';
 import { NeoCalculator } from '../../components/common/NeoCalculator';
+import { formatCurrency } from '../../utils/formatters';
 import { evaluateMathExpression } from '../../utils/mathEvaluator';
 import { AccountType, IconFamily } from '../../types';
 import { createAccount, updateAccount } from '../../database/accountRepo';
@@ -37,7 +38,8 @@ export const AccountFormModal: React.FC = () => {
   const [initialBalanceExpr, setInitialBalanceExpr] = useState<string>(
     isEditing ? String(editAccount.initial_balance) : '0'
   );
-  const [showCalculator, setShowCalculator] = useState<boolean>(false);
+  // Default to true: directly show built-in calculator, no phone keyboard
+  const [showCalculator, setShowCalculator] = useState<boolean>(true);
   const [icon, setIcon] = useState<string>(isEditing ? editAccount.icon : 'wallet');
   const [iconFamily, setIconFamily] = useState<IconFamily>(
     isEditing ? editAccount.icon_family : 'Ionicons'
@@ -65,7 +67,7 @@ export const AccountFormModal: React.FC = () => {
         });
       } else {
         await createAccount({
-          id: `acc_${Date.now()}`,
+          id: `acc_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
           name: name.trim(),
           type,
           initial_balance: balanceNum,
@@ -81,6 +83,11 @@ export const AccountFormModal: React.FC = () => {
     } catch (err: any) {
       Alert.alert('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem.');
     }
+  };
+
+  const getComputedDisplayAmount = () => {
+    const res = evaluateMathExpression(initialBalanceExpr);
+    return res.isValid ? formatCurrency(res.value) : 'Rp 0';
   };
 
   return (
@@ -100,7 +107,7 @@ export const AccountFormModal: React.FC = () => {
           <Ionicons name="close" size={22} color={theme.colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-          {isEditing ? 'EDIT AKUN / DOMPET' : 'TAMBAH AKUN BARU'}
+          {isEditing ? 'EDIT DOMPET / AKUN' : 'TAMBAH DOMPET / AKUN'}
         </Text>
         <View style={{ width: 40 }} />
       </View>
@@ -113,11 +120,68 @@ export const AccountFormModal: React.FC = () => {
         {/* Account Name */}
         <NeoCard style={styles.card}>
           <NeoInput
-            label="NAMA AKUN / REKENING"
-            placeholder="Misal: Dompet Tunai, BCA Utama, GoPay..."
+            label="NAMA DOMPET / AKUN"
+            placeholder="Misal: Dompet Utama, Rekening BCA, GoPay..."
             value={name}
             onChangeText={setName}
           />
+        </NeoCard>
+
+        {/* Initial Balance with Direct Calculator */}
+        <NeoCard style={styles.card}>
+          <View style={styles.limitHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              SALDO AWAL
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowCalculator(!showCalculator)}
+              style={[
+                styles.calcBtn,
+                {
+                  backgroundColor: showCalculator ? theme.colors.primary : theme.colors.cardSecondary,
+                  borderColor: theme.colors.border,
+                },
+              ]}
+            >
+              <Ionicons name="calculator" size={14} color={theme.colors.text} />
+              <Text style={[styles.calcBtnText, { color: theme.colors.text }]}>
+                {showCalculator ? 'Sembunyikan Keypad' : 'Buka Keypad'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Touchable Display Box */}
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => setShowCalculator(true)}
+            style={[
+              styles.displayBox,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <Text style={[styles.displayAmount, { color: theme.colors.text }]}>
+              {initialBalanceExpr ? getComputedDisplayAmount() : 'Rp 0'}
+            </Text>
+            {initialBalanceExpr.length > 0 && (
+              <Text style={[styles.displayExpression, { color: theme.colors.textMuted }]}>
+                = {initialBalanceExpr}
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Built-in Keypad */}
+          {showCalculator && (
+            <View style={styles.calcWrapper}>
+              <NeoCalculator
+                value={initialBalanceExpr}
+                onChange={setInitialBalanceExpr}
+                onDone={() => setShowCalculator(false)}
+              />
+            </View>
+          )}
         </NeoCard>
 
         {/* Account Type Selector */}
@@ -153,53 +217,6 @@ export const AccountFormModal: React.FC = () => {
           </View>
         </NeoCard>
 
-        {/* Initial Balance with Calculator */}
-        <NeoCard style={styles.card}>
-          <View style={styles.limitHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              SALDO AWAL
-            </Text>
-            <TouchableOpacity
-              onPress={() => setShowCalculator(!showCalculator)}
-              style={[
-                styles.calcBtn,
-                {
-                  backgroundColor: showCalculator ? theme.colors.primary : theme.colors.cardSecondary,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-            >
-              <Ionicons name="calculator" size={14} color={theme.colors.text} />
-              <Text style={[styles.calcBtnText, { color: theme.colors.text }]}>
-                {showCalculator ? 'Tutup' : 'Kalkulator'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.amountInputRow}>
-            <Text style={[styles.rpPrefix, { color: theme.colors.text }]}>Rp</Text>
-            <NeoInput
-              placeholder="0"
-              value={initialBalanceExpr}
-              onChangeText={setInitialBalanceExpr}
-              keyboardType="numeric"
-              style={{ fontSize: 20, fontWeight: '900' }}
-              containerStyle={{ flex: 1, marginVertical: 0 }}
-            />
-          </View>
-        </NeoCard>
-
-        {/* Calculator Keypad */}
-        {showCalculator && (
-          <NeoCalculator
-            initialValue={initialBalanceExpr}
-            onConfirm={(val) => {
-              setInitialBalanceExpr(String(val));
-              setShowCalculator(false);
-            }}
-          />
-        )}
-
         {/* Icon & Color Picker */}
         <NeoCard style={styles.card}>
           <NeoIconPicker
@@ -214,14 +231,16 @@ export const AccountFormModal: React.FC = () => {
           />
         </NeoCard>
 
-        {/* Submit Button */}
+        {/* Save Button */}
         <NeoButton
-          title={isEditing ? 'SIMPAN PERUBAHAN' : 'SIMPAN AKUN'}
+          title={isEditing ? 'SIMPAN PERUBAHAN' : 'SIMPAN AKUN BARU'}
           variant="primary"
           size="lg"
           onPress={handleSave}
-          style={{ marginTop: 14 }}
+          style={{ marginTop: 10 }}
         />
+
+        <View style={{ height: 60 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -253,18 +272,58 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 50,
+    paddingBottom: 40,
   },
   card: {
     padding: 14,
     marginVertical: 6,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 0.5,
     marginBottom: 8,
     textTransform: 'uppercase',
+  },
+  limitHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  calcBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    gap: 4,
+  },
+  calcBtnText: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  displayBox: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  displayAmount: {
+    fontSize: 26,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+  },
+  displayExpression: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  calcWrapper: {
+    marginTop: 4,
   },
   typeGrid: {
     flexDirection: 'row',
@@ -278,33 +337,5 @@ const styles = StyleSheet.create({
   },
   typeChipText: {
     fontSize: 12,
-  },
-  limitHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  calcBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    gap: 4,
-  },
-  calcBtnText: {
-    fontSize: 11,
-    fontWeight: '800',
-  },
-  amountInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-  },
-  rpPrefix: {
-    fontSize: 22,
-    fontWeight: '900',
-    marginRight: 8,
   },
 });

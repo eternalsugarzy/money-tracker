@@ -20,7 +20,7 @@ import { scheduleDailyExpenseReminder, cancelDailyExpenseReminder } from '../../
 export const SettingsScreen: React.FC = () => {
   const { theme, isDark, toggleTheme } = useTheme();
   const navigation = useNavigation<any>();
-  const { generateSampleData, refreshData } = useAppData();
+  const { generateSampleData } = useAppData();
 
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [reminderHour, setReminderHour] = useState(20);
@@ -82,7 +82,7 @@ export const SettingsScreen: React.FC = () => {
         <Text style={[styles.sectionHeading, { color: theme.colors.text }]}>TAMPILAN</Text>
         <NeoCard style={styles.settingCard}>
           <View style={styles.settingRow}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <View style={styles.settingLeftGroup}>
               <View
                 style={[
                   styles.iconBadge,
@@ -91,7 +91,7 @@ export const SettingsScreen: React.FC = () => {
               >
                 <Ionicons name={isDark ? 'moon' : 'sunny'} size={20} color="#121212" />
               </View>
-              <View style={{ marginLeft: 12 }}>
+              <View style={styles.settingTextCol}>
                 <Text style={[styles.settingTitle, { color: theme.colors.text }]}>Mode Gelap (Dark Mode)</Text>
                 <Text style={[styles.settingDesc, { color: theme.colors.textMuted }]}>
                   {isDark ? 'Tema Neo-Brutalism Gelap aktif' : 'Tema Neo-Brutalism Terang aktif'}
@@ -99,12 +99,14 @@ export const SettingsScreen: React.FC = () => {
               </View>
             </View>
 
-            <Switch
-              value={isDark}
-              onValueChange={toggleTheme}
-              trackColor={{ false: '#CCCCCC', true: theme.colors.primary }}
-              thumbColor={isDark ? '#121212' : '#FFFFFF'}
-            />
+            <View style={styles.switchWrapper}>
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{ false: '#CCCCCC', true: theme.colors.primary }}
+                thumbColor={isDark ? '#121212' : '#FFFFFF'}
+              />
+            </View>
           </View>
         </NeoCard>
 
@@ -114,7 +116,7 @@ export const SettingsScreen: React.FC = () => {
         </Text>
         <NeoCard style={styles.settingCard}>
           <View style={styles.settingRow}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <View style={styles.settingLeftGroup}>
               <View
                 style={[
                   styles.iconBadge,
@@ -123,22 +125,24 @@ export const SettingsScreen: React.FC = () => {
               >
                 <Ionicons name="notifications" size={20} color="#121212" />
               </View>
-              <View style={{ marginLeft: 12 }}>
+              <View style={styles.settingTextCol}>
                 <Text style={[styles.settingTitle, { color: theme.colors.text }]}>
-                  Pengingat Harian Catat Keuangan
+                  Pengingat Catat Harian
                 </Text>
                 <Text style={[styles.settingDesc, { color: theme.colors.textMuted }]}>
-                  Notifikasi setiap malam pukul {String(reminderHour).padStart(2, '0')}:{String(reminderMinute).padStart(2, '0')}
+                  Pukul {String(reminderHour).padStart(2, '0')}:{String(reminderMinute).padStart(2, '0')} setiap malam
                 </Text>
               </View>
             </View>
 
-            <Switch
-              value={reminderEnabled}
-              onValueChange={handleToggleReminder}
-              trackColor={{ false: '#CCCCCC', true: theme.colors.income }}
-              thumbColor={reminderEnabled ? '#0A3B0A' : '#FFFFFF'}
-            />
+            <View style={styles.switchWrapper}>
+              <Switch
+                value={reminderEnabled}
+                onValueChange={handleToggleReminder}
+                trackColor={{ false: '#CCCCCC', true: theme.colors.income }}
+                thumbColor={reminderEnabled ? '#0A3B0A' : '#FFFFFF'}
+              />
+            </View>
           </View>
         </NeoCard>
 
@@ -194,9 +198,11 @@ export const SettingsScreen: React.FC = () => {
             >
               <Ionicons name="wallet" size={28} color="#121212" />
             </View>
-            <Text style={[styles.appName, { color: theme.colors.text }]}>Money+ Finance Tracker</Text>
+            <Text style={[styles.appName, { color: theme.colors.text }]}>
+              Sugarzy Finance Tracker (SuFiKer+)
+            </Text>
             <Text style={[styles.appVersion, { color: theme.colors.textMuted }]}>
-              Versi 1.2.0 (Build 2026.08)
+              Versi 1.3.0 (Build 2026.08)
             </Text>
 
             <View
@@ -268,6 +274,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    minHeight: 48,
+  },
+  settingLeftGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 10,
+  },
+  settingTextCol: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  switchWrapper: {
+    flexShrink: 0,
+    marginLeft: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   iconBadge: {
     width: 40,
@@ -278,7 +301,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   settingTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '800',
   },
   settingDesc: {
@@ -287,10 +310,11 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   appName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '900',
     marginTop: 10,
     letterSpacing: 0.5,
+    textAlign: 'center',
   },
   appVersion: {
     fontSize: 12,

@@ -32,16 +32,17 @@ export const BudgetFormModal: React.FC = () => {
   const editBudget = route.params?.editBudget;
   const isEditing = !!editBudget;
 
-  const expenseCategories = categories.filter((c) => c.type === 'expense' && c.is_archived === 0);
+  const activeCategories = categories.filter((c) => c.is_archived === 0);
 
   const [name, setName] = useState<string>(isEditing ? editBudget.name : '');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
-    isEditing ? editBudget.category_id : expenseCategories[0]?.id || ''
+    isEditing ? editBudget.category_id : activeCategories[0]?.id || ''
   );
   const [limitExpression, setLimitExpression] = useState<string>(
     isEditing ? String(editBudget.limit_amount) : ''
   );
-  const [showCalculator, setShowCalculator] = useState<boolean>(false);
+  // Default to true: directly show built-in calculator, no phone keyboard
+  const [showCalculator, setShowCalculator] = useState<boolean>(true);
   const [periodType, setPeriodType] = useState<BudgetPeriodType>(
     isEditing ? editBudget.period_type : 'monthly'
   );
@@ -56,7 +57,7 @@ export const BudgetFormModal: React.FC = () => {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Nama Budget Kosong', 'Harap masukkan nama budget (misal: Budget Jajan Mingguan).');
+      Alert.alert('Nama Budget Kosong', 'Harap masukkan nama budget (misal: Budget Makan & Kopi).');
       return;
     }
     if (!selectedCategoryId) {
@@ -66,7 +67,7 @@ export const BudgetFormModal: React.FC = () => {
 
     const evalRes = evaluateMathExpression(limitExpression);
     if (!evalRes.isValid || evalRes.value <= 0) {
-      Alert.alert('Limit Tidak Valid', 'Silakan masukkan limit nominal budget yang valid.');
+      Alert.alert('Limit Belum Diisi', 'Silakan masukkan limit nominal budget menggunakan kalkulator.');
       return;
     }
 
@@ -114,6 +115,11 @@ export const BudgetFormModal: React.FC = () => {
     ]);
   };
 
+  const getComputedDisplayAmount = () => {
+    const res = evaluateMathExpression(limitExpression);
+    return res.isValid ? formatCurrency(res.value) : 'Rp 0';
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       {/* Header */}
@@ -151,13 +157,70 @@ export const BudgetFormModal: React.FC = () => {
           />
         </NeoCard>
 
+        {/* Limit Amount Box with Direct Keypad */}
+        <NeoCard style={styles.card}>
+          <View style={styles.limitHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              LIMIT NOMINAL ANGGARAN
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowCalculator(!showCalculator)}
+              style={[
+                styles.calcBtn,
+                {
+                  backgroundColor: showCalculator ? theme.colors.primary : theme.colors.cardSecondary,
+                  borderColor: theme.colors.border,
+                },
+              ]}
+            >
+              <Ionicons name="calculator" size={14} color={theme.colors.text} />
+              <Text style={[styles.calcBtnText, { color: theme.colors.text }]}>
+                {showCalculator ? 'Sembunyikan Keypad' : 'Buka Keypad'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Large Touchable Display */}
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={() => setShowCalculator(true)}
+            style={[
+              styles.displayBox,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <Text style={[styles.displayAmount, { color: theme.colors.text }]}>
+              {limitExpression ? getComputedDisplayAmount() : 'Rp 0'}
+            </Text>
+            {limitExpression.length > 0 && (
+              <Text style={[styles.displayExpression, { color: theme.colors.textMuted }]}>
+                = {limitExpression}
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Keypad */}
+          {showCalculator && (
+            <View style={styles.calcWrapper}>
+              <NeoCalculator
+                value={limitExpression}
+                onChange={setLimitExpression}
+                onDone={() => setShowCalculator(false)}
+              />
+            </View>
+          )}
+        </NeoCard>
+
         {/* Category Picker Grid */}
         <NeoCard style={styles.card}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            PILIH KATEGORI PENGELUARAN
+            HUBUNGKAN KE KATEGORI
           </Text>
           <View style={styles.catGrid}>
-            {expenseCategories.map((cat) => {
+            {activeCategories.map((cat) => {
               const isSelected = selectedCategoryId === cat.id;
               return (
                 <TouchableOpacity
@@ -181,7 +244,7 @@ export const BudgetFormModal: React.FC = () => {
                   <Text
                     style={[
                       styles.catName,
-                      { color: theme.colors.text, fontWeight: isSelected ? '900' : '600' },
+                      { color: isSelected ? '#121212' : theme.colors.text, fontWeight: isSelected ? '900' : '600' },
                     ]}
                     numberOfLines={1}
                   >
@@ -192,53 +255,6 @@ export const BudgetFormModal: React.FC = () => {
             })}
           </View>
         </NeoCard>
-
-        {/* Limit Amount Box with Calculator */}
-        <NeoCard style={styles.card}>
-          <View style={styles.limitHeader}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              LIMIT NOMINAL ANGGARAN
-            </Text>
-            <TouchableOpacity
-              onPress={() => setShowCalculator(!showCalculator)}
-              style={[
-                styles.calcBtn,
-                {
-                  backgroundColor: showCalculator ? theme.colors.primary : theme.colors.cardSecondary,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-            >
-              <Ionicons name="calculator" size={14} color={theme.colors.text} />
-              <Text style={[styles.calcBtnText, { color: theme.colors.text }]}>
-                {showCalculator ? 'Tutup' : 'Kalkulator'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.amountInputRow}>
-            <Text style={[styles.rpPrefix, { color: theme.colors.text }]}>Rp</Text>
-            <NeoInput
-              placeholder="0 (misal: 1500000)"
-              value={limitExpression}
-              onChangeText={setLimitExpression}
-              keyboardType="numeric"
-              style={{ fontSize: 20, fontWeight: '900' }}
-              containerStyle={{ flex: 1, marginVertical: 0 }}
-            />
-          </View>
-        </NeoCard>
-
-        {/* Calculator Keypad */}
-        {showCalculator && (
-          <NeoCalculator
-            initialValue={limitExpression}
-            onConfirm={(val) => {
-              setLimitExpression(String(val));
-              setShowCalculator(false);
-            }}
-          />
-        )}
 
         {/* Period & Date Settings */}
         <NeoCard style={styles.card}>
@@ -272,19 +288,18 @@ export const BudgetFormModal: React.FC = () => {
               ]}
             >
               <Text style={[styles.periodChoiceText, { fontWeight: periodType === 'custom' ? '900' : '700' }]}>
-                Rentang Custom
+                Custom Tanggal
               </Text>
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            onPress={() => setShowStartDatePicker(true)}
-            style={{ marginTop: 10 }}
-          >
-            <Text style={[styles.dateLabel, { color: theme.colors.text }]}>TANGGAL MULAI</Text>
-            <View
+          {/* Start Date */}
+          <View style={{ marginTop: 10 }}>
+            <Text style={[styles.dateLabel, { color: theme.colors.textMuted }]}>TANGGAL MULAI</Text>
+            <TouchableOpacity
+              onPress={() => setShowStartDatePicker(true)}
               style={[
-                styles.dateBox,
+                styles.dateBtn,
                 {
                   backgroundColor: theme.colors.surface,
                   borderColor: theme.colors.border,
@@ -292,21 +307,22 @@ export const BudgetFormModal: React.FC = () => {
               ]}
             >
               <Ionicons name="calendar-outline" size={18} color={theme.colors.text} />
-              <Text style={[styles.dateBoxText, { color: theme.colors.text }]}>
+              <Text style={[styles.dateBtnText, { color: theme.colors.text }]}>
                 {formatDateLabel(startDate)} ({startDate})
               </Text>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
 
+          {/* End Date (for custom) */}
           {periodType === 'custom' && (
-            <TouchableOpacity
-              onPress={() => setShowEndDatePicker(true)}
-              style={{ marginTop: 10 }}
-            >
-              <Text style={[styles.dateLabel, { color: theme.colors.text }]}>TANGGAL SELESAI</Text>
-              <View
+            <View style={{ marginTop: 10 }}>
+              <Text style={[styles.dateLabel, { color: theme.colors.textMuted }]}>
+                TANGGAL BERAKHIR (OPSIONAL)
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowEndDatePicker(true)}
                 style={[
-                  styles.dateBox,
+                  styles.dateBtn,
                   {
                     backgroundColor: theme.colors.surface,
                     borderColor: theme.colors.border,
@@ -314,45 +330,50 @@ export const BudgetFormModal: React.FC = () => {
                 ]}
               >
                 <Ionicons name="calendar-outline" size={18} color={theme.colors.text} />
-                <Text style={[styles.dateBoxText, { color: theme.colors.text }]}>
-                  {endDate ? `${formatDateLabel(endDate)} (${endDate})` : 'Pilih tanggal selesai'}
+                <Text style={[styles.dateBtnText, { color: theme.colors.text }]}>
+                  {endDate ? `${formatDateLabel(endDate)} (${endDate})` : 'Tanpa Batas Akhir'}
                 </Text>
-              </View>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            </View>
           )}
         </NeoCard>
 
-        {/* Buttons */}
+        {/* Submit Button */}
         <NeoButton
-          title={isEditing ? 'SIMPAN PERUBAHAN' : 'BUAT BUDGET'}
+          title={isEditing ? 'SIMPAN PERUBAHAN' : 'BUAT ANGGARAN SEKARANG'}
           variant="primary"
           size="lg"
           onPress={handleSave}
-          style={{ marginTop: 14 }}
+          style={{ marginTop: 10 }}
         />
 
+        {/* Delete Button (when editing) */}
         {isEditing && (
           <NeoButton
-            title="HAPUS BUDGET"
+            title="HAPUS ANGGARAN INI"
             variant="expense"
+            size="md"
             onPress={handleDelete}
-            style={{ marginTop: 10 }}
+            style={{ marginTop: 8 }}
           />
         )}
+
+        <View style={{ height: 60 }} />
       </ScrollView>
 
+      {/* Date Pickers */}
       <NeoDatePicker
         visible={showStartDatePicker}
-        onClose={() => setShowStartDatePicker(false)}
         selectedDate={startDate}
         onSelectDate={setStartDate}
+        onClose={() => setShowStartDatePicker(false)}
       />
 
       <NeoDatePicker
         visible={showEndDatePicker}
-        onClose={() => setShowEndDatePicker(false)}
-        selectedDate={endDate || startDate}
+        selectedDate={endDate || getTodayDateString()}
         onSelectDate={setEndDate}
+        onClose={() => setShowEndDatePicker(false)}
       />
     </SafeAreaView>
   );
@@ -384,40 +405,24 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 50,
+    paddingBottom: 40,
   },
   card: {
     padding: 14,
     marginVertical: 6,
   },
   sectionTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 0.5,
     marginBottom: 8,
     textTransform: 'uppercase',
   },
-  catGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  catCard: {
-    width: '48%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8,
-    borderRadius: 8,
-  },
-  catName: {
-    fontSize: 12,
-    marginLeft: 8,
-    flex: 1,
-  },
   limitHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 8,
   },
   calcBtn: {
     flexDirection: 'row',
@@ -429,48 +434,79 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   calcBtnText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '800',
   },
-  amountInputRow: {
-    flexDirection: 'row',
+  displayBox: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
     alignItems: 'center',
-    marginTop: 6,
+    justifyContent: 'center',
+    marginBottom: 10,
   },
-  rpPrefix: {
-    fontSize: 22,
+  displayAmount: {
+    fontSize: 26,
     fontWeight: '900',
-    marginRight: 8,
+    letterSpacing: 0.5,
+  },
+  displayExpression: {
+    fontSize: 12,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  calcWrapper: {
+    marginTop: 4,
+  },
+  catGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  catCard: {
+    width: '30.8%',
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  catName: {
+    fontSize: 11,
+    marginTop: 4,
+    textAlign: 'center',
   },
   periodRow: {
     flexDirection: 'row',
     gap: 8,
+    marginTop: 4,
   },
   periodChoice: {
     flex: 1,
-    padding: 10,
+    paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   periodChoiceText: {
     fontSize: 12,
     color: '#121212',
   },
   dateLabel: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '800',
     marginBottom: 4,
-    textTransform: 'uppercase',
   },
-  dateBox: {
+  dateBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 2,
     gap: 8,
   },
-  dateBoxText: {
+  dateBtnText: {
     fontSize: 13,
     fontWeight: '800',
   },

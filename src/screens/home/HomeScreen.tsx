@@ -92,10 +92,10 @@ export const HomeScreen: React.FC = () => {
       <View style={styles.topHeader}>
         <View>
           <Text style={[styles.greetingText, { color: theme.colors.textMuted }]}>
-            SELAMAT DATANG DI
+            SUGARZY FINANCE TRACKER
           </Text>
           <View style={styles.appTitleRow}>
-            <Text style={[styles.appName, { color: theme.colors.text }]}>MONEY</Text>
+            <Text style={[styles.appName, { color: theme.colors.text }]}>SUFIKER</Text>
             <View
               style={[
                 styles.plusBadge,
@@ -111,7 +111,7 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
+          onPress={() => navigation.navigate('Settings')}
           style={[
             styles.settingsBtn,
             {
@@ -120,7 +120,7 @@ export const HomeScreen: React.FC = () => {
             },
           ]}
         >
-          <Ionicons name="settings-outline" size={22} color={theme.colors.text} />
+          <Ionicons name="settings-sharp" size={22} color={theme.colors.text} />
         </TouchableOpacity>
       </View>
 
