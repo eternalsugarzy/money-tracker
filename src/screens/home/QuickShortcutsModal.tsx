@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../context/ThemeContext';
@@ -48,6 +49,18 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [selectedAccId, setSelectedAccId] = useState<string | null>(null);
 
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState<boolean>(false);
+  const [categorySearchQuery, setCategorySearchQuery] = useState<string>('');
+
+  const activeCategories = categories.filter((c) => c.is_archived === 0);
+  const selectedCategory = activeCategories.find((c) => c.id === selectedCatId) || activeCategories[0];
+
+  const displayedCategories = categorySearchQuery.trim()
+    ? activeCategories.filter((c) =>
+        c.name.toLowerCase().includes(categorySearchQuery.toLowerCase())
+      )
+    : activeCategories;
+
   const resetForm = () => {
     setIsEditing(false);
     setEditingId(null);
@@ -56,6 +69,8 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
     setAmountExpr('');
     setSelectedCatId(categories[0]?.id || null);
     setSelectedAccId(accounts[0]?.id || null);
+    setIsCategoryDropdownOpen(false);
+    setCategorySearchQuery('');
   };
 
   const handleOpenAdd = () => {
@@ -179,35 +194,173 @@ export const QuickShortcutsModal: React.FC<QuickShortcutsModalProps> = ({
           />
 
           {/* Category Selector */}
-          <Text style={[styles.label, { color: theme.colors.text, marginTop: 12 }]}>{t.category.toUpperCase()}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
-            {categories.map((c) => {
-              const isSelected = selectedCatId === c.id;
-              return (
-                <TouchableOpacity
-                  key={c.id}
-                  onPress={() => setSelectedCatId(c.id)}
-                  style={[
-                    styles.chip,
-                    {
-                      backgroundColor: isSelected ? theme.colors.primary : theme.colors.surface,
-                      borderColor: theme.colors.border,
-                      borderWidth: isSelected ? 2 : 1.5,
-                    },
-                  ]}
-                >
-                  <Text
+          <View style={{ marginTop: 12, marginBottom: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={[styles.label, { color: theme.colors.text, marginBottom: 0 }]}>{t.category.toUpperCase()}</Text>
+            <TouchableOpacity
+              onPress={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 6,
+                borderWidth: 1.5,
+                backgroundColor: isCategoryDropdownOpen ? theme.colors.primary : theme.colors.cardSecondary,
+                borderColor: theme.colors.border,
+                gap: 4,
+              }}
+            >
+              <Ionicons
+                name={isCategoryDropdownOpen ? 'chevron-up' : 'grid-outline'}
+                size={14}
+                color={theme.colors.text}
+              />
+              <Text style={{ fontSize: 10, fontWeight: '800', color: theme.colors.text }}>
+                {isCategoryDropdownOpen ? 'Tutup Daftar' : `Buka Dropdown (${activeCategories.length})`}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Selected Category Trigger Card */}
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+            style={[
+              styles.selectedCatBanner,
+              {
+                backgroundColor: selectedCategory ? selectedCategory.color : theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <View style={styles.selectedCatLeft}>
+              <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name={(selectedCategory?.icon || 'pricetag') as any} size={20} color={selectedCategory?.color || theme.colors.primary} />
+              </View>
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <Text style={styles.selectedCatSub}>Kategori Terpilih:</Text>
+                <Text style={styles.selectedCatName} numberOfLines={1}>
+                  {selectedCategory ? selectedCategory.name : 'Pilih Kategori'}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={[
+                styles.dropdownBadge,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.border,
+                },
+              ]}
+            >
+              <Ionicons
+                name={isCategoryDropdownOpen ? 'chevron-up' : 'chevron-down'}
+                size={16}
+                color={theme.colors.text}
+                style={{ marginRight: 4 }}
+              />
+              <Text style={[styles.dropdownBadgeText, { color: theme.colors.text }]}>
+                {isCategoryDropdownOpen ? 'Tutup' : 'Ubah'}
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* Quick Horizontal Scroll when collapsed */}
+          {!isCategoryDropdownOpen && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
+              {activeCategories.map((c) => {
+                const isSelected = selectedCatId === c.id;
+                return (
+                  <TouchableOpacity
+                    key={c.id}
+                    onPress={() => setSelectedCatId(c.id)}
                     style={[
-                      styles.chipText,
-                      { color: isSelected ? '#121212' : theme.colors.text, fontWeight: isSelected ? '900' : '600' },
+                      styles.chip,
+                      {
+                        backgroundColor: isSelected ? c.color : theme.colors.surface,
+                        borderColor: theme.colors.border,
+                        borderWidth: isSelected ? 2.5 : 1.5,
+                      },
                     ]}
                   >
-                    {c.name}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+                    <Text
+                      style={[
+                        styles.chipText,
+                        { color: isSelected ? '#FFFFFF' : theme.colors.text, fontWeight: isSelected ? '900' : '600' },
+                      ]}
+                    >
+                      {c.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          )}
+
+          {/* Dropdown Content: Search Box + 3-Column Grid */}
+          {isCategoryDropdownOpen && (
+            <View style={styles.dropdownContentWrapper}>
+              <View
+                style={[
+                  styles.searchBox,
+                  {
+                    backgroundColor: theme.colors.inputBg,
+                    borderColor: theme.colors.border,
+                  },
+                ]}
+              >
+                <Ionicons name="search" size={16} color={theme.colors.textMuted} style={{ marginRight: 6 }} />
+                <TextInput
+                  placeholder="Cari kategori..."
+                  placeholderTextColor={theme.colors.textMuted}
+                  value={categorySearchQuery}
+                  onChangeText={setCategorySearchQuery}
+                  style={[styles.searchInput, { color: theme.colors.text }]}
+                />
+                {categorySearchQuery ? (
+                  <TouchableOpacity onPress={() => setCategorySearchQuery('')}>
+                    <Ionicons name="close-circle" size={16} color={theme.colors.textMuted} />
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+
+              <View style={styles.catGrid}>
+                {displayedCategories.map((cat) => {
+                  const isSelected = selectedCatId === cat.id;
+                  return (
+                    <TouchableOpacity
+                      key={cat.id}
+                      onPress={() => setSelectedCatId(cat.id)}
+                      style={[
+                        styles.catGridItem,
+                        {
+                          backgroundColor: isSelected ? cat.color : theme.colors.surface,
+                          borderColor: theme.colors.border,
+                          borderWidth: isSelected ? 2.5 : 1.5,
+                        },
+                      ]}
+                    >
+                      <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: isSelected ? '#FFFFFF' : cat.color, alignItems: 'center', justifyContent: 'center' }}>
+                        <Ionicons name={cat.icon as any} size={20} color={isSelected ? cat.color : '#FFFFFF'} />
+                      </View>
+                      <Text
+                        style={[
+                          styles.catGridName,
+                          {
+                            color: isSelected ? '#121212' : theme.colors.text,
+                            fontWeight: isSelected ? '900' : '600',
+                          },
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {cat.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          )}
 
           {/* Amount Keypad */}
           <Text style={[styles.label, { color: theme.colors.text, marginTop: 12 }]}>
@@ -353,5 +506,78 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  selectedCatBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    marginBottom: 10,
+  },
+  selectedCatLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  selectedCatSub: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: 'rgba(0,0,0,0.5)',
+    marginBottom: 2,
+  },
+  selectedCatName: {
+    fontSize: 14,
+    fontWeight: '900',
+    color: '#121212',
+  },
+  dropdownBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1.5,
+  },
+  dropdownBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  dropdownContentWrapper: {
+    marginTop: 6,
+    marginBottom: 10,
+  },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    marginBottom: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  catGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  catGridItem: {
+    width: '30.8%',
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  catGridName: {
+    fontSize: 11,
+    marginTop: 6,
+    textAlign: 'center',
   },
 });
