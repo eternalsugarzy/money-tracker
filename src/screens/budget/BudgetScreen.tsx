@@ -48,7 +48,11 @@ export const BudgetScreen: React.FC = () => {
 
   useEffect(() => {
     fetchBudgets();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchBudgets();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const onRefresh = async () => {
     try {
