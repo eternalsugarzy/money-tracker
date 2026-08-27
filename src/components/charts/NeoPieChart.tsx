@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Svg, G, Path, Circle } from 'react-native-svg';
 import { CategorySpendingSummary } from '../../types';
@@ -18,8 +18,10 @@ export const NeoPieChart: React.FC<NeoPieChartProps> = ({
   onCategoryPress,
 }) => {
   const { theme } = useTheme();
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
 
   const totalSpent = data.reduce((sum, item) => sum + item.totalSpent, 0);
+  const activeSlice = data.find((d) => d.categoryId === activeCategoryId);
 
   if (!data || data.length === 0 || totalSpent === 0) {
     return (
@@ -85,26 +87,52 @@ export const NeoPieChart: React.FC<NeoPieChartProps> = ({
       <View style={styles.chartWrapper}>
         <Svg width={size} height={size}>
           <G>
-            {slices.map((slice, idx) => (
-              <Path
-                key={`slice_${slice.categoryId}_${idx}`}
-                d={slice.path}
-                fill={slice.color}
-                stroke={theme.colors.border}
-                strokeWidth={2.5}
-              />
-            ))}
+            {slices.map((slice, idx) => {
+              const isActive = slice.categoryId === activeCategoryId;
+              return (
+                <Path
+                  key={`slice_${slice.categoryId}_${idx}`}
+                  d={slice.path}
+                  fill={slice.color}
+                  stroke={theme.colors.border}
+                  strokeWidth={isActive ? 5 : 2.5}
+                  onPress={() => setActiveCategoryId(isActive ? null : slice.categoryId)}
+                />
+              );
+            })}
           </G>
         </Svg>
 
         {/* Center Label in Donut */}
-        <View style={[styles.centerOverlay, { width: innerRadius * 2 - 10, height: innerRadius * 2 - 10 }]}>
-          <Text style={[styles.centerLabel, { color: theme.colors.textMuted }]}>
-            TOTAL
+        <View 
+          style={[styles.centerOverlay, { width: innerRadius * 2 - 10, height: innerRadius * 2 - 10 }]}
+          pointerEvents="none"
+        >
+          <Text 
+            style={[
+              styles.centerLabel, 
+              { color: activeSlice ? activeSlice.categoryColor : theme.colors.textMuted }
+            ]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            {activeSlice ? activeSlice.categoryName.toUpperCase() : 'TOTAL'}
           </Text>
-          <Text style={[styles.centerTotal, { color: theme.colors.text }]} numberOfLines={1}>
-            {formatCurrency(totalSpent)}
+          <Text 
+            style={[
+              styles.centerTotal, 
+              { color: theme.colors.text, fontSize: activeSlice ? 12 : 13 }
+            ]} 
+            numberOfLines={1} 
+            adjustsFontSizeToFit
+          >
+            {activeSlice ? formatCurrency(activeSlice.totalSpent) : formatCurrency(totalSpent)}
           </Text>
+          {activeSlice && (
+            <Text style={[styles.centerPct, { color: theme.colors.text }]}>
+              {formatPercentage(activeSlice.percentage)}
+            </Text>
+          )}
         </View>
       </View>
 
@@ -197,6 +225,12 @@ const styles = StyleSheet.create({
   centerTotal: {
     fontSize: 13,
     fontWeight: '900',
+    marginTop: 2,
+    textAlign: 'center',
+  },
+  centerPct: {
+    fontSize: 11,
+    fontWeight: '800',
     marginTop: 2,
   },
   legendContainer: {
