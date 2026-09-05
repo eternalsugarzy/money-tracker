@@ -63,6 +63,9 @@ export const AddTransactionModal: React.FC = () => {
     ? transactions[0].account_id
     : accounts[0]?.id || '';
 
+  // Extract unique previous notes for suggestions
+  const suggestedNotes = Array.from(new Set(transactions.map(t => t.note?.trim()).filter(Boolean))).slice(0, 10);
+
   // Income / Expense specific
   const [selectedAccountId, setSelectedAccountId] = useState<string>(
     isEditing && editTx.account_id ? editTx.account_id : lastUsedAccountId
@@ -351,6 +354,28 @@ export const AddTransactionModal: React.FC = () => {
             </TouchableOpacity>
           </View>
         )}
+
+        {/* Section: Tanggal Transaksi */}
+        <NeoCard style={styles.card}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            {language === 'id' ? 'TANGGAL TRANSAKSI' : 'TRANSACTION DATE'}
+          </Text>
+          <TouchableOpacity
+            onPress={() => setShowDatePicker(true)}
+            style={[
+              styles.dateBtn,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+              },
+            ]}
+          >
+            <Ionicons name="calendar-outline" size={18} color={theme.colors.text} />
+            <Text style={[styles.dateBtnText, { color: theme.colors.text }]}>
+              {formatDateLabel(selectedDate, language)} ({selectedDate})
+            </Text>
+          </TouchableOpacity>
+        </NeoCard>
 
         {/* Nominal Amount Card (Direct Calculator Display) */}
         <NeoCard style={styles.nominalCard}>
@@ -699,28 +724,6 @@ export const AddTransactionModal: React.FC = () => {
           </NeoCard>
         )}
 
-        {/* Section: Tanggal Transaksi */}
-        <NeoCard style={styles.card}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            {language === 'id' ? 'TANGGAL TRANSAKSI' : 'TRANSACTION DATE'}
-          </Text>
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={[
-              styles.dateBtn,
-              {
-                backgroundColor: theme.colors.surface,
-                borderColor: theme.colors.border,
-              },
-            ]}
-          >
-            <Ionicons name="calendar-outline" size={18} color={theme.colors.text} />
-            <Text style={[styles.dateBtnText, { color: theme.colors.text }]}>
-              {formatDateLabel(selectedDate, language)} ({selectedDate})
-            </Text>
-          </TouchableOpacity>
-        </NeoCard>
-
         {/* Section: Catatan */}
         <NeoCard style={styles.card}>
           <NeoInput
@@ -729,6 +732,30 @@ export const AddTransactionModal: React.FC = () => {
             value={note}
             onChangeText={setNote}
           />
+          {suggestedNotes.length > 0 && (
+            <View style={{ marginTop: 12 }}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.textMuted, marginBottom: 8 }]}>
+                {language === 'id' ? 'SUGESTI CATATAN:' : 'SUGGESTED NOTES:'}
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsScroll}>
+                {suggestedNotes.map((sNote, idx) => (
+                  <TouchableOpacity
+                    key={`note_${idx}`}
+                    style={[
+                      styles.suggestionChip,
+                      {
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.border,
+                      }
+                    ]}
+                    onPress={() => setNote(sNote)}
+                  >
+                    <Text style={[styles.suggestionText, { color: theme.colors.text }]}>{sNote}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
         </NeoCard>
 
         {/* Section: Foto Struk Transaksi */}
@@ -977,6 +1004,19 @@ const styles = StyleSheet.create({
   },
   dateBtnText: {
     fontSize: 13,
+    fontWeight: '800',
+  },
+  suggestionChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  suggestionText: {
+    fontSize: 11,
     fontWeight: '800',
   },
   submitBtn: {
