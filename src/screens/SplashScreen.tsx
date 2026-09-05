@@ -31,15 +31,17 @@ export const SplashScreen: React.FC = () => {
         <View style={styles.logoContainer}>
           <Ionicons name="wallet" size={80} color={theme.colors.primary} />
         </View>
-        <Text style={[styles.appName, { color: theme.colors.text }]}>Neo Tracker</Text>
+        <Text style={[styles.appName, { color: theme.colors.text, textAlign: 'center', paddingHorizontal: 20 }]} adjustsFontSizeToFit numberOfLines={2}>
+          SUGARZY FINANCE TRACKER
+        </Text>
       </Animated.View>
       
       <Animated.View style={[styles.footer, { opacity: fadeAnim }]}>
         <Text style={[styles.copyright, { color: theme.colors.textMuted }]}>
-          © 2024 Neo Tracker
+          © 2024 SUGARZY FINANCE TRACKER
         </Text>
         <Text style={[styles.creator, { color: theme.colors.text }]}>
-          Created by Sufiker
+          Created by Irwan Firmanto AKA eternalsugarzy
         </Text>
       </Animated.View>
     </View>
