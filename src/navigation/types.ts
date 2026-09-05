@@ -9,6 +9,7 @@ export type RootTabParamList = {
 };
 
 export type RootStackParamList = {
+  Splash: undefined;
   MainTabs: undefined;
   TransactionDetail: { transactionId: string };
   AddModal?: { editTransaction?: Transaction };

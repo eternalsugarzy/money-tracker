@@ -17,17 +17,20 @@ import { ExportReportScreen } from '../screens/more/ExportReportScreen';
 import { AnalyticsScreen } from '../screens/more/AnalyticsScreen';
 import { SavingsGoalsScreen } from '../screens/more/SavingsGoalsScreen';
 import { SettingsScreen } from '../screens/more/SettingsScreen';
+import { SplashScreen } from '../screens/SplashScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator: React.FC = () => {
   return (
     <Stack.Navigator
+      initialRouteName="Splash"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
       }}
     >
+      <Stack.Screen name="Splash" component={SplashScreen} />
       <Stack.Screen name="MainTabs" component={BottomTabNavigator} />
       <Stack.Screen name="TransactionDetail" component={TransactionDetailScreen} />
       <Stack.Screen

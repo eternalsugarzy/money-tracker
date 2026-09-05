@@ -64,7 +64,10 @@ export const AddTransactionModal: React.FC = () => {
     : accounts[0]?.id || '';
 
   // Extract unique previous notes for suggestions
-  const suggestedNotes = Array.from(new Set(transactions.map(t => t.note?.trim()).filter(Boolean))).slice(0, 10);
+  const allUniqueNotes = Array.from(new Set(transactions.map(t => t.note?.trim()).filter(Boolean)));
+  const suggestedNotes = allUniqueNotes
+    .filter(n => n.toLowerCase().includes(note.toLowerCase()))
+    .slice(0, 10);
 
   // Income / Expense specific
   const [selectedAccountId, setSelectedAccountId] = useState<string>(
