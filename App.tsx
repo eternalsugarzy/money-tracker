@@ -13,7 +13,7 @@ function MainApp() {
 
   return (
     <>
-      <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={theme.colors.background} />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <NavigationContainer>
         <RootNavigator />
       </NavigationContainer>
